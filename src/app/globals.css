@@ -44,3 +44,54 @@ body {
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
   background: #475569;
 }
+
+/* ==============================================================================
+   Interacciones del puntero y aspecto de selección para módulos con acción
+   ============================================================================== */
+button,
+[role="button"],
+a,
+select,
+summary,
+input[type="checkbox"],
+input[type="radio"],
+[data-actionable="true"],
+.cursor-pointer,
+.actionable-card,
+.actionable-item {
+  cursor: pointer;
+}
+
+/* Efectos visuales de selección para módulos, tarjetas y elementos accionables */
+.actionable-card,
+.actionable-item,
+[data-actionable="true"],
+button:not(:disabled),
+a[href] {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Aspecto de selección al pasar el puntero sobre módulos o tarjetas con acción */
+.actionable-card:hover,
+.actionable-item:hover,
+[data-actionable="true"]:hover {
+  border-color: #cfd500 !important;
+  box-shadow: 0 6px 18px -3px rgba(207, 213, 0, 0.35), 0 3px 8px -2px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.actionable-card:active,
+.actionable-item:active,
+[data-actionable="true"]:active {
+  transform: scale(0.98);
+}
+
+/* Realce para botones accionables */
+button:not(:disabled):hover {
+  filter: brightness(1.04);
+}
+
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+

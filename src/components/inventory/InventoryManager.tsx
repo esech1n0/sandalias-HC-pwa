@@ -177,60 +177,60 @@ export function InventoryManager({
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setActiveTab("products")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${
               activeTab === "products"
-                ? "bg-black text-[#cfd500]"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
             }`}
           >
             Catálogo
           </button>
           <button
             onClick={() => setActiveTab("newProduct")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === "newProduct"
-                ? "bg-black text-[#cfd500]"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
             }`}
           >
             <Plus className="w-4 h-4" /> Nuevo Producto
           </button>
           <button
             onClick={() => setActiveTab("purchase")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === "purchase"
-                ? "bg-black text-[#cfd500]"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
             }`}
           >
             <ArrowDownToLine className="w-4 h-4" /> Entrada de Mercancía
           </button>
           <button
             onClick={() => setActiveTab("adjustment")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === "adjustment"
-                ? "bg-black text-[#cfd500]"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
             }`}
           >
             <SlidersHorizontal className="w-4 h-4" /> Ajuste Manual
           </button>
           <button
             onClick={() => setActiveTab("categories")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === "categories"
-                ? "bg-black text-[#cfd500]"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
             }`}
           >
             <Tag className="w-4 h-4" /> Categorías
           </button>
           <button
             onClick={() => setActiveTab("history")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === "history"
-                ? "bg-black text-[#cfd500]"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
             }`}
           >
             <History className="w-4 h-4" /> Historial
@@ -276,8 +276,10 @@ export function InventoryManager({
             <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto no-scrollbar">
               <button
                 onClick={() => setSelectedCat("ALL")}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold ${
-                  selectedCat === "ALL" ? "bg-black text-[#cfd500]" : "bg-slate-100 dark:bg-slate-800 text-slate-600"
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all ${
+                  selectedCat === "ALL"
+                    ? "bg-black text-[#cfd500] shadow-xs"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 hover:text-black dark:hover:text-white"
                 }`}
               >
                 Todas
@@ -286,8 +288,10 @@ export function InventoryManager({
                 <button
                   key={c.id}
                   onClick={() => setSelectedCat(c.id)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 ${
-                    selectedCat === c.id ? "bg-black text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600"
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95 transition-all ${
+                    selectedCat === c.id
+                      ? "bg-black text-white shadow-xs"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 hover:text-black dark:hover:text-white"
                   }`}
                 >
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: c.color }} />

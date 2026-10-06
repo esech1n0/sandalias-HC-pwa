@@ -104,8 +104,12 @@ export function SalesHistoryViewer({ sales }: SalesHistoryViewerProps) {
                 filteredSales.map((s) => {
                   const totalItems = s.items.reduce((sum, i) => sum + i.quantity, 0);
                   return (
-                    <tr key={s.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                      <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-white">
+                    <tr
+                      key={s.id}
+                      onClick={() => setSelectedSale(s)}
+                      className="cursor-pointer hover:bg-[#cfd500]/15 dark:hover:bg-[#cfd500]/10 transition-colors group"
+                    >
+                      <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-white group-hover:text-black dark:group-hover:text-[#cfd500]">
                         {s.folio}
                       </td>
                       <td className="py-3 px-4 text-slate-500 font-mono">
@@ -129,8 +133,11 @@ export function SalesHistoryViewer({ sales }: SalesHistoryViewerProps) {
                       </td>
                       <td className="py-3 px-4 text-center">
                         <button
-                          onClick={() => setSelectedSale(s)}
-                          className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-[#cfd500] hover:text-black transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedSale(s);
+                          }}
+                          className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-[#cfd500] group-hover:text-black cursor-pointer active:scale-90 transition-all"
                           title="Ver detalle del ticket"
                         >
                           <Eye className="w-4 h-4" />

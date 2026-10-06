@@ -338,10 +338,10 @@ export function PosTerminal({
           <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
             <button
               onClick={() => setSelectedCategory("ALL")}
-              className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 ${
+              className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer active:scale-95 ${
                 selectedCategory === "ALL"
                   ? "bg-black text-[#cfd500] shadow-xs"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:scale-105"
               }`}
             >
               Todos ({products.length})
@@ -350,10 +350,10 @@ export function PosTerminal({
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer active:scale-95 ${
                   selectedCategory === cat.id
                     ? "bg-black text-white shadow-xs"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:scale-105"
                 }`}
               >
                 <span
@@ -385,10 +385,10 @@ export function PosTerminal({
                     key={p.id}
                     onClick={() => addToCart(p)}
                     disabled={isOutOfStock}
-                    className={`p-3.5 rounded-xl border text-left flex flex-col justify-between transition-all relative overflow-hidden group ${
+                    className={`p-3.5 rounded-xl border text-left flex flex-col justify-between transition-all duration-200 relative overflow-hidden group ${
                       isOutOfStock
                         ? "opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800"
-                        : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-[#cfd500] hover:shadow-md cursor-pointer active:scale-[0.98]"
+                        : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-[#cfd500] hover:shadow-lg hover:-translate-y-0.5 cursor-pointer active:scale-[0.98]"
                     }`}
                   >
                     {/* Badge de Categoría con su color */}
