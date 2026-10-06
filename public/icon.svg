@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="128" fill="#cfd500"/>
+  <path d="M128 320C128 240 180 160 256 160C332 160 384 240 384 320C384 360 340 384 256 384C172 384 128 360 128 320Z" fill="#1c1d00" opacity="0.1"/>
+  <text x="256" y="310" font-family="system-ui, sans-serif" font-size="120" font-weight="900" fill="#1c1d00" text-anchor="middle" letter-spacing="-4">HC</text>
+  <text x="256" y="380" font-family="system-ui, sans-serif" font-size="36" font-weight="700" fill="#1c1d00" text-anchor="middle" letter-spacing="4">VENTA</text>
+</svg>

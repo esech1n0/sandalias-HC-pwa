@@ -1,0 +1,16 @@
+{
+  "name": "Sandalias y Pantuflas HC - Punto de Venta",
+  "short_name": "HC Venta",
+  "description": "Sistema de Punto de Venta para Sandalias HC",
+  "start_url": "/ventas",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#cfd500",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
