@@ -15,7 +15,7 @@ import {
   DollarSign,
   Tag,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/money";
+import { formatCurrency, roundMoney } from "@/lib/money";
 import {
   calculateCart,
   validatePayments,
@@ -81,7 +81,6 @@ export function PosTerminal({
 
   // Cobro / Checkout Modal
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
-  const [cashAmount, setCashAmount] = useState<string>("");
   const [cashReceived, setCashReceived] = useState<string>("");
   const [cardAmount, setCardAmount] = useState<string>("");
   const [transferAmount, setTransferAmount] = useState<string>("");
@@ -208,33 +207,32 @@ export function PosTerminal({
     );
   }, [cart, globalDiscountType, globalDiscountValue]);
 
+  // Monto a cubrir en efectivo calculado de forma fija y automática (No editable)
+  const cashToCover = useMemo(() => {
+    const cardVal = parseFloat(cardAmount) || 0;
+    const transVal = parseFloat(transferAmount) || 0;
+    return Math.max(0, roundMoney(cartCalculation.total - cardVal - transVal));
+  }, [cartCalculation.total, cardAmount, transferAmount]);
+
   // Apertura de modal de cobro
   const openCheckout = () => {
     if (cart.length === 0) return;
     setSaleError(null);
-    // Por defecto sugerir efectivo exacto
-    setCashAmount(cartCalculation.total.toString());
-    setCashReceived(cartCalculation.total.toString());
     setCardAmount("");
     setTransferAmount("");
+    // Por defecto sugerir efectivo recibido igual al total de la venta
+    setCashReceived(cartCalculation.total.toString());
     setCheckoutModalOpen(true);
   };
 
   // Validación de pagos en checkout
   const currentPayments = useMemo(() => {
     const paymentsList = [];
-    const cashVal = parseFloat(cashAmount) || 0;
-    const cashRecVal = parseFloat(cashReceived) || cashVal;
     const cardVal = parseFloat(cardAmount) || 0;
     const transVal = parseFloat(transferAmount) || 0;
+    const cashVal = cashToCover;
+    const cashRecVal = cashReceived !== "" ? (parseFloat(cashReceived) || 0) : cashVal;
 
-    if (cashVal > 0) {
-      paymentsList.push({
-        method: "CASH" as PaymentMethod,
-        amount: cashVal,
-        receivedAmount: cashRecVal,
-      });
-    }
     if (cardVal > 0) {
       paymentsList.push({
         method: "CARD" as PaymentMethod,
@@ -247,8 +245,15 @@ export function PosTerminal({
         amount: transVal,
       });
     }
+    if (cashVal > 0 || (cardVal === 0 && transVal === 0)) {
+      paymentsList.push({
+        method: "CASH" as PaymentMethod,
+        amount: cashVal,
+        receivedAmount: cashRecVal,
+      });
+    }
     return paymentsList;
-  }, [cashAmount, cashReceived, cardAmount, transferAmount]);
+  }, [cashToCover, cashReceived, cardAmount, transferAmount]);
 
   const paymentValidation = useMemo(() => {
     return validatePayments(cartCalculation.total, currentPayments);
@@ -817,29 +822,39 @@ export function PosTerminal({
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
-                          Monto a Cubrir
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1 flex items-center justify-between">
+                          <span>Monto a Cubrir</span>
+                          <span className="text-[9px] font-semibold text-slate-400 lowercase">(no editable)</span>
                         </label>
                         <input
-                          type="number"
-                          step="any"
-                          value={cashAmount}
-                          onChange={(e) => setCashAmount(e.target.value)}
-                          placeholder="0.00"
-                          className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg font-bold text-sm"
+                          type="text"
+                          readOnly
+                          disabled
+                          tabIndex={-1}
+                          value={formatCurrency(cashToCover)}
+                          className="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg font-black text-sm text-slate-700 dark:text-slate-300 cursor-not-allowed select-none focus:outline-hidden"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
-                          Efectivo Recibido
-                        </label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-[10px] font-bold text-slate-400 uppercase">
+                            Efectivo Recibido
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setCashReceived(cashToCover > 0 ? cashToCover.toString() : "")}
+                            className="text-[10px] font-bold text-slate-600 dark:text-slate-300 hover:text-black dark:hover:text-white underline cursor-pointer"
+                          >
+                            Exacto
+                          </button>
+                        </div>
                         <input
                           type="number"
                           step="any"
                           value={cashReceived}
                           onChange={(e) => setCashReceived(e.target.value)}
                           placeholder="0.00"
-                          className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg font-bold text-sm"
+                          className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg font-bold text-sm focus:ring-2 focus:ring-[#cfd500] focus:outline-hidden"
                         />
                       </div>
                     </div>
@@ -847,9 +862,22 @@ export function PosTerminal({
 
                   {/* Tarjeta */}
                   <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
-                    <div className="flex items-center gap-2 font-bold text-sm">
-                      <CreditCard className="w-4 h-4 text-blue-500" />
-                      <span>Tarjeta (Débito/Crédito)</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-bold text-sm">
+                        <CreditCard className="w-4 h-4 text-blue-500" />
+                        <span>Tarjeta (Débito/Crédito)</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const transVal = parseFloat(transferAmount) || 0;
+                          const remaining = Math.max(0, roundMoney(cartCalculation.total - transVal));
+                          setCardAmount(remaining.toString());
+                        }}
+                        className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                      >
+                        Cubrir Total
+                      </button>
                     </div>
                     <div>
                       <input
@@ -865,9 +893,22 @@ export function PosTerminal({
 
                   {/* Transferencia */}
                   <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
-                    <div className="flex items-center gap-2 font-bold text-sm">
-                      <ArrowRightLeft className="w-4 h-4 text-purple-500" />
-                      <span>Transferencia Bancaria</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 font-bold text-sm">
+                        <ArrowRightLeft className="w-4 h-4 text-purple-500" />
+                        <span>Transferencia Bancaria</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const cardVal = parseFloat(cardAmount) || 0;
+                          const remaining = Math.max(0, roundMoney(cartCalculation.total - cardVal));
+                          setTransferAmount(remaining.toString());
+                        }}
+                        className="text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+                      >
+                        Cubrir Total
+                      </button>
                     </div>
                     <div>
                       <input
