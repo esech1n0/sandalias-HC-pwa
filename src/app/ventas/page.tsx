@@ -38,7 +38,7 @@ export default async function VentasPage() {
           activeCashRegister={
             activeRegister
               ? {
-                  ...activeRegister,
+                  id: activeRegister.id,
                   openingBalance: Number(activeRegister.openingBalance),
                   expectedCash: Number(activeRegister.expectedCash),
                 }

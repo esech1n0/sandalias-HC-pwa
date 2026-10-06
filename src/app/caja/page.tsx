@@ -26,7 +26,9 @@ export default async function CajaPage() {
           activeRegister={
             activeRegister
               ? {
-                  ...activeRegister,
+                  id: activeRegister.id,
+                  status: activeRegister.status,
+                  openedAt: activeRegister.openedAt.toISOString(),
                   openingBalance: Number(activeRegister.openingBalance),
                   cashSales: Number(activeRegister.cashSales),
                   cardSales: Number(activeRegister.cardSales),
@@ -47,13 +49,16 @@ export default async function CajaPage() {
                     type: m.type,
                     amount: Number(m.amount),
                     reason: m.reason,
-                    createdAt: m.createdAt,
+                    createdAt: m.createdAt.toISOString(),
                   })),
                 }
               : null
           }
           history={history.map((h) => ({
-            ...h,
+            id: h.id,
+            status: h.status,
+            openedAt: h.openedAt.toISOString(),
+            closedAt: h.closedAt ? h.closedAt.toISOString() : null,
             openingBalance: Number(h.openingBalance),
             cashSales: Number(h.cashSales),
             withdrawalsTotal: Number(h.withdrawalsTotal),

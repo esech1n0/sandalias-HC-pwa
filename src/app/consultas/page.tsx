@@ -25,6 +25,7 @@ export default async function ConsultasPage() {
           sales={sales.map((s) => ({
             ...s,
             subtotal: Number(s.subtotal),
+            discountValue: s.discountValue !== null ? Number(s.discountValue) : null,
             discountAmount: Number(s.discountAmount),
             total: Number(s.total),
             totalCost: Number(s.totalCost),
@@ -34,7 +35,9 @@ export default async function ConsultasPage() {
               ...i,
               originalPrice: Number(i.originalPrice),
               unitPrice: Number(i.unitPrice),
+              discountValue: i.discountValue !== null ? Number(i.discountValue) : null,
               discountAmount: Number(i.discountAmount),
+              unitCost: Number(i.unitCost),
               subtotal: Number(i.subtotal),
               totalCost: Number(i.totalCost),
               profit: Number(i.profit),
