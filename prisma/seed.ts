@@ -52,6 +52,11 @@ async function main() {
       password: "Choco1234$",
       name: "Hector",
     },
+    {
+      username: "Empleado",
+      password: "JD#56B",
+      name: "Empleado",
+    },
   ];
 
   for (const user of usersToSeed) {
@@ -83,7 +88,7 @@ async function main() {
     }
   }
 
-  // 3. Categorías iniciales sugeridas en INSTRUCTIONS.md
+  // 3. Categorías iniciales de productos
   const initialCategories = [
     { name: "Sandalia", color: "#cfd500" },
     { name: "Pantufla", color: "#f59e0b" },
@@ -103,6 +108,24 @@ async function main() {
     });
   }
   console.log("✅ Categorías iniciales registradas");
+
+  // 4. Categorías iniciales de gastos del negocio
+  const initialExpenseCategories = [
+    "Renta",
+    "Servicios (Luz / Agua)",
+    "Sueldos",
+    "Transporte",
+    "Mantenimiento",
+  ];
+
+  for (const expCat of initialExpenseCategories) {
+    await prisma.expenseCategory.upsert({
+      where: { name: expCat },
+      update: {},
+      create: { name: expCat },
+    });
+  }
+  console.log("✅ Categorías de gastos iniciales registradas");
 
   console.log("✨ Seed completado con éxito.");
 }

@@ -8,6 +8,8 @@ import {
 } from "@/services/reports";
 import { getNotifications, getUnreadNotificationsCount } from "@/services/notifications";
 
+import { serializeData } from "@/lib/serialize";
+
 interface ReportesPageProps {
   searchParams: Promise<{ range?: string }>;
 }
@@ -30,6 +32,8 @@ export default async function ReportesPage({ searchParams }: ReportesPageProps) 
     reportData = await getDailyReport(now);
   }
 
+  const serializedReport = serializeData(reportData);
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <Header
@@ -41,7 +45,7 @@ export default async function ReportesPage({ searchParams }: ReportesPageProps) 
         unreadCount={unreadCount}
       />
       <main className="flex-1 flex flex-col overflow-y-auto">
-        <ReportViewer initialReport={reportData} period={range} />
+        <ReportViewer initialReport={serializedReport} period={range} />
       </main>
     </div>
   );

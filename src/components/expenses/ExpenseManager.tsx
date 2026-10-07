@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ReceiptText, Plus, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ReceiptText, Plus, AlertCircle, CheckCircle2, Sparkles } from "lucide-react";
 import { formatCurrency } from "@/lib/money";
 import { createExpenseAction } from "@/actions/expenses";
 
@@ -16,18 +16,52 @@ interface ExpenseItem {
   user?: { name: string; username: string } | null;
 }
 
-interface ExpenseManagerProps {
-  expenses: ExpenseItem[];
+interface ExpenseCategoryItem {
+  id: string;
+  name: string;
 }
 
-export function ExpenseManager({ expenses }: ExpenseManagerProps) {
+interface ExpenseManagerProps {
+  expenses: ExpenseItem[];
+  categories?: ExpenseCategoryItem[];
+}
+
+const DEFAULT_CATEGORIES = [
+  "Renta",
+  "Servicios (Luz / Agua)",
+  "Sueldos",
+  "Transporte",
+  "Mantenimiento",
+];
+
+const categoryLabels: Record<string, string> = {
+  RENT: "Renta",
+  UTILITIES: "Servicios (Luz / Agua)",
+  SALARY: "Sueldos",
+  TRANSPORT: "Transporte",
+  MAINTENANCE: "Mantenimiento",
+  OTHER: "Otros Gastos",
+};
+
+export function ExpenseManager({ expenses, categories = [] }: ExpenseManagerProps) {
+  // Combinar categorías fijas y personalizadas de la BD
+  const availableCategories = Array.from(
+    new Set([
+      ...DEFAULT_CATEGORIES,
+      ...categories.map((c) => c.name),
+    ])
+  );
+
   const [concept, setConcept] = useState("");
-  const [category, setCategory] = useState("UTILITIES");
+  const [category, setCategory] = useState(availableCategories[0] || "Servicios (Luz / Agua)");
+  const [customCategory, setCustomCategory] = useState("");
   const [amount, setAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("CASH");
   const [description, setDescription] = useState("");
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isOther = category === "OTHER" || category === "Otros";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,21 +77,16 @@ export function ExpenseManager({ expenses }: ExpenseManagerProps) {
       setConcept("");
       setAmount("");
       setDescription("");
+      setCustomCategory("");
+      if (isOther) {
+        setCategory(availableCategories[0] || "Servicios (Luz / Agua)");
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error al registrar gasto";
       setFeedback({ type: "error", message: msg });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const categoryLabels: Record<string, string> = {
-    RENT: "Renta",
-    UTILITIES: "Servicios (Luz / Agua)",
-    SALARY: "Sueldos",
-    TRANSPORT: "Transporte",
-    MAINTENANCE: "Mantenimiento",
-    OTHER: "Otros Gastos",
   };
 
   return (
@@ -124,11 +153,11 @@ export function ExpenseManager({ expenses }: ExpenseManagerProps) {
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-xl text-xs font-semibold"
                 >
-                  <option value="RENT">Renta</option>
-                  <option value="UTILITIES">Servicios (Luz / Agua)</option>
-                  <option value="SALARY">Sueldos</option>
-                  <option value="TRANSPORT">Transporte</option>
-                  <option value="MAINTENANCE">Mantenimiento</option>
+                  {availableCategories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
                   <option value="OTHER">Otros</option>
                 </select>
               </div>
@@ -149,6 +178,32 @@ export function ExpenseManager({ expenses }: ExpenseManagerProps) {
                 />
               </div>
             </div>
+
+            {/* Cuadro de texto para nueva categoría si se selecciona 'Otros' */}
+            {isOther && (
+              <div className="p-3 bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl space-y-1.5 transition-all animate-in fade-in slide-in-from-top-1">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-800 dark:text-amber-300">
+                  <Sparkles className="w-3.5 h-3.5 text-[#9da101]" />
+                  <span>Nueva Categoría de Gasto</span>
+                </div>
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
+                  Nombre del gasto / categoría *
+                </label>
+                <input
+                  name="customCategory"
+                  type="text"
+                  required
+                  placeholder="Ej. Papelería, Publicidad, Insumos..."
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-[#9da101] rounded-xl font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-[#9da101]"
+                  autoFocus
+                />
+                <p className="text-[10px] text-slate-400 dark:text-slate-400">
+                  Esta categoría se guardará en la base de datos para futuros registros.
+                </p>
+              </div>
+            )}
 
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
@@ -223,7 +278,9 @@ export function ExpenseManager({ expenses }: ExpenseManagerProps) {
                           {e.concept}
                         </td>
                         <td className="py-2.5 px-3 text-slate-500">
-                          {categoryLabels[e.category] || e.category}
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                            {categoryLabels[e.category] || e.category}
+                          </span>
                         </td>
                         <td className="py-2.5 px-3 text-right font-black text-red-500">
                           {formatCurrency(e.amount)}

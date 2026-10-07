@@ -39,18 +39,6 @@ export const CashMovementType = {
 export type CashMovementType = (typeof CashMovementType)[keyof typeof CashMovementType]
 
 
-export const ExpenseCategory = {
-  RENT: 'RENT',
-  UTILITIES: 'UTILITIES',
-  SALARY: 'SALARY',
-  TRANSPORT: 'TRANSPORT',
-  MAINTENANCE: 'MAINTENANCE',
-  OTHER: 'OTHER'
-} as const
-
-export type ExpenseCategory = (typeof ExpenseCategory)[keyof typeof ExpenseCategory]
-
-
 export const CashRegisterStatus = {
   OPEN: 'OPEN',
   CLOSED: 'CLOSED'

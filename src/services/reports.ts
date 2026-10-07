@@ -93,10 +93,20 @@ export async function getFinancialReport(filter: DateRangeFilter) {
   const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
   const totalWithdrawals = withdrawals.reduce((sum, w) => sum + Number(w.amount), 0);
 
+  // Mapeo amigable para categorías
+  const categoryDisplayNames: Record<string, string> = {
+    RENT: "Renta",
+    UTILITIES: "Servicios (Luz / Agua)",
+    SALARY: "Sueldos",
+    TRANSPORT: "Transporte",
+    MAINTENANCE: "Mantenimiento",
+    OTHER: "Otros Gastos",
+  };
+
   // Gastos por categoría
   const expensesByCategoryMap = new Map<string, number>();
   for (const e of expenses) {
-    const cat = e.category;
+    const cat = categoryDisplayNames[e.category] || e.category;
     expensesByCategoryMap.set(cat, (expensesByCategoryMap.get(cat) || 0) + Number(e.amount));
   }
 
@@ -129,8 +139,27 @@ export async function getFinancialReport(filter: DateRangeFilter) {
     salesByDay,
     topProducts,
     expensesByCategory,
-    expensesList: expenses,
-    withdrawalsList: withdrawals,
+    expensesList: expenses.map((e) => ({
+      id: e.id,
+      concept: e.concept,
+      category: categoryDisplayNames[e.category] || e.category,
+      amount: Number(e.amount),
+      date: e.date.toISOString(),
+      paymentMethod: e.paymentMethod,
+      description: e.description,
+      cashRegisterId: e.cashRegisterId,
+      userId: e.userId,
+      createdAt: e.createdAt.toISOString(),
+    })),
+    withdrawalsList: withdrawals.map((w) => ({
+      id: w.id,
+      cashRegisterId: w.cashRegisterId,
+      type: w.type,
+      amount: Number(w.amount),
+      reason: w.reason,
+      userId: w.userId,
+      createdAt: w.createdAt.toISOString(),
+    })),
   };
 }
 

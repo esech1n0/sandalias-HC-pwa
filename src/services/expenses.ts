@@ -1,15 +1,16 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { ExpenseCategory, PaymentMethod } from "@/generated/prisma/client";
+import { PaymentMethod } from "@/generated/prisma/client";
 
 export interface CreateExpenseInput {
   concept: string;
-  category: ExpenseCategory;
+  category: string;
   amount: number;
   paymentMethod: PaymentMethod;
   description?: string | null;
   userId?: string | null;
 }
+
 
 export async function createExpense(input: CreateExpenseInput) {
   const concept = input.concept.trim();

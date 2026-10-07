@@ -37,7 +37,7 @@ export type ExpenseSumAggregateOutputType = {
 export type ExpenseMinAggregateOutputType = {
   id: string | null
   concept: string | null
-  category: $Enums.ExpenseCategory | null
+  category: string | null
   amount: runtime.Decimal | null
   date: Date | null
   paymentMethod: $Enums.PaymentMethod | null
@@ -50,7 +50,7 @@ export type ExpenseMinAggregateOutputType = {
 export type ExpenseMaxAggregateOutputType = {
   id: string | null
   concept: string | null
-  category: $Enums.ExpenseCategory | null
+  category: string | null
   amount: runtime.Decimal | null
   date: Date | null
   paymentMethod: $Enums.PaymentMethod | null
@@ -212,7 +212,7 @@ export type ExpenseGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type ExpenseGroupByOutputType = {
   id: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal
   date: Date
   paymentMethod: $Enums.PaymentMethod
@@ -248,7 +248,7 @@ export type ExpenseWhereInput = {
   NOT?: Prisma.ExpenseWhereInput | Prisma.ExpenseWhereInput[]
   id?: Prisma.StringFilter<"Expense"> | string
   concept?: Prisma.StringFilter<"Expense"> | string
-  category?: Prisma.EnumExpenseCategoryFilter<"Expense"> | $Enums.ExpenseCategory
+  category?: Prisma.StringFilter<"Expense"> | string
   amount?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFilter<"Expense"> | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFilter<"Expense"> | $Enums.PaymentMethod
@@ -281,7 +281,7 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ExpenseWhereInput[]
   NOT?: Prisma.ExpenseWhereInput | Prisma.ExpenseWhereInput[]
   concept?: Prisma.StringFilter<"Expense"> | string
-  category?: Prisma.EnumExpenseCategoryFilter<"Expense"> | $Enums.ExpenseCategory
+  category?: Prisma.StringFilter<"Expense"> | string
   amount?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFilter<"Expense"> | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFilter<"Expense"> | $Enums.PaymentMethod
@@ -317,7 +317,7 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ExpenseScalarWhereWithAggregatesInput | Prisma.ExpenseScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   concept?: Prisma.StringWithAggregatesFilter<"Expense"> | string
-  category?: Prisma.EnumExpenseCategoryWithAggregatesFilter<"Expense"> | $Enums.ExpenseCategory
+  category?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   amount?: Prisma.DecimalWithAggregatesFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodWithAggregatesFilter<"Expense"> | $Enums.PaymentMethod
@@ -330,7 +330,7 @@ export type ExpenseScalarWhereWithAggregatesInput = {
 export type ExpenseCreateInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -343,7 +343,7 @@ export type ExpenseCreateInput = {
 export type ExpenseUncheckedCreateInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -356,7 +356,7 @@ export type ExpenseUncheckedCreateInput = {
 export type ExpenseUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -369,7 +369,7 @@ export type ExpenseUpdateInput = {
 export type ExpenseUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -382,7 +382,7 @@ export type ExpenseUncheckedUpdateInput = {
 export type ExpenseCreateManyInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -395,7 +395,7 @@ export type ExpenseCreateManyInput = {
 export type ExpenseUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -406,7 +406,7 @@ export type ExpenseUpdateManyMutationInput = {
 export type ExpenseUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -557,14 +557,10 @@ export type ExpenseUncheckedUpdateManyWithoutCashRegisterNestedInput = {
   deleteMany?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
 }
 
-export type EnumExpenseCategoryFieldUpdateOperationsInput = {
-  set?: $Enums.ExpenseCategory
-}
-
 export type ExpenseCreateWithoutUserInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -576,7 +572,7 @@ export type ExpenseCreateWithoutUserInput = {
 export type ExpenseUncheckedCreateWithoutUserInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -617,7 +613,7 @@ export type ExpenseScalarWhereInput = {
   NOT?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
   id?: Prisma.StringFilter<"Expense"> | string
   concept?: Prisma.StringFilter<"Expense"> | string
-  category?: Prisma.EnumExpenseCategoryFilter<"Expense"> | $Enums.ExpenseCategory
+  category?: Prisma.StringFilter<"Expense"> | string
   amount?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFilter<"Expense"> | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFilter<"Expense"> | $Enums.PaymentMethod
@@ -630,7 +626,7 @@ export type ExpenseScalarWhereInput = {
 export type ExpenseCreateWithoutCashRegisterInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -642,7 +638,7 @@ export type ExpenseCreateWithoutCashRegisterInput = {
 export type ExpenseUncheckedCreateWithoutCashRegisterInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -680,7 +676,7 @@ export type ExpenseUpdateManyWithWhereWithoutCashRegisterInput = {
 export type ExpenseCreateManyUserInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -692,7 +688,7 @@ export type ExpenseCreateManyUserInput = {
 export type ExpenseUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -704,7 +700,7 @@ export type ExpenseUpdateWithoutUserInput = {
 export type ExpenseUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -716,7 +712,7 @@ export type ExpenseUncheckedUpdateWithoutUserInput = {
 export type ExpenseUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -728,7 +724,7 @@ export type ExpenseUncheckedUpdateManyWithoutUserInput = {
 export type ExpenseCreateManyCashRegisterInput = {
   id?: string
   concept: string
-  category: $Enums.ExpenseCategory
+  category: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Date | string
   paymentMethod?: $Enums.PaymentMethod
@@ -740,7 +736,7 @@ export type ExpenseCreateManyCashRegisterInput = {
 export type ExpenseUpdateWithoutCashRegisterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -752,7 +748,7 @@ export type ExpenseUpdateWithoutCashRegisterInput = {
 export type ExpenseUncheckedUpdateWithoutCashRegisterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -764,7 +760,7 @@ export type ExpenseUncheckedUpdateWithoutCashRegisterInput = {
 export type ExpenseUncheckedUpdateManyWithoutCashRegisterInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   concept?: Prisma.StringFieldUpdateOperationsInput | string
-  category?: Prisma.EnumExpenseCategoryFieldUpdateOperationsInput | $Enums.ExpenseCategory
+  category?: Prisma.StringFieldUpdateOperationsInput | string
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
@@ -856,7 +852,7 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     concept: string
-    category: $Enums.ExpenseCategory
+    category: string
     amount: runtime.Decimal
     date: Date
     paymentMethod: $Enums.PaymentMethod
@@ -1291,7 +1287,7 @@ export interface Prisma__ExpenseClient<T, Null = never, ExtArgs extends runtime.
 export interface ExpenseFieldRefs {
   readonly id: Prisma.FieldRef<"Expense", 'String'>
   readonly concept: Prisma.FieldRef<"Expense", 'String'>
-  readonly category: Prisma.FieldRef<"Expense", 'ExpenseCategory'>
+  readonly category: Prisma.FieldRef<"Expense", 'String'>
   readonly amount: Prisma.FieldRef<"Expense", 'Decimal'>
   readonly date: Prisma.FieldRef<"Expense", 'DateTime'>
   readonly paymentMethod: Prisma.FieldRef<"Expense", 'PaymentMethod'>

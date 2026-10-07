@@ -35,7 +35,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 -z-10 bg-black/25 dark:bg-black/60" />
 
       {/* Tarjeta de Login */}
-      <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 dark:border-slate-800 overflow-hidden relative z-10">
+      <div className="w-full max-w-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border-2 border-[#9da101] dark:border-slate-800 overflow-hidden relative z-10">
         {/* Banner Superior con color de marca #cfd500 y logo nuevo */}
         <div
           className="p-6 text-center text-black border-b border-black/10 flex flex-col items-center justify-center"

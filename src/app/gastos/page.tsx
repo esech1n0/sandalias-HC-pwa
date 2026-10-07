@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/auth/dal";
 import { getExpenses } from "@/services/expenses";
+import { getExpenseCategories } from "@/services/expenseCategories";
 import { getNotifications, getUnreadNotificationsCount } from "@/services/notifications";
 import { Header } from "@/components/Header";
 import { ExpenseManager } from "@/components/expenses/ExpenseManager";
@@ -7,6 +8,7 @@ import { ExpenseManager } from "@/components/expenses/ExpenseManager";
 export default async function GastosPage() {
   const user = await getCurrentUser();
   const expenses = await getExpenses(50);
+  const categories = await getExpenseCategories();
   const notifications = await getNotifications();
   const unreadCount = await getUnreadNotificationsCount();
 
@@ -28,6 +30,7 @@ export default async function GastosPage() {
             date: e.date.toISOString(),
             user: e.user ? { name: e.user.name, username: e.user.username } : null,
           }))}
+          categories={categories.map((c) => ({ id: c.id, name: c.name }))}
         />
       </main>
     </div>

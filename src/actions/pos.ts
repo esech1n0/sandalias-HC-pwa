@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { openCashRegister } from "@/services/cash";
 import { createSaleTransaction, CreateSaleInput } from "@/services/sales";
+import { serializeData } from "@/lib/serialize";
 
 export async function openCashRegisterAction(openingBalance: number) {
   const user = await getCurrentUser();
@@ -12,7 +13,7 @@ export async function openCashRegisterAction(openingBalance: number) {
   const register = await openCashRegister(openingBalance, user.id);
   revalidatePath("/ventas");
   revalidatePath("/caja");
-  return register;
+  return serializeData(register);
 }
 
 export async function completeSaleAction(data: Omit<CreateSaleInput, "userId">) {
@@ -30,5 +31,5 @@ export async function completeSaleAction(data: Omit<CreateSaleInput, "userId">) 
   revalidatePath("/consultas");
   revalidatePath("/reportes");
 
-  return result;
+  return serializeData(result);
 }
