@@ -1907,6 +1907,7 @@ export const CashRegisterScalarFieldEnum = {
   cardSales: 'cardSales',
   transferSales: 'transferSales',
   withdrawalsTotal: 'withdrawalsTotal',
+  depositsTotal: 'depositsTotal',
   expensesCashTotal: 'expensesCashTotal',
   expectedCash: 'expectedCash',
   countedCash: 'countedCash',

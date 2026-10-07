@@ -987,25 +987,9 @@ export function InventoryManager({
 
           <form onSubmit={handleAdjustStock} className="space-y-4">
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-bold text-slate-500 uppercase">
-                  Producto a Ajustar *
-                </label>
-                {adjustProductId && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const prod = localProducts.find((p) => p.id === adjustProductId);
-                      if (prod) setProductToDelete(prod);
-                    }}
-                    className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline flex items-center gap-1 cursor-pointer"
-                    title="Eliminar este producto"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                    <span>Eliminar producto</span>
-                  </button>
-                )}
-              </div>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                Producto a Ajustar *
+              </label>
               <select
                 required
                 value={adjustProductId}
@@ -1024,31 +1008,6 @@ export function InventoryManager({
                 ))}
               </select>
             </div>
-
-            {adjustProductId && (
-              <div className="p-3 rounded-xl bg-red-50/70 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 flex items-center justify-between gap-3">
-                <div className="text-xs">
-                  <p className="font-bold text-red-700 dark:text-red-400">
-                    ¿Deseas dar de baja o eliminar este producto?
-                  </p>
-                  <p className="text-red-600/80 dark:text-red-400/80 text-[11px]">
-                    Puedes retirarlo del catálogo si ya no se comercializa.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const prod = localProducts.find((p) => p.id === adjustProductId);
-                    if (prod) setProductToDelete(prod);
-                  }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-black bg-red-600 hover:bg-red-700 text-white flex items-center gap-1.5 shrink-0 transition-all cursor-pointer shadow-xs active:scale-95"
-                  title="Eliminar este producto"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Eliminar Producto</span>
-                </button>
-              </div>
-            )}
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">

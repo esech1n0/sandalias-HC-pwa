@@ -11,6 +11,9 @@ import {
   CreditCard,
   Banknote,
   ArrowRightLeft,
+  ArrowLeftRight,
+  ArrowDownLeft,
+  ArrowUpRight,
   CheckCircle2,
   DollarSign,
   Tag,
@@ -22,7 +25,11 @@ import {
   DiscountType,
   PaymentMethod,
 } from "@/lib/sales/calculations";
-import { openCashRegisterAction, completeSaleAction } from "@/actions/pos";
+import {
+  openCashRegisterAction,
+  completeSaleAction,
+  createCashMovementAction,
+} from "@/actions/pos";
 
 interface Category {
   id: string;
@@ -90,6 +97,17 @@ export function PosTerminal({
     folio: string;
     total: number;
     changeGiven: number;
+  } | null>(null);
+
+  // Movimiento de Caja (Ingreso / Retiro)
+  const [movementModalOpen, setMovementModalOpen] = useState(false);
+  const [movementType, setMovementType] = useState<"DEPOSIT" | "WITHDRAWAL">("DEPOSIT");
+  const [movementAmount, setMovementAmount] = useState("");
+  const [movementReason, setMovementReason] = useState("");
+  const [isSubmittingMovement, setIsSubmittingMovement] = useState(false);
+  const [movementFeedback, setMovementFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
   } | null>(null);
 
   // Filtrado de productos
@@ -280,6 +298,68 @@ export function PosTerminal({
     }
   };
 
+  // Confirmar movimiento de caja (Ingreso o Retiro)
+  const handleCashMovement = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cashRegister) return;
+    setMovementFeedback(null);
+
+    const amount = parseFloat(movementAmount);
+    if (isNaN(amount) || amount <= 0) {
+      setMovementFeedback({ type: "error", message: "La cantidad debe ser mayor a cero." });
+      return;
+    }
+
+    const reason = movementReason.trim();
+    if (!reason) {
+      setMovementFeedback({ type: "error", message: "El motivo del movimiento es obligatorio." });
+      return;
+    }
+
+    if (movementType === "WITHDRAWAL" && amount > Number(cashRegister.expectedCash)) {
+      setMovementFeedback({
+        type: "error",
+        message: `El monto del retiro (${formatCurrency(amount)}) supera el efectivo disponible en caja (${formatCurrency(Number(cashRegister.expectedCash))}).`,
+      });
+      return;
+    }
+
+    setIsSubmittingMovement(true);
+    try {
+      await createCashMovementAction({
+        cashRegisterId: cashRegister.id,
+        type: movementType,
+        amount,
+        reason,
+      });
+
+      const newExpected =
+        movementType === "DEPOSIT"
+          ? Number(cashRegister.expectedCash) + amount
+          : Number(cashRegister.expectedCash) - amount;
+
+      setCashRegister({
+        ...cashRegister,
+        expectedCash: newExpected,
+      });
+
+      setMovementFeedback({
+        type: "success",
+        message:
+          movementType === "DEPOSIT"
+            ? `Ingreso de ${formatCurrency(amount)} registrado exitosamente.`
+            : `Retiro de ${formatCurrency(amount)} registrado exitosamente.`,
+      });
+      setMovementAmount("");
+      setMovementReason("");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error al registrar movimiento";
+      setMovementFeedback({ type: "error", message: msg });
+    } finally {
+      setIsSubmittingMovement(false);
+    }
+  };
+
   // Confirmar venta
   const handleConfirmSale = async () => {
     if (!paymentValidation.isValid) return;
@@ -326,17 +406,33 @@ export function PosTerminal({
       <div className="flex-1 flex flex-col border-r border-slate-200 dark:border-slate-800 overflow-hidden">
         {/* Barra superior de búsqueda y filtros */}
         <div className="p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 space-y-3">
-          <div className="relative">
-            <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              placeholder="Buscar producto por nombre... (Enter para agregar)"
-              className="w-full pl-11 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-0 rounded-xl text-sm focus:ring-2 focus:ring-[#cfd500] dark:text-white"
-            />
+          <div className="flex items-center gap-2.5">
+            <div className="relative flex-1">
+              <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder="Buscar producto por nombre... (Enter para agregar)"
+                className="w-full pl-11 pr-4 py-2.5 bg-slate-100 dark:bg-slate-800 border-0 rounded-xl text-sm focus:ring-2 focus:ring-[#cfd500] dark:text-white"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setMovementFeedback(null);
+                setMovementModalOpen(true);
+              }}
+              className="px-3.5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 hover:border-[#cfd500] hover:text-black dark:hover:text-[#cfd500] transition-all cursor-pointer shrink-0 shadow-xs active:scale-95"
+              title="Registrar ingreso o retiro de efectivo en caja"
+            >
+              <ArrowLeftRight className="w-4 h-4 text-[#cfd500]" />
+              <span className="hidden sm:inline">Movimiento de caja</span>
+              <span className="sm:hidden">Mov. caja</span>
+            </button>
           </div>
 
           {/* Categorías */}
@@ -975,6 +1071,198 @@ export function PosTerminal({
                   </button>
                 </div>
               </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* Modal de Movimiento de Caja (Ingreso / Retiro sin salir de Ventas) */}
+      {/* ==================================================================== */}
+      {movementModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-slate-800 dark:text-slate-100 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-black shadow-xs shrink-0"
+                  style={{ backgroundColor: "#cfd500" }}
+                >
+                  <ArrowLeftRight className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-black text-lg leading-tight">Movimiento de Caja</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Ajuste físico de efectivo en caja
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMovementModalOpen(false);
+                  setMovementFeedback(null);
+                }}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {movementFeedback && (
+              <div
+                className={`p-3 rounded-xl mb-4 text-xs font-bold flex items-center gap-2 ${
+                  movementFeedback.type === "success"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                    : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"
+                }`}
+              >
+                {movementFeedback.type === "success" ? (
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                ) : (
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
+                )}
+                <span>{movementFeedback.message}</span>
+              </div>
+            )}
+
+            {!cashRegister ? (
+              <div className="text-center py-6 space-y-3">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  No hay una caja abierta actualmente. Para registrar movimientos de efectivo, primero debes abrir caja.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMovementModalOpen(false);
+                    setOpeningModalOpen(true);
+                  }}
+                  className="px-4 py-2.5 rounded-xl font-bold text-xs bg-[#cfd500] text-black shadow-sm hover:brightness-105 cursor-pointer"
+                >
+                  Abrir Caja Ahora
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleCashMovement} className="space-y-4">
+                {/* Selector Tipo de Movimiento */}
+                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMovementType("DEPOSIT");
+                      setMovementFeedback(null);
+                    }}
+                    className={`py-2 px-3 rounded-lg text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      movementType === "DEPOSIT"
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                    }`}
+                  >
+                    <ArrowDownLeft className="w-4 h-4" />
+                    <span>Ingreso de dinero</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMovementType("WITHDRAWAL");
+                      setMovementFeedback(null);
+                    }}
+                    className={`py-2 px-3 rounded-lg text-xs font-black flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      movementType === "WITHDRAWAL"
+                        ? "bg-rose-600 text-white shadow-xs"
+                        : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                    }`}
+                  >
+                    <ArrowUpRight className="w-4 h-4" />
+                    <span>Retiro de dinero</span>
+                  </button>
+                </div>
+
+                {/* Info de Efectivo Actual */}
+                <div className="flex items-center justify-between text-xs px-1">
+                  <span className="text-slate-500 dark:text-slate-400">Efectivo disponible en caja:</span>
+                  <span className="font-black text-slate-800 dark:text-slate-200">
+                    {formatCurrency(cashRegister.expectedCash)}
+                  </span>
+                </div>
+
+                {/* Campo Cantidad */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                    Cantidad a {movementType === "DEPOSIT" ? "ingresar" : "retirar"} ($) *
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-black text-base text-slate-400">
+                      $
+                    </span>
+                    <input
+                      type="number"
+                      step="any"
+                      min="0.01"
+                      required
+                      placeholder="0.00"
+                      value={movementAmount}
+                      onChange={(e) => setMovementAmount(e.target.value)}
+                      className="w-full pl-8 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-black text-base text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#cfd500]"
+                      autoFocus
+                    />
+                  </div>
+                </div>
+
+                {/* Campo Motivo */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">
+                    Motivo del {movementType === "DEPOSIT" ? "ingreso" : "retiro"} *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={
+                      movementType === "DEPOSIT"
+                        ? "Ej. Fondo adicional de cambio, reintegro..."
+                        : "Ej. Retiro parcial para resguardo, pago de paquetería..."
+                    }
+                    value={movementReason}
+                    onChange={(e) => setMovementReason(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#cfd500]"
+                  />
+                </div>
+
+                {/* Nota explicativa de utilidad neta */}
+                <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                  💡 <span className="font-bold">Aviso contable:</span> Este movimiento ajusta el arqueo físico en caja y <span className="font-bold text-slate-700 dark:text-slate-300">no disminuye ni incrementa la utilidad neta</span> del negocio.
+                </div>
+
+                {/* Botones de acción */}
+                <div className="flex gap-2.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMovementModalOpen(false);
+                      setMovementFeedback(null);
+                    }}
+                    className="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingMovement}
+                    className={`flex-1 py-2.5 rounded-xl font-black text-xs text-white shadow-md transition-all cursor-pointer disabled:opacity-50 ${
+                      movementType === "DEPOSIT"
+                        ? "bg-emerald-600 hover:bg-emerald-700"
+                        : "bg-rose-600 hover:bg-rose-700"
+                    }`}
+                  >
+                    {isSubmittingMovement
+                      ? "Registrando..."
+                      : movementType === "DEPOSIT"
+                      ? "Confirmar Ingreso"
+                      : "Confirmar Retiro"}
+                  </button>
+                </div>
+              </form>
             )}
           </div>
         </div>

@@ -107,6 +107,54 @@ export async function createWithdrawal(
   });
 }
 
+export async function createCashDeposit(
+  cashRegisterId: string,
+  amount: number,
+  reason: string,
+  userId: string
+) {
+  if (amount <= 0) {
+    throw new Error("El monto del ingreso debe ser mayor a cero.");
+  }
+  const cleanReason = reason.trim();
+  if (!cleanReason) {
+    throw new Error("El motivo del ingreso es obligatorio.");
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const register = await tx.cashRegister.findUnique({
+      where: { id: cashRegisterId },
+    });
+
+    if (!register || register.status !== "OPEN") {
+      throw new Error("No hay una caja abierta válida para registrar ingresos.");
+    }
+
+    // Registrar movimiento de Ingreso / Ajuste de efectivo (NO es venta, solo ingreso físico)
+    await tx.cashMovement.create({
+      data: {
+        cashRegisterId: register.id,
+        type: "ADJUSTMENT",
+        amount,
+        reason: cleanReason.startsWith("Ingreso:") ? cleanReason : `Ingreso: ${cleanReason}`,
+        userId,
+      },
+    });
+
+    // Actualizar totales de caja
+    const newDepositsTotal = Number(register.depositsTotal) + amount;
+    const newExpectedCash = Number(register.expectedCash) + amount;
+
+    return tx.cashRegister.update({
+      where: { id: register.id },
+      data: {
+        depositsTotal: newDepositsTotal,
+        expectedCash: newExpectedCash,
+      },
+    });
+  });
+}
+
 export async function closeCashRegister(
   cashRegisterId: string,
   countedCash: number,
@@ -132,6 +180,7 @@ export async function closeCashRegister(
       cardSales: Number(register.cardSales),
       transferSales: Number(register.transferSales),
       withdrawalsTotal: Number(register.withdrawalsTotal),
+      depositsTotal: Number(register.depositsTotal),
       expensesCashTotal: Number(register.expensesCashTotal),
       countedCash,
     });

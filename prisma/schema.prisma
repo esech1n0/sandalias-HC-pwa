@@ -277,6 +277,7 @@ model CashRegister {
   cardSales         Decimal            @default(0) @db.Decimal(12, 2)
   transferSales     Decimal            @default(0) @db.Decimal(12, 2)
   withdrawalsTotal  Decimal            @default(0) @db.Decimal(12, 2)
+  depositsTotal     Decimal            @default(0) @db.Decimal(12, 2)
   expensesCashTotal Decimal            @default(0) @db.Decimal(12, 2)
   expectedCash      Decimal            @default(0) @db.Decimal(12, 2)
   countedCash       Decimal?           @db.Decimal(12, 2)

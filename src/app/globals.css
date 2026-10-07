@@ -13,13 +13,27 @@
 }
 
 [data-theme="dark"] {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --card: #1e293b;
-  --card-foreground: #f8fafc;
+  --background: #0d0d0e;
+  --foreground: #f4f4f5;
+  --card: #121212;
+  --card-foreground: #f4f4f5;
   --primary: #cfd500;
   --primary-foreground: #1c1d00;
-  --border: #334155;
+  --border: #262629;
+
+  /* Overrides para la paleta slate en tema oscuro: neutrales profundos, sin tinte azul */
+  --color-slate-950: #0d0d0e; /* Fondo principal solicitado */
+  --color-slate-900: #121212; /* Contenedores solicitados */
+  --color-slate-850: #161618;
+  --color-slate-800: #1a1a1d; /* Sub-contenedores, inputs y tarjetas secundarias */
+  --color-slate-700: #262629; /* Bordes y divisores armonizados */
+  --color-slate-600: #52525b; /* Textos atenuados */
+  --color-slate-500: #71717a; /* Textos secundarios */
+  --color-slate-400: #a1a1aa; /* Textos de soporte */
+  --color-slate-300: #d4d4d8;
+  --color-slate-200: #e4e4e7;
+  --color-slate-100: #f4f4f5; /* Textos principales */
+  --color-slate-50: #fafafa;
 }
 
 body {
@@ -42,7 +56,7 @@ body {
   border-radius: 9999px;
 }
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: #2a2a2e;
 }
 
 /* ==============================================================================

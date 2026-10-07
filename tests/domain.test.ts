@@ -171,6 +171,25 @@ describe("HC Venta - Reglas de Negocio e Integridad Financiera", () => {
       expect(corte.isBalanced).toBe(false);
       expect(corte.totalSales).toBe(7300);
     });
+
+    it("Calcula efectivo esperado considerando ingresos de dinero (depositsTotal)", () => {
+      const corte = calculateCashRegister({
+        openingBalance: 1000,
+        cashSales: 2000,
+        cardSales: 500,
+        transferSales: 0,
+        depositsTotal: 400, // Ingreso de dinero a caja (ej. cambio inicial adicional)
+        withdrawalsTotal: 200, // Retiro de dinero
+        expensesCashTotal: 100, // Gasto en efectivo
+        countedCash: 3100,
+      });
+
+      // 1000 + 2000 + 400 - 200 - 100 = 3100 esperado
+      expect(corte.expectedCash).toBe(3100);
+      expect(corte.depositsTotal).toBe(400);
+      expect(corte.difference).toBe(0);
+      expect(corte.isBalanced).toBe(true);
+    });
   });
 
   // --------------------------------------------------------------------------

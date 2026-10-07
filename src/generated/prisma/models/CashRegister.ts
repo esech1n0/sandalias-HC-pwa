@@ -32,6 +32,7 @@ export type CashRegisterAvgAggregateOutputType = {
   cardSales: runtime.Decimal | null
   transferSales: runtime.Decimal | null
   withdrawalsTotal: runtime.Decimal | null
+  depositsTotal: runtime.Decimal | null
   expensesCashTotal: runtime.Decimal | null
   expectedCash: runtime.Decimal | null
   countedCash: runtime.Decimal | null
@@ -44,6 +45,7 @@ export type CashRegisterSumAggregateOutputType = {
   cardSales: runtime.Decimal | null
   transferSales: runtime.Decimal | null
   withdrawalsTotal: runtime.Decimal | null
+  depositsTotal: runtime.Decimal | null
   expensesCashTotal: runtime.Decimal | null
   expectedCash: runtime.Decimal | null
   countedCash: runtime.Decimal | null
@@ -59,6 +61,7 @@ export type CashRegisterMinAggregateOutputType = {
   cardSales: runtime.Decimal | null
   transferSales: runtime.Decimal | null
   withdrawalsTotal: runtime.Decimal | null
+  depositsTotal: runtime.Decimal | null
   expensesCashTotal: runtime.Decimal | null
   expectedCash: runtime.Decimal | null
   countedCash: runtime.Decimal | null
@@ -78,6 +81,7 @@ export type CashRegisterMaxAggregateOutputType = {
   cardSales: runtime.Decimal | null
   transferSales: runtime.Decimal | null
   withdrawalsTotal: runtime.Decimal | null
+  depositsTotal: runtime.Decimal | null
   expensesCashTotal: runtime.Decimal | null
   expectedCash: runtime.Decimal | null
   countedCash: runtime.Decimal | null
@@ -97,6 +101,7 @@ export type CashRegisterCountAggregateOutputType = {
   cardSales: number
   transferSales: number
   withdrawalsTotal: number
+  depositsTotal: number
   expensesCashTotal: number
   expectedCash: number
   countedCash: number
@@ -115,6 +120,7 @@ export type CashRegisterAvgAggregateInputType = {
   cardSales?: true
   transferSales?: true
   withdrawalsTotal?: true
+  depositsTotal?: true
   expensesCashTotal?: true
   expectedCash?: true
   countedCash?: true
@@ -127,6 +133,7 @@ export type CashRegisterSumAggregateInputType = {
   cardSales?: true
   transferSales?: true
   withdrawalsTotal?: true
+  depositsTotal?: true
   expensesCashTotal?: true
   expectedCash?: true
   countedCash?: true
@@ -142,6 +149,7 @@ export type CashRegisterMinAggregateInputType = {
   cardSales?: true
   transferSales?: true
   withdrawalsTotal?: true
+  depositsTotal?: true
   expensesCashTotal?: true
   expectedCash?: true
   countedCash?: true
@@ -161,6 +169,7 @@ export type CashRegisterMaxAggregateInputType = {
   cardSales?: true
   transferSales?: true
   withdrawalsTotal?: true
+  depositsTotal?: true
   expensesCashTotal?: true
   expectedCash?: true
   countedCash?: true
@@ -180,6 +189,7 @@ export type CashRegisterCountAggregateInputType = {
   cardSales?: true
   transferSales?: true
   withdrawalsTotal?: true
+  depositsTotal?: true
   expensesCashTotal?: true
   expectedCash?: true
   countedCash?: true
@@ -286,6 +296,7 @@ export type CashRegisterGroupByOutputType = {
   cardSales: runtime.Decimal
   transferSales: runtime.Decimal
   withdrawalsTotal: runtime.Decimal
+  depositsTotal: runtime.Decimal
   expensesCashTotal: runtime.Decimal
   expectedCash: runtime.Decimal
   countedCash: runtime.Decimal | null
@@ -328,6 +339,7 @@ export type CashRegisterWhereInput = {
   cardSales?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.DecimalNullableFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -353,6 +365,7 @@ export type CashRegisterOrderByWithRelationInput = {
   cardSales?: Prisma.SortOrder
   transferSales?: Prisma.SortOrder
   withdrawalsTotal?: Prisma.SortOrder
+  depositsTotal?: Prisma.SortOrder
   expensesCashTotal?: Prisma.SortOrder
   expectedCash?: Prisma.SortOrder
   countedCash?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -381,6 +394,7 @@ export type CashRegisterWhereUniqueInput = Prisma.AtLeast<{
   cardSales?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.DecimalNullableFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -406,6 +420,7 @@ export type CashRegisterOrderByWithAggregationInput = {
   cardSales?: Prisma.SortOrder
   transferSales?: Prisma.SortOrder
   withdrawalsTotal?: Prisma.SortOrder
+  depositsTotal?: Prisma.SortOrder
   expensesCashTotal?: Prisma.SortOrder
   expectedCash?: Prisma.SortOrder
   countedCash?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -433,6 +448,7 @@ export type CashRegisterScalarWhereWithAggregatesInput = {
   cardSales?: Prisma.DecimalWithAggregatesFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalWithAggregatesFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalWithAggregatesFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalWithAggregatesFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalWithAggregatesFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalWithAggregatesFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.DecimalNullableWithAggregatesFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -452,6 +468,7 @@ export type CashRegisterCreateInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -475,6 +492,7 @@ export type CashRegisterUncheckedCreateInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -498,6 +516,7 @@ export type CashRegisterUpdateInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -521,6 +540,7 @@ export type CashRegisterUncheckedUpdateInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -544,6 +564,7 @@ export type CashRegisterCreateManyInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -563,6 +584,7 @@ export type CashRegisterUpdateManyMutationInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -580,6 +602,7 @@ export type CashRegisterUncheckedUpdateManyInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -614,6 +637,7 @@ export type CashRegisterCountOrderByAggregateInput = {
   cardSales?: Prisma.SortOrder
   transferSales?: Prisma.SortOrder
   withdrawalsTotal?: Prisma.SortOrder
+  depositsTotal?: Prisma.SortOrder
   expensesCashTotal?: Prisma.SortOrder
   expectedCash?: Prisma.SortOrder
   countedCash?: Prisma.SortOrder
@@ -630,6 +654,7 @@ export type CashRegisterAvgOrderByAggregateInput = {
   cardSales?: Prisma.SortOrder
   transferSales?: Prisma.SortOrder
   withdrawalsTotal?: Prisma.SortOrder
+  depositsTotal?: Prisma.SortOrder
   expensesCashTotal?: Prisma.SortOrder
   expectedCash?: Prisma.SortOrder
   countedCash?: Prisma.SortOrder
@@ -645,6 +670,7 @@ export type CashRegisterMaxOrderByAggregateInput = {
   cardSales?: Prisma.SortOrder
   transferSales?: Prisma.SortOrder
   withdrawalsTotal?: Prisma.SortOrder
+  depositsTotal?: Prisma.SortOrder
   expensesCashTotal?: Prisma.SortOrder
   expectedCash?: Prisma.SortOrder
   countedCash?: Prisma.SortOrder
@@ -664,6 +690,7 @@ export type CashRegisterMinOrderByAggregateInput = {
   cardSales?: Prisma.SortOrder
   transferSales?: Prisma.SortOrder
   withdrawalsTotal?: Prisma.SortOrder
+  depositsTotal?: Prisma.SortOrder
   expensesCashTotal?: Prisma.SortOrder
   expectedCash?: Prisma.SortOrder
   countedCash?: Prisma.SortOrder
@@ -680,6 +707,7 @@ export type CashRegisterSumOrderByAggregateInput = {
   cardSales?: Prisma.SortOrder
   transferSales?: Prisma.SortOrder
   withdrawalsTotal?: Prisma.SortOrder
+  depositsTotal?: Prisma.SortOrder
   expensesCashTotal?: Prisma.SortOrder
   expectedCash?: Prisma.SortOrder
   countedCash?: Prisma.SortOrder
@@ -854,6 +882,7 @@ export type CashRegisterCreateWithoutOpenedByInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -876,6 +905,7 @@ export type CashRegisterUncheckedCreateWithoutOpenedByInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -908,6 +938,7 @@ export type CashRegisterCreateWithoutClosedByInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -930,6 +961,7 @@ export type CashRegisterUncheckedCreateWithoutClosedByInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -981,6 +1013,7 @@ export type CashRegisterScalarWhereInput = {
   cardSales?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.DecimalNullableFilter<"CashRegister"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1016,6 +1049,7 @@ export type CashRegisterCreateWithoutPurchasesInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1038,6 +1072,7 @@ export type CashRegisterUncheckedCreateWithoutPurchasesInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1076,6 +1111,7 @@ export type CashRegisterUpdateWithoutPurchasesInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1098,6 +1134,7 @@ export type CashRegisterUncheckedUpdateWithoutPurchasesInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1120,6 +1157,7 @@ export type CashRegisterCreateWithoutSalesInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1142,6 +1180,7 @@ export type CashRegisterUncheckedCreateWithoutSalesInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1180,6 +1219,7 @@ export type CashRegisterUpdateWithoutSalesInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1202,6 +1242,7 @@ export type CashRegisterUncheckedUpdateWithoutSalesInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1224,6 +1265,7 @@ export type CashRegisterCreateWithoutMovementsInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1246,6 +1288,7 @@ export type CashRegisterUncheckedCreateWithoutMovementsInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1284,6 +1327,7 @@ export type CashRegisterUpdateWithoutMovementsInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1306,6 +1350,7 @@ export type CashRegisterUncheckedUpdateWithoutMovementsInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1328,6 +1373,7 @@ export type CashRegisterCreateWithoutExpensesInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1350,6 +1396,7 @@ export type CashRegisterUncheckedCreateWithoutExpensesInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1388,6 +1435,7 @@ export type CashRegisterUpdateWithoutExpensesInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1410,6 +1458,7 @@ export type CashRegisterUncheckedUpdateWithoutExpensesInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1432,6 +1481,7 @@ export type CashRegisterCreateManyOpenedByInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1450,6 +1500,7 @@ export type CashRegisterCreateManyClosedByInput = {
   cardSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1468,6 +1519,7 @@ export type CashRegisterUpdateWithoutOpenedByInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1490,6 +1542,7 @@ export type CashRegisterUncheckedUpdateWithoutOpenedByInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1512,6 +1565,7 @@ export type CashRegisterUncheckedUpdateManyWithoutOpenedByInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1530,6 +1584,7 @@ export type CashRegisterUpdateWithoutClosedByInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1552,6 +1607,7 @@ export type CashRegisterUncheckedUpdateWithoutClosedByInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1574,6 +1630,7 @@ export type CashRegisterUncheckedUpdateManyWithoutClosedByInput = {
   cardSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   transferSales?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   withdrawalsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  depositsTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expensesCashTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   expectedCash?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   countedCash?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
@@ -1650,6 +1707,7 @@ export type CashRegisterSelect<ExtArgs extends runtime.Types.Extensions.Internal
   cardSales?: boolean
   transferSales?: boolean
   withdrawalsTotal?: boolean
+  depositsTotal?: boolean
   expensesCashTotal?: boolean
   expectedCash?: boolean
   countedCash?: boolean
@@ -1676,6 +1734,7 @@ export type CashRegisterSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   cardSales?: boolean
   transferSales?: boolean
   withdrawalsTotal?: boolean
+  depositsTotal?: boolean
   expensesCashTotal?: boolean
   expectedCash?: boolean
   countedCash?: boolean
@@ -1697,6 +1756,7 @@ export type CashRegisterSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   cardSales?: boolean
   transferSales?: boolean
   withdrawalsTotal?: boolean
+  depositsTotal?: boolean
   expensesCashTotal?: boolean
   expectedCash?: boolean
   countedCash?: boolean
@@ -1718,6 +1778,7 @@ export type CashRegisterSelectScalar = {
   cardSales?: boolean
   transferSales?: boolean
   withdrawalsTotal?: boolean
+  depositsTotal?: boolean
   expensesCashTotal?: boolean
   expectedCash?: boolean
   countedCash?: boolean
@@ -1728,7 +1789,7 @@ export type CashRegisterSelectScalar = {
   notes?: boolean
 }
 
-export type CashRegisterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "openedAt" | "closedAt" | "openingBalance" | "cashSales" | "cardSales" | "transferSales" | "withdrawalsTotal" | "expensesCashTotal" | "expectedCash" | "countedCash" | "difference" | "status" | "openedById" | "closedById" | "notes", ExtArgs["result"]["cashRegister"]>
+export type CashRegisterOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "openedAt" | "closedAt" | "openingBalance" | "cashSales" | "cardSales" | "transferSales" | "withdrawalsTotal" | "depositsTotal" | "expensesCashTotal" | "expectedCash" | "countedCash" | "difference" | "status" | "openedById" | "closedById" | "notes", ExtArgs["result"]["cashRegister"]>
 export type CashRegisterInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   openedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   closedBy?: boolean | Prisma.CashRegister$closedByArgs<ExtArgs>
@@ -1766,6 +1827,7 @@ export type $CashRegisterPayload<ExtArgs extends runtime.Types.Extensions.Intern
     cardSales: runtime.Decimal
     transferSales: runtime.Decimal
     withdrawalsTotal: runtime.Decimal
+    depositsTotal: runtime.Decimal
     expensesCashTotal: runtime.Decimal
     expectedCash: runtime.Decimal
     countedCash: runtime.Decimal | null
@@ -2211,6 +2273,7 @@ export interface CashRegisterFieldRefs {
   readonly cardSales: Prisma.FieldRef<"CashRegister", 'Decimal'>
   readonly transferSales: Prisma.FieldRef<"CashRegister", 'Decimal'>
   readonly withdrawalsTotal: Prisma.FieldRef<"CashRegister", 'Decimal'>
+  readonly depositsTotal: Prisma.FieldRef<"CashRegister", 'Decimal'>
   readonly expensesCashTotal: Prisma.FieldRef<"CashRegister", 'Decimal'>
   readonly expectedCash: Prisma.FieldRef<"CashRegister", 'Decimal'>
   readonly countedCash: Prisma.FieldRef<"CashRegister", 'Decimal'>

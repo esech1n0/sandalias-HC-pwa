@@ -10,6 +10,7 @@ export interface CashRegisterCalculationInput {
   cardSales: number;
   transferSales: number;
   withdrawalsTotal: number;
+  depositsTotal?: number;
   expensesCashTotal: number;
   countedCash?: number | null;
 }
@@ -21,6 +22,7 @@ export interface CashRegisterCalculationResult {
   transferSales: number;
   totalSales: number;
   withdrawalsTotal: number;
+  depositsTotal: number;
   expensesCashTotal: number;
   expectedCash: number;
   countedCash: number | null;
@@ -32,7 +34,7 @@ export interface CashRegisterCalculationResult {
  * Calcula los totales y el cuadre de caja (corte diario).
  * 
  * Regla:
- * Efectivo Esperado = Fondo Inicial + Ventas Efectivo - Retiros - Gastos/Compras en Efectivo
+ * Efectivo Esperado = Fondo Inicial + Ventas Efectivo + Ingresos - Retiros - Gastos/Compras en Efectivo
  * Diferencia = Efectivo Contado - Efectivo Esperado
  */
 export function calculateCashRegister(
@@ -43,12 +45,13 @@ export function calculateCashRegister(
   const cardSales = roundMoney(input.cardSales);
   const transferSales = roundMoney(input.transferSales);
   const withdrawalsTotal = roundMoney(input.withdrawalsTotal);
+  const depositsTotal = roundMoney(input.depositsTotal || 0);
   const expensesCashTotal = roundMoney(input.expensesCashTotal);
 
   const totalSales = roundMoney(cashSales + cardSales + transferSales);
 
   const expectedCash = roundMoney(
-    openingBalance + cashSales - withdrawalsTotal - expensesCashTotal
+    openingBalance + cashSales + depositsTotal - withdrawalsTotal - expensesCashTotal
   );
 
   let difference: number | null = null;
@@ -66,6 +69,7 @@ export function calculateCashRegister(
     transferSales,
     totalSales,
     withdrawalsTotal,
+    depositsTotal,
     expensesCashTotal,
     expectedCash,
     countedCash,
