@@ -96,8 +96,8 @@ export function Header({
         className="sticky top-0 z-40 text-black shadow-md"
         style={{ backgroundColor: "#cfd500" }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          {/* Izquierda: Botón Menú Hamburguesa */}
+        <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          {/* Extremo Izquierdo: Menú Hamburguesa y Contenedor de Bienvenida (sin emoji) */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
@@ -106,26 +106,28 @@ export function Header({
             >
               {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
-            <span className="hidden sm:inline-block font-semibold text-sm opacity-90">
-              Hola, {userName}
-            </span>
+            <div className="px-3.5 py-1.5 rounded-full bg-black/10 border border-black/10 text-black text-xs sm:text-sm font-bold shadow-xs">
+              <span>
+                Hola, <span className="font-black">{userName}</span>
+              </span>
+            </div>
           </div>
 
           {/* Centro: Logo / Identidad */}
           <Link
             href="/ventas"
-            className="flex items-center hover:opacity-90 transition-opacity cursor-pointer py-1"
+            className="flex items-center justify-center hover:opacity-90 transition-opacity cursor-pointer py-1"
             aria-label="Sandalias HC"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/logo.png"
               alt="Sandalias HC"
-              className="h-11 sm:h-12 w-auto object-contain transition-transform hover:scale-105"
+              className="h-10 sm:h-12 w-auto object-contain transition-transform hover:scale-105"
             />
           </Link>
 
-          {/* Derecha: Icono de Notificaciones */}
+          {/* Extremo Derecho: Icono de Notificaciones */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setNotifOpen(!notifOpen)}
@@ -199,15 +201,17 @@ export function Header({
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all ${
+                  onClick={() => {
+                    setTimeout(() => setMenuOpen(false), 60);
+                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all select-none ${
                     isActive
                       ? "bg-[#cfd500]/30 text-black dark:text-yellow-300 font-bold translate-x-1 shadow-xs"
                       : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 hover:translate-x-1"
                   }`}
                 >
-                  <Icon className="w-5 h-5 opacity-80" />
-                  <span>{item.label}</span>
+                  <Icon className="w-5 h-5 opacity-80 shrink-0 pointer-events-none" />
+                  <span className="flex-1 pointer-events-none">{item.label}</span>
                 </Link>
               );
             })}

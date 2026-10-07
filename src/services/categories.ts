@@ -28,3 +28,21 @@ export async function updateCategory(id: string, name: string, color: string) {
     data: { name: trimmedName, color },
   });
 }
+
+export async function deleteCategory(id: string) {
+  const productCount = await prisma.product.count({
+    where: { categoryId: id },
+  });
+
+  if (productCount > 0) {
+    return prisma.category.update({
+      where: { id },
+      data: { isActive: false },
+    });
+  }
+
+  return prisma.category.delete({
+    where: { id },
+  });
+}
+

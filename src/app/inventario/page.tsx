@@ -8,7 +8,7 @@ import { InventoryManager } from "@/components/inventory/InventoryManager";
 
 export default async function InventarioPage() {
   const user = await getCurrentUser();
-  const products = await getProducts({ onlyActive: false });
+  const products = await getProducts({ onlyActive: true });
   const categories = await getCategories();
   const movements = await getInventoryMovements(undefined, 40);
   const notifications = await getNotifications();

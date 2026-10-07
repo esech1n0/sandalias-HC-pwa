@@ -216,6 +216,23 @@ export function SalesHistoryViewer({ sales }: SalesHistoryViewerProps) {
               </div>
             </div>
 
+            {/* Módulo de Ganancia Obtenida */}
+            <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs mb-4 flex items-center justify-between shadow-xs">
+              <div>
+                <span className="text-[10px] uppercase font-black text-emerald-800 dark:text-emerald-300 block tracking-wider">
+                  Ganancia Obtenida
+                </span>
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Costo de inversión: {formatCurrency(selectedSale.totalCost)}
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="text-base font-black text-emerald-600 dark:text-emerald-400">
+                  +{formatCurrency(selectedSale.grossProfit)}
+                </span>
+              </div>
+            </div>
+
             {/* Pagos */}
             <div className="p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-1 mb-4">
               <div className="font-bold text-slate-500 uppercase text-[10px] mb-1">

@@ -20,6 +20,7 @@ export interface UpdateProductInput {
   description?: string | null;
   categoryId?: string;
   salePrice?: number;
+  currentCost?: number;
   minStock?: number;
   imageUrl?: string | null;
   isActive?: boolean;
@@ -141,6 +142,7 @@ export async function updateProduct(id: string, input: UpdateProductInput) {
   if (input.description !== undefined) data.description = input.description;
   if (input.categoryId !== undefined) data.categoryId = input.categoryId;
   if (input.salePrice !== undefined) data.salePrice = input.salePrice;
+  if (input.currentCost !== undefined) data.currentCost = input.currentCost;
   if (input.minStock !== undefined) data.minStock = Math.floor(input.minStock);
   if (input.imageUrl !== undefined) data.imageUrl = input.imageUrl;
   if (input.isActive !== undefined) data.isActive = input.isActive;
@@ -157,3 +159,25 @@ export async function updateProduct(id: string, input: UpdateProductInput) {
 
   return updated;
 }
+
+export async function deleteProduct(id: string) {
+  const saleCount = await prisma.saleItem.count({ where: { productId: id } });
+  const purchaseCount = await prisma.purchaseItem.count({ where: { productId: id } });
+
+  if (saleCount > 0 || purchaseCount > 0) {
+    return prisma.product.update({
+      where: { id },
+      data: { isActive: false },
+      include: { category: true },
+    });
+  }
+
+  await prisma.inventoryMovement.deleteMany({ where: { productId: id } });
+  await prisma.notification.deleteMany({ where: { productId: id } });
+  await prisma.productCostHistory.deleteMany({ where: { productId: id } });
+  return prisma.product.delete({
+    where: { id },
+    include: { category: true },
+  });
+}
+
