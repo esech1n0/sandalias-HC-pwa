@@ -63,12 +63,14 @@ interface InventoryManagerProps {
   products: Product[];
   categories: Category[];
   movements: InventoryMovement[];
+  isEmployee?: boolean;
 }
 
 export function InventoryManager({
   products,
   categories,
   movements,
+  isEmployee = false,
 }: InventoryManagerProps) {
   const [activeTab, setActiveTab] = useState<
     "products" | "newProduct" | "purchase" | "adjustment" | "categories" | "history"
@@ -444,69 +446,71 @@ export function InventoryManager({
           </p>
         </div>
 
-        {/* Botones de acción */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setActiveTab("products")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${
-              activeTab === "products"
-                ? "bg-black text-[#cfd500] shadow-xs"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-            }`}
-          >
-            Catálogo
-          </button>
-          <button
-            onClick={() => setActiveTab("newProduct")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-              activeTab === "newProduct"
-                ? "bg-black text-[#cfd500] shadow-xs"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-            }`}
-          >
-            <Plus className="w-4 h-4" /> Nuevo Producto
-          </button>
-          <button
-            onClick={() => setActiveTab("purchase")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-              activeTab === "purchase"
-                ? "bg-black text-[#cfd500] shadow-xs"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-            }`}
-          >
-            <ArrowDownToLine className="w-4 h-4" /> Entrada de Mercancía
-          </button>
-          <button
-            onClick={() => setActiveTab("adjustment")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-              activeTab === "adjustment"
-                ? "bg-black text-[#cfd500] shadow-xs"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-            }`}
-          >
-            <SlidersHorizontal className="w-4 h-4" /> Ajuste Manual
-          </button>
-          <button
-            onClick={() => setActiveTab("categories")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-              activeTab === "categories"
-                ? "bg-black text-[#cfd500] shadow-xs"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-            }`}
-          >
-            <Tag className="w-4 h-4" /> Categorías
-          </button>
-          <button
-            onClick={() => setActiveTab("history")}
-            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-              activeTab === "history"
-                ? "bg-black text-[#cfd500] shadow-xs"
-                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-            }`}
-          >
-            <History className="w-4 h-4" /> Historial
-          </button>
-        </div>
+        {/* Botones de acción (solo administrador) */}
+        {!isEmployee && (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab("products")}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${
+                activeTab === "products"
+                  ? "bg-black text-[#cfd500] shadow-xs"
+                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+              }`}
+            >
+              Catálogo
+            </button>
+            <button
+              onClick={() => setActiveTab("newProduct")}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                activeTab === "newProduct"
+                  ? "bg-black text-[#cfd500] shadow-xs"
+                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+              }`}
+            >
+              <Plus className="w-4 h-4" /> Nuevo Producto
+            </button>
+            <button
+              onClick={() => setActiveTab("purchase")}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                activeTab === "purchase"
+                  ? "bg-black text-[#cfd500] shadow-xs"
+                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+              }`}
+            >
+              <ArrowDownToLine className="w-4 h-4" /> Entrada de Mercancía
+            </button>
+            <button
+              onClick={() => setActiveTab("adjustment")}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                activeTab === "adjustment"
+                  ? "bg-black text-[#cfd500] shadow-xs"
+                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+              }`}
+            >
+              <SlidersHorizontal className="w-4 h-4" /> Ajuste Manual
+            </button>
+            <button
+              onClick={() => setActiveTab("categories")}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                activeTab === "categories"
+                  ? "bg-black text-[#cfd500] shadow-xs"
+                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+              }`}
+            >
+              <Tag className="w-4 h-4" /> Categorías
+            </button>
+            <button
+              onClick={() => setActiveTab("history")}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
+                activeTab === "history"
+                  ? "bg-black text-[#cfd500] shadow-xs"
+                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+              }`}
+            >
+              <History className="w-4 h-4" /> Historial
+            </button>
+          </div>
+        )}
       </div>
 
       {feedback && (
@@ -584,13 +588,13 @@ export function InventoryManager({
                   <th className="py-3 px-4 text-center">Stock</th>
                   <th className="py-3 px-4 text-center">Mínimo</th>
                   <th className="py-3 px-4 text-center">Estado</th>
-                  <th className="py-3 px-4 text-center">Acciones</th>
+                  {!isEmployee && <th className="py-3 px-4 text-center">Acciones</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-12 text-center text-slate-400">
+                    <td colSpan={isEmployee ? 7 : 8} className="py-12 text-center text-slate-400">
                       No hay productos registrados con esos filtros.
                     </td>
                   </tr>
@@ -641,42 +645,44 @@ export function InventoryManager({
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-center">
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setAdjustProductId(p.id);
-                                setAdjustNewStock(p.stock.toString());
-                                setAdjustReason("");
-                                setActiveTab("adjustment");
-                              }}
-                              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-[#cfd500] hover:text-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-                              title="Ajuste Manual de Stock"
-                            >
-                              <SlidersHorizontal className="w-3.5 h-3.5" />
-                              <span className="hidden xl:inline">Ajuste</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => openEditProduct(p)}
-                              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-black text-[#cfd500] hover:brightness-110 transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-xs"
-                              title="Editar Producto"
-                            >
-                              <Pencil className="w-3.5 h-3.5" />
-                              <span>Editar</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setProductToDelete(p)}
-                              className="px-2.5 py-1 rounded-lg text-xs font-bold border border-red-200 dark:border-red-900/60 bg-red-50/60 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-xs"
-                              title="Eliminar Producto"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                              <span>Eliminar</span>
-                            </button>
-                          </div>
-                        </td>
+                        {!isEmployee && (
+                          <td className="py-3 px-4 text-center">
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAdjustProductId(p.id);
+                                  setAdjustNewStock(p.stock.toString());
+                                  setAdjustReason("");
+                                  setActiveTab("adjustment");
+                                }}
+                                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-[#cfd500] hover:text-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                                title="Ajuste Manual de Stock"
+                              >
+                                <SlidersHorizontal className="w-3.5 h-3.5" />
+                                <span className="hidden xl:inline">Ajuste</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => openEditProduct(p)}
+                                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-black text-[#cfd500] hover:brightness-110 transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-xs"
+                                title="Editar Producto"
+                              >
+                                <Pencil className="w-3.5 h-3.5" />
+                                <span>Editar</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setProductToDelete(p)}
+                                className="px-2.5 py-1 rounded-lg text-xs font-bold border border-red-200 dark:border-red-900/60 bg-red-50/60 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-xs"
+                                title="Eliminar Producto"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Eliminar</span>
+                              </button>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     );
                   })
@@ -690,7 +696,7 @@ export function InventoryManager({
       {/* ==================================================================== */}
       {/* Pestaña: Registrar Nuevo Producto */}
       {/* ==================================================================== */}
-      {activeTab === "newProduct" && (
+      {!isEmployee && activeTab === "newProduct" && (
         <div className="max-w-2xl bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
           <h2 className="text-lg font-black mb-4">Registrar Nuevo Producto</h2>
           <form onSubmit={handleCreateProduct} className="space-y-4">
@@ -852,7 +858,7 @@ export function InventoryManager({
       {/* ==================================================================== */}
       {/* Pestaña: Entrada de Mercancía / Compra a Proveedor */}
       {/* ==================================================================== */}
-      {activeTab === "purchase" && (
+      {!isEmployee && activeTab === "purchase" && (
         <div className="max-w-2xl bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="mb-4">
             <h2 className="text-lg font-black">Registrar Entrada / Compra a Proveedor</h2>
@@ -976,7 +982,7 @@ export function InventoryManager({
       {/* ==================================================================== */}
       {/* Pestaña: Ajuste Manual de Inventario */}
       {/* ==================================================================== */}
-      {activeTab === "adjustment" && (
+      {!isEmployee && activeTab === "adjustment" && (
         <div className="max-w-2xl bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
           <div className="mb-4">
             <h2 className="text-lg font-black">Ajuste Manual de Inventario</h2>
@@ -1051,7 +1057,7 @@ export function InventoryManager({
       {/* ==================================================================== */}
       {/* Pestaña: Categorías y Colores */}
       {/* ==================================================================== */}
-      {activeTab === "categories" && (
+      {!isEmployee && activeTab === "categories" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
             <h2 className="text-lg font-black mb-4">Añadir Categoría</h2>
@@ -1137,7 +1143,7 @@ export function InventoryManager({
       {/* ==================================================================== */}
       {/* Pestaña: Historial de Movimientos de Inventario */}
       {/* ==================================================================== */}
-      {activeTab === "history" && (
+      {!isEmployee && activeTab === "history" && (
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-4 overflow-hidden">
           <h2 className="text-lg font-black mb-3">Trazabilidad de Movimientos</h2>
           <div className="overflow-x-auto">
@@ -1196,7 +1202,7 @@ export function InventoryManager({
       {/* ==================================================================== */}
       {/* Modal: Editar Producto */}
       {/* ==================================================================== */}
-      {editingProduct && (
+      {!isEmployee && editingProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-slate-800 dark:text-slate-100 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
@@ -1342,7 +1348,7 @@ export function InventoryManager({
       {/* ==================================================================== */}
       {/* Modal: Opciones / Editar / Eliminar Categoría */}
       {/* ==================================================================== */}
-      {selectedCategory && (
+      {!isEmployee && selectedCategory && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-slate-800 dark:text-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">
@@ -1494,7 +1500,7 @@ export function InventoryManager({
       {/* ==================================================================== */}
       {/* Modal: Confirmación de Eliminación de Producto */}
       {/* ==================================================================== */}
-      {productToDelete && (
+      {!isEmployee && productToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-slate-800 dark:text-slate-100">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">

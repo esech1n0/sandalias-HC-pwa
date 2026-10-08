@@ -32,25 +32,26 @@ interface NotificationItem {
 
 interface HeaderProps {
   userName?: string;
+  isEmployee?: boolean;
   notifications?: NotificationItem[];
   unreadCount?: number;
 }
 
 export function Header({
   userName = "Usuario",
+  isEmployee,
   notifications = [],
   unreadCount = 0,
 }: HeaderProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("hc-theme") as "light" | "dark") || "light";
-    }
-    return "light";
-  });
+  // Always start with "light" so server and client render the same HTML;
+  // the saved theme is applied after hydration in the effect below.
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [hasMarkedAllRead, setHasMarkedAllRead] = useState(false);
+
+  const isEmp = isEmployee ?? (userName?.toLowerCase() === "empleado");
 
   const displayNotifications = hasMarkedAllRead
     ? notifications.map((n) => ({ ...n, isRead: true }))
@@ -61,6 +62,8 @@ export function Header({
     const savedTheme = localStorage.getItem("hc-theme") as "light" | "dark" | null;
     if (savedTheme) {
       document.documentElement.setAttribute("data-theme", savedTheme);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTheme(savedTheme);
     }
   }, []);
 
@@ -71,7 +74,7 @@ export function Header({
     document.documentElement.setAttribute("data-theme", next);
   };
 
-  const navLinks = [
+  const allNavLinks = [
     { href: "/ventas", label: "Ventas", icon: ShoppingCart },
     { href: "/consultas", label: "Consultas", icon: Search },
     { href: "/inventario", label: "Inventario", icon: Package },
@@ -80,6 +83,12 @@ export function Header({
     { href: "/reportes", label: "Reportes", icon: BarChart3 },
     { href: "/configuracion", label: "Configuración", icon: Settings },
   ];
+
+  const navLinks = isEmp
+    ? allNavLinks.filter((item) =>
+        ["/ventas", "/consultas", "/inventario", "/caja"].includes(item.href)
+      )
+    : allNavLinks;
 
   const handleMarkAllRead = async () => {
     try {

@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { Header } from "@/components/Header";
 import { ReportViewer } from "@/components/reports/ReportViewer";
@@ -16,6 +17,9 @@ interface ReportesPageProps {
 
 export default async function ReportesPage({ searchParams }: ReportesPageProps) {
   const user = await getCurrentUser();
+  if (user?.username?.toLowerCase() === "empleado") {
+    redirect("/ventas");
+  }
   const notifications = await getNotifications();
   const unreadCount = await getUnreadNotificationsCount();
 

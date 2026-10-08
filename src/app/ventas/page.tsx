@@ -16,10 +16,13 @@ export default async function VentasPage() {
   const unreadCount = await getUnreadNotificationsCount();
   const settings = await getSystemSettings();
 
+  const isEmployee = user?.username?.toLowerCase() === "empleado";
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <Header
         userName={user?.name || user?.username || "Administrador"}
+        isEmployee={isEmployee}
         notifications={notifications.map((n) => ({
           ...n,
           createdAt: n.createdAt.toISOString(),

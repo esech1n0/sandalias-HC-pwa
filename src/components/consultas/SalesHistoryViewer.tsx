@@ -40,9 +40,13 @@ interface Sale {
 
 interface SalesHistoryViewerProps {
   sales: Sale[];
+  isEmployee?: boolean;
 }
 
-export function SalesHistoryViewer({ sales }: SalesHistoryViewerProps) {
+export function SalesHistoryViewer({
+  sales,
+  isEmployee = false,
+}: SalesHistoryViewerProps) {
   const [search, setSearch] = useState("");
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
 
@@ -90,13 +94,13 @@ export function SalesHistoryViewer({ sales }: SalesHistoryViewerProps) {
                 <th className="py-3 px-4 text-center">Productos</th>
                 <th className="py-3 px-4 text-right">Total</th>
                 <th className="py-3 px-4">Métodos de Pago</th>
-                <th className="py-3 px-4 text-center">Detalle</th>
+                {!isEmployee && <th className="py-3 px-4 text-center">Detalle</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filteredSales.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-400">
+                  <td colSpan={isEmployee ? 5 : 6} className="py-12 text-center text-slate-400">
                     No se encontraron ventas.
                   </td>
                 </tr>
@@ -106,10 +110,14 @@ export function SalesHistoryViewer({ sales }: SalesHistoryViewerProps) {
                   return (
                     <tr
                       key={s.id}
-                      onClick={() => setSelectedSale(s)}
-                      className="cursor-pointer hover:bg-[#cfd500]/15 dark:hover:bg-[#cfd500]/10 transition-colors group"
+                      onClick={!isEmployee ? () => setSelectedSale(s) : undefined}
+                      className={
+                        !isEmployee
+                          ? "cursor-pointer hover:bg-[#cfd500]/15 dark:hover:bg-[#cfd500]/10 transition-colors group"
+                          : "transition-colors"
+                      }
                     >
-                      <td className="py-3 px-4 font-mono font-bold text-slate-900 dark:text-white group-hover:text-black dark:group-hover:text-[#cfd500]">
+                      <td className={`py-3 px-4 font-mono font-bold text-slate-900 dark:text-white ${!isEmployee ? "group-hover:text-black dark:group-hover:text-[#cfd500]" : ""}`}>
                         {s.folio}
                       </td>
                       <td className="py-3 px-4 text-slate-500 font-mono">
@@ -131,18 +139,20 @@ export function SalesHistoryViewer({ sales }: SalesHistoryViewerProps) {
                           ))}
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-center">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedSale(s);
-                          }}
-                          className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-[#cfd500] group-hover:text-black cursor-pointer active:scale-90 transition-all"
-                          title="Ver detalle del ticket"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                      </td>
+                      {!isEmployee && (
+                        <td className="py-3 px-4 text-center">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedSale(s);
+                            }}
+                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-[#cfd500] group-hover:text-black cursor-pointer active:scale-90 transition-all"
+                            title="Ver detalle del ticket"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   );
                 })
@@ -153,7 +163,7 @@ export function SalesHistoryViewer({ sales }: SalesHistoryViewerProps) {
       </div>
 
       {/* Modal de Detalle de Venta / Ticket */}
-      {selectedSale && (
+      {!isEmployee && selectedSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-slate-800 dark:text-slate-100 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800 mb-4">

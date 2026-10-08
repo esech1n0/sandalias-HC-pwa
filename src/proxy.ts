@@ -42,6 +42,17 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.redirect(ventasUrl);
   }
 
+  // 4. Restricción de rol Empleado: solo puede acceder a /ventas, /consultas, /inventario, /caja
+  const isEmployee = session?.username?.toLowerCase() === "empleado";
+  const adminOnlyRoutes = ["/gastos", "/reportes", "/configuracion"];
+  if (
+    isEmployee &&
+    adminOnlyRoutes.some((route) => path === route || path.startsWith(`${route}/`))
+  ) {
+    const ventasUrl = new URL("/ventas", req.nextUrl.origin);
+    return NextResponse.redirect(ventasUrl);
+  }
+
   return NextResponse.next();
 }
 

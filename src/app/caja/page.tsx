@@ -6,8 +6,9 @@ import { CashManager } from "@/components/cash/CashManager";
 
 export default async function CajaPage() {
   const user = await getCurrentUser();
+  const isEmployee = user?.username?.toLowerCase() === "empleado";
   const activeRegister = await getActiveCashRegister();
-  const history = await getCashRegistersHistory(30);
+  const history = isEmployee ? [] : await getCashRegistersHistory(30);
   const notifications = await getNotifications();
   const unreadCount = await getUnreadNotificationsCount();
 
@@ -15,6 +16,7 @@ export default async function CajaPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <Header
         userName={user?.name || user?.username || "Administrador"}
+        isEmployee={isEmployee}
         notifications={notifications.map((n) => ({
           ...n,
           createdAt: n.createdAt.toISOString(),
@@ -23,6 +25,7 @@ export default async function CajaPage() {
       />
       <main className="flex-1 flex flex-col overflow-y-auto">
         <CashManager
+          isEmployee={isEmployee}
           activeRegister={
             activeRegister
               ? {

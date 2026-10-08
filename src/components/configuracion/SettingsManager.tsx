@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Settings,
   Lock,
@@ -54,12 +54,13 @@ export function SettingsManager({ initialSettings, currentUser }: SettingsManage
   const [savingSettings, setSavingSettings] = useState(false);
 
   // Theme state
-  const [activeTheme, setActiveTheme] = useState<"light" | "dark">(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("hc-theme") as "light" | "dark") || "light";
-    }
-    return "light";
-  });
+  const [activeTheme, setActiveTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("hc-theme") as "light" | "dark" | null;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (saved) setActiveTheme(saved);
+  }, []);
 
   const handleToggleTheme = (theme: "light" | "dark") => {
     setActiveTheme(theme);

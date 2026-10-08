@@ -55,9 +55,14 @@ export interface RegisterHistoryItem {
 interface CashManagerProps {
   activeRegister: ActiveRegisterData | null;
   history: RegisterHistoryItem[];
+  isEmployee?: boolean;
 }
 
-export function CashManager({ activeRegister, history }: CashManagerProps) {
+export function CashManager({
+  activeRegister,
+  history,
+  isEmployee = false,
+}: CashManagerProps) {
   const [openingBalance, setOpeningBalance] = useState("1000");
 
   // Retiro
@@ -380,91 +385,93 @@ export function CashManager({ activeRegister, history }: CashManagerProps) {
         </div>
       )}
 
-      {/* Historial de Cortes de Caja */}
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-        <h2 className="text-base font-black mb-3 flex items-center gap-2">
-          <History className="w-5 h-5 text-slate-400" />
-          Historial de Cortes de Caja
-        </h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-slate-50 dark:bg-slate-800/50 border-b text-slate-500 font-bold uppercase">
-                <th className="py-2.5 px-3">Fecha Apertura</th>
-                <th className="py-2.5 px-3">Fecha Cierre</th>
-                <th className="py-2.5 px-3 text-right">Fondo Inicial</th>
-                <th className="py-2.5 px-3 text-right">Ventas Efectivo</th>
-                <th className="py-2.5 px-3 text-right">Retiros</th>
-                <th className="py-2.5 px-3 text-right">Esperado</th>
-                <th className="py-2.5 px-3 text-right">Contado</th>
-                <th className="py-2.5 px-3 text-right">Diferencia</th>
-                <th className="py-2.5 px-3 text-center">Estado</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {history.length === 0 ? (
-                <tr>
-                  <td colSpan={9} className="py-8 text-center text-slate-400">
-                    No hay registros de caja históricos.
-                  </td>
+      {/* Historial de Cortes de Caja (solo administrador) */}
+      {!isEmployee && (
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+          <h2 className="text-base font-black mb-3 flex items-center gap-2">
+            <History className="w-5 h-5 text-slate-400" />
+            Historial de Cortes de Caja
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b text-slate-500 font-bold uppercase">
+                  <th className="py-2.5 px-3">Fecha Apertura</th>
+                  <th className="py-2.5 px-3">Fecha Cierre</th>
+                  <th className="py-2.5 px-3 text-right">Fondo Inicial</th>
+                  <th className="py-2.5 px-3 text-right">Ventas Efectivo</th>
+                  <th className="py-2.5 px-3 text-right">Retiros</th>
+                  <th className="py-2.5 px-3 text-right">Esperado</th>
+                  <th className="py-2.5 px-3 text-right">Contado</th>
+                  <th className="py-2.5 px-3 text-right">Diferencia</th>
+                  <th className="py-2.5 px-3 text-center">Estado</th>
                 </tr>
-              ) : (
-                history.map((h) => (
-                  <tr key={h.id}>
-                    <td className="py-2.5 px-3 text-slate-500 font-mono">
-                      {new Date(h.openedAt).toLocaleString("es-MX")}
-                    </td>
-                    <td className="py-2.5 px-3 text-slate-500 font-mono">
-                      {h.closedAt ? new Date(h.closedAt).toLocaleString("es-MX") : "—"}
-                    </td>
-                    <td className="py-2.5 px-3 text-right">{formatCurrency(h.openingBalance)}</td>
-                    <td className="py-2.5 px-3 text-right font-bold text-emerald-600">
-                      {formatCurrency(h.cashSales)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right text-amber-600">
-                      {formatCurrency(h.withdrawalsTotal)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-bold">
-                      {formatCurrency(h.expectedCash)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-black">
-                      {h.countedCash !== null ? formatCurrency(h.countedCash) : "—"}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-bold">
-                      {h.difference !== null && h.difference !== undefined ? (
-                        <span
-                          className={
-                            h.difference === 0
-                              ? "text-slate-400"
-                              : h.difference > 0
-                              ? "text-blue-500"
-                              : "text-red-500"
-                          }
-                        >
-                          {formatCurrency(h.difference)}
-                        </span>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="py-2.5 px-3 text-center">
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          h.status === "OPEN"
-                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-                            : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
-                        }`}
-                      >
-                        {h.status === "OPEN" ? "Abierta" : "Cerrada"}
-                      </span>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {history.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="py-8 text-center text-slate-400">
+                      No hay registros de caja históricos.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  history.map((h) => (
+                    <tr key={h.id}>
+                      <td className="py-2.5 px-3 text-slate-500 font-mono">
+                        {new Date(h.openedAt).toLocaleString("es-MX")}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-500 font-mono">
+                        {h.closedAt ? new Date(h.closedAt).toLocaleString("es-MX") : "—"}
+                      </td>
+                      <td className="py-2.5 px-3 text-right">{formatCurrency(h.openingBalance)}</td>
+                      <td className="py-2.5 px-3 text-right font-bold text-emerald-600">
+                        {formatCurrency(h.cashSales)}
+                      </td>
+                      <td className="py-2.5 px-3 text-right text-amber-600">
+                        {formatCurrency(h.withdrawalsTotal)}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-bold">
+                        {formatCurrency(h.expectedCash)}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-black">
+                        {h.countedCash !== null ? formatCurrency(h.countedCash) : "—"}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-bold">
+                        {h.difference !== null && h.difference !== undefined ? (
+                          <span
+                            className={
+                              h.difference === 0
+                                ? "text-slate-400"
+                                : h.difference > 0
+                                ? "text-blue-500"
+                                : "text-red-500"
+                            }
+                          >
+                            {formatCurrency(h.difference)}
+                          </span>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="py-2.5 px-3 text-center">
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            h.status === "OPEN"
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                              : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+                          }`}
+                        >
+                          {h.status === "OPEN" ? "Abierta" : "Cerrada"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

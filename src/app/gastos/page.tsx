@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { getExpenses } from "@/services/expenses";
 import { getExpenseCategories } from "@/services/expenseCategories";
@@ -7,6 +8,9 @@ import { ExpenseManager } from "@/components/expenses/ExpenseManager";
 
 export default async function GastosPage() {
   const user = await getCurrentUser();
+  if (user?.username?.toLowerCase() === "empleado") {
+    redirect("/ventas");
+  }
   const expenses = await getExpenses(50);
   const categories = await getExpenseCategories();
   const notifications = await getNotifications();

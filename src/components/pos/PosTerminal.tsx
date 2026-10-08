@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo, useRef } from "react";
+import { flushSync } from "react-dom";
+import { ThermalTicket, TicketData } from "./ThermalTicket";
 import {
   Search,
   ShoppingCart,
@@ -98,6 +100,13 @@ export function PosTerminal({
     total: number;
     changeGiven: number;
   } | null>(null);
+  const [ticketData, setTicketData] = useState<TicketData | null>(null);
+
+  // Monta el ticket de forma síncrona y abre el diálogo de impresión
+  const printTicket = (data: TicketData) => {
+    flushSync(() => setTicketData(data));
+    window.print();
+  };
 
   // Movimiento de Caja (Ingreso / Retiro)
   const [movementModalOpen, setMovementModalOpen] = useState(false);
@@ -361,8 +370,16 @@ export function PosTerminal({
   };
 
   // Confirmar venta
-  const handleConfirmSale = async () => {
-    if (!paymentValidation.isValid) return;
+  const handleConfirmSale = async (withTicket: boolean) => {
+    if (!paymentValidation.isValid || isSubmittingSale) return;
+
+    // Snapshot del carrito antes de limpiarlo (para el ticket)
+    const ticketItems = cartCalculation.items.map((i) => ({
+      name: i.name,
+      quantity: i.quantity,
+      amount: i.subtotal,
+    }));
+    const saleTotal = cartCalculation.total;
     setIsSubmittingSale(true);
     setSaleError(null);
 
@@ -386,10 +403,22 @@ export function PosTerminal({
 
       setSaleSuccess({
         folio: result.folio,
-        total: cartCalculation.total,
+        total: saleTotal,
         changeGiven: result.changeGiven,
       });
       clearCart();
+
+      const data: TicketData = {
+        folio: result.folio,
+        date: new Date(),
+        items: ticketItems,
+        total: saleTotal,
+      };
+      if (withTicket) {
+        printTicket(data);
+      } else {
+        setTicketData(data); // disponible para reimpresión opcional
+      }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Error al procesar la venta";
       setSaleError(msg);
@@ -874,10 +903,19 @@ export function PosTerminal({
                     </div>
                   )}
                 </div>
+                {ticketData && (
+                  <button
+                    onClick={() => printTicket(ticketData)}
+                    className="w-full py-3 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    Imprimir ticket
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     setCheckoutModalOpen(false);
                     setSaleSuccess(null);
+                    setTicketData(null);
                   }}
                   className="w-full py-3.5 rounded-xl font-black text-black text-sm tracking-wide shadow-md hover:brightness-105 transition-all"
                   style={{ backgroundColor: "#cfd500" }}
@@ -1054,20 +1092,29 @@ export function PosTerminal({
                 </div>
 
                 {/* Botones de Acción */}
-                <div className="flex gap-3">
+                <div className="space-y-2.5">
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      onClick={() => handleConfirmSale(true)}
+                      disabled={!paymentValidation.isValid || isSubmittingSale}
+                      className="py-3.5 rounded-xl font-black text-black text-sm shadow-md hover:brightness-105 active:scale-[0.98] transition-all disabled:opacity-40"
+                      style={{ backgroundColor: "#cfd500" }}
+                    >
+                      {isSubmittingSale ? "Procesando..." : "Confirmar con ticket"}
+                    </button>
+                    <button
+                      onClick={() => handleConfirmSale(false)}
+                      disabled={!paymentValidation.isValid || isSubmittingSale}
+                      className="py-3.5 rounded-xl font-black text-sm shadow-md bg-black text-[#cfd500] hover:brightness-125 active:scale-[0.98] transition-all disabled:opacity-40"
+                    >
+                      {isSubmittingSale ? "Procesando..." : "Confirmar sin ticket"}
+                    </button>
+                  </div>
                   <button
                     onClick={() => setCheckoutModalOpen(false)}
-                    className="flex-1 py-3 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="w-full py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 font-bold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
                     Volver
-                  </button>
-                  <button
-                    onClick={handleConfirmSale}
-                    disabled={!paymentValidation.isValid || isSubmittingSale}
-                    className="flex-2 py-3.5 rounded-xl font-black text-black text-sm shadow-md hover:brightness-105 transition-all disabled:opacity-40"
-                    style={{ backgroundColor: "#cfd500" }}
-                  >
-                    {isSubmittingSale ? "Procesando Venta..." : "Confirmar y Cobrar"}
                   </button>
                 </div>
               </div>
@@ -1267,6 +1314,9 @@ export function PosTerminal({
           </div>
         </div>
       )}
+
+      {/* Ticket térmico (sólo visible al imprimir) */}
+      <ThermalTicket data={ticketData} />
     </div>
   );
 }

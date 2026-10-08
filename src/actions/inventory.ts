@@ -18,9 +18,16 @@ function serializeProduct(product: any) {
   };
 }
 
+function assertAdmin(user: { username: string }) {
+  if (user.username.toLowerCase() === "empleado") {
+    throw new Error("Acción no permitida para la cuenta de empleado.");
+  }
+}
+
 export async function createProductAction(formData: FormData) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  assertAdmin(user);
 
   const name = formData.get("name")?.toString() || "";
   const description = formData.get("description")?.toString() || null;
@@ -51,6 +58,7 @@ export async function createProductAction(formData: FormData) {
 export async function updateProductAction(id: string, formData: FormData) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  assertAdmin(user);
 
   const name = formData.get("name")?.toString();
   const description = formData.get("description")?.toString() || null;
@@ -92,6 +100,7 @@ export async function adjustStockAction(
 ) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  assertAdmin(user);
 
   const product = await adjustInventoryManual({
     productId,
@@ -110,6 +119,7 @@ export async function createPurchaseAction(
 ) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  assertAdmin(user);
 
   const purchase = await createPurchaseEntry({
     ...data,
@@ -127,6 +137,7 @@ export async function createPurchaseAction(
 export async function createCategoryAction(name: string, color: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  assertAdmin(user);
 
   const cat = await createCategory(name, color);
   revalidatePath("/inventario");
@@ -141,6 +152,7 @@ export async function createCategoryAction(name: string, color: string) {
 export async function updateCategoryAction(id: string, name: string, color: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  assertAdmin(user);
 
   const cat = await updateCategory(id, name, color);
   revalidatePath("/inventario");
@@ -155,6 +167,7 @@ export async function updateCategoryAction(id: string, name: string, color: stri
 export async function deleteCategoryAction(id: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  assertAdmin(user);
 
   const cat = await deleteCategory(id);
   revalidatePath("/inventario");
@@ -169,6 +182,7 @@ export async function deleteCategoryAction(id: string) {
 export async function deleteProductAction(id: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  assertAdmin(user);
 
   const product = await deleteProduct(id);
   revalidatePath("/inventario");

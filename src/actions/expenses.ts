@@ -10,6 +10,9 @@ import { serializeData } from "@/lib/serialize";
 export async function createExpenseAction(formData: FormData) {
   const user = await getCurrentUser();
   if (!user) throw new Error("No autenticado.");
+  if (user.username.toLowerCase() === "empleado") {
+    throw new Error("Acción no permitida para la cuenta de empleado.");
+  }
 
   const concept = formData.get("concept")?.toString().trim() || "";
   let category = formData.get("category")?.toString().trim() || "OTHER";

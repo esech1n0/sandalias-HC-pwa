@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { Header } from "@/components/Header";
 import { SettingsManager } from "@/components/configuracion/SettingsManager";
@@ -6,6 +7,9 @@ import { getNotifications, getUnreadNotificationsCount } from "@/services/notifi
 
 export default async function ConfiguracionPage() {
   const user = await getCurrentUser();
+  if (user?.username?.toLowerCase() === "empleado") {
+    redirect("/ventas");
+  }
   const settings = await getSystemSettings();
   const notifications = await getNotifications();
   const unreadCount = await getUnreadNotificationsCount();

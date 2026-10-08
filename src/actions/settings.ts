@@ -11,8 +11,8 @@ export async function updateSettingsAction(data: {
   headerColor?: string;
 }) {
   const session = await getSession();
-  if (!session?.userId) {
-    return { success: false, error: "No autorizado." };
+  if (!session?.userId || session?.username?.toLowerCase() === "empleado") {
+    return { success: false, error: "No autorizado para cuenta de empleado." };
   }
 
   try {

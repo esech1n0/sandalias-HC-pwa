@@ -8,9 +8,10 @@ import { InventoryManager } from "@/components/inventory/InventoryManager";
 
 export default async function InventarioPage() {
   const user = await getCurrentUser();
+  const isEmployee = user?.username?.toLowerCase() === "empleado";
   const products = await getProducts({ onlyActive: true });
   const categories = await getCategories();
-  const movements = await getInventoryMovements(undefined, 40);
+  const movements = isEmployee ? [] : await getInventoryMovements(undefined, 40);
   const notifications = await getNotifications();
   const unreadCount = await getUnreadNotificationsCount();
 
@@ -18,6 +19,7 @@ export default async function InventarioPage() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <Header
         userName={user?.name || user?.username || "Administrador"}
+        isEmployee={isEmployee}
         notifications={notifications.map((n) => ({
           ...n,
           createdAt: n.createdAt.toISOString(),
@@ -26,6 +28,7 @@ export default async function InventarioPage() {
       />
       <main className="flex-1 flex flex-col overflow-y-auto">
         <InventoryManager
+          isEmployee={isEmployee}
           products={products.map((p) => ({
             ...p,
             salePrice: Number(p.salePrice),
