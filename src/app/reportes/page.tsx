@@ -18,7 +18,7 @@ interface ReportesPageProps {
 export default async function ReportesPage({ searchParams }: ReportesPageProps) {
   const user = await getCurrentUser();
   if (user?.username?.toLowerCase() === "empleado") {
-    redirect("/ventas");
+    redirect("/403");
   }
   const notifications = await getNotifications();
   const unreadCount = await getUnreadNotificationsCount();

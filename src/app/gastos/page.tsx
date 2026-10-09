@@ -9,7 +9,7 @@ import { ExpenseManager } from "@/components/expenses/ExpenseManager";
 export default async function GastosPage() {
   const user = await getCurrentUser();
   if (user?.username?.toLowerCase() === "empleado") {
-    redirect("/ventas");
+    redirect("/403");
   }
   const expenses = await getExpenses(50);
   const categories = await getExpenseCategories();
