@@ -48,7 +48,7 @@ export default async function ReportesPage({ searchParams }: ReportesPageProps) 
         }))}
         unreadCount={unreadCount}
       />
-      <main className="flex-1 flex flex-col overflow-y-auto">
+      <main className="flex-1 flex flex-col overflow-y-auto pb-20 md:pb-0">
         <ReportViewer initialReport={serializedReport} period={range} />
       </main>
     </div>

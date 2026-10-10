@@ -20,6 +20,7 @@ import {
   CheckCheck,
 } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
+import { BottomNav } from "./BottomNav";
 
 interface NotificationItem {
   id: string;
@@ -331,6 +332,9 @@ export function Header({
           </div>
         </div>
       </div>
+
+      {/* Menú de Navegación Inferior (Exclusivo para móviles) */}
+      <BottomNav isEmployee={isEmp} />
     </>
   );
 }
