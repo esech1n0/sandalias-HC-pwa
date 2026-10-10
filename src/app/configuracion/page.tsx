@@ -8,7 +8,7 @@ import { getNotifications, getUnreadNotificationsCount } from "@/services/notifi
 export default async function ConfiguracionPage() {
   const user = await getCurrentUser();
   if (user?.username?.toLowerCase() === "empleado") {
-    redirect("/ventas");
+    redirect("/403");
   }
   const settings = await getSystemSettings();
   const notifications = await getNotifications();

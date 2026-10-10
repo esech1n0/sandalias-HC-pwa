@@ -15,7 +15,8 @@ export default async function proxy(req: NextRequest) {
     path.startsWith("/_next") ||
     path.startsWith("/api/public") ||
     path.includes(".") ||
-    path === "/favicon.ico"
+    path === "/favicon.ico" ||
+    path === "/403"
   ) {
     return NextResponse.next();
   }
@@ -49,8 +50,8 @@ export default async function proxy(req: NextRequest) {
     isEmployee &&
     adminOnlyRoutes.some((route) => path === route || path.startsWith(`${route}/`))
   ) {
-    const ventasUrl = new URL("/ventas", req.nextUrl.origin);
-    return NextResponse.redirect(ventasUrl);
+    const forbiddenUrl = new URL("/403", req.nextUrl.origin);
+    return NextResponse.redirect(forbiddenUrl);
   }
 
   return NextResponse.next();
