@@ -18,8 +18,11 @@ import {
   Moon,
   LogOut,
   CheckCheck,
+  Sparkles,
 } from "lucide-react";
 import { logoutAction } from "@/actions/auth";
+import { useAppUpdate } from "@/lib/pwa/useAppUpdate";
+import { BottomNav } from "./BottomNav";
 
 interface NotificationItem {
   id: string;
@@ -51,12 +54,26 @@ export function Header({
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [hasMarkedAllRead, setHasMarkedAllRead] = useState(false);
 
+  const { hasUpdate, isUpdating, applyUpdate, checkForUpdate } = useAppUpdate();
+
   const isEmp = isEmployee ?? (userName?.toLowerCase() === "empleado");
 
   const displayNotifications = hasMarkedAllRead
     ? notifications.map((n) => ({ ...n, isRead: true }))
     : notifications;
   const displayUnreadCount = hasMarkedAllRead ? 0 : unreadCount;
+
+  // Comprobar si existe notificación no leída de tipo SYSTEM_UPDATE en BD
+  const hasDbSystemUpdate = displayNotifications.some(
+    (n) => n.type === "SYSTEM_UPDATE" && !n.isRead
+  );
+
+  // Mostrar aviso si hay actualización pendiente (detectada en cliente o en BD)
+  const showUpdateAlert = (hasUpdate || hasDbSystemUpdate) && !hasMarkedAllRead;
+
+  // Contador efectivo: suma actualización pendiente detectada por cliente si aún no está en BD
+  const unreadUpdateAdd = hasUpdate && !hasDbSystemUpdate && !hasMarkedAllRead ? 1 : 0;
+  const effectiveUnreadCount = displayUnreadCount + unreadUpdateAdd;
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("hc-theme") as "light" | "dark" | null;
@@ -136,17 +153,20 @@ export function Header({
             />
           </Link>
 
-          {/* Extremo Derecho: Icono de Notificaciones */}
+          {/* Extremo Derecho: Icono de Notificaciones con Indicador Visual */}
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setNotifOpen(!notifOpen)}
+              onClick={() => {
+                setNotifOpen(!notifOpen);
+                checkForUpdate();
+              }}
               className="p-2 rounded-lg hover:bg-black/15 transition-all relative focus:outline-hidden cursor-pointer active:scale-95"
               aria-label="Ver notificaciones"
             >
               <Bell className="w-6 h-6" />
-              {displayUnreadCount > 0 && (
+              {effectiveUnreadCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
-                  {displayUnreadCount > 9 ? "9+" : displayUnreadCount}
+                  {effectiveUnreadCount > 9 ? "9+" : effectiveUnreadCount}
                 </span>
               )}
             </button>
@@ -279,9 +299,9 @@ export function Header({
             <div className="flex items-center gap-2">
               <Bell className="w-5 h-5 text-amber-500" />
               <h3 className="font-bold text-base">Notificaciones</h3>
-              {displayUnreadCount > 0 && (
-                <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                  {displayUnreadCount}
+              {effectiveUnreadCount > 0 && (
+                <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-bold animate-pulse">
+                  {effectiveUnreadCount}
                 </span>
               )}
             </div>
@@ -304,8 +324,42 @@ export function Header({
             </button>
           </div>
 
+          {/* Aviso de Actualización de la Aplicación (Requisito 3 y 4) */}
+          {showUpdateAlert && (
+            <div className="mx-3 mt-3 mb-1 p-3 bg-gradient-to-r from-amber-500/10 via-[#cfd500]/25 to-amber-500/10 border-2 border-[#cfd500] rounded-xl shadow-xs transition-all animate-in fade-in slide-in-from-top-2">
+              <div className="flex items-start gap-2.5">
+                <div className="p-2 rounded-lg bg-[#cfd500] text-black shrink-0 mt-0.5">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-400 mb-0.5 flex items-center justify-between">
+                    <span>Actualización Disponible</span>
+                    <span className="text-[9px] bg-[#cfd500] text-black px-1.5 py-0.5 rounded font-black">
+                      NUEVA
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={applyUpdate}
+                    disabled={isUpdating}
+                    className="w-full text-left text-xs font-bold text-slate-800 dark:text-slate-100 hover:text-black dark:hover:text-yellow-300 transition-colors cursor-pointer group"
+                  >
+                    <span className="underline decoration-[#cfd500] decoration-2 underline-offset-2">
+                      El sistema recibió una notificación, pulse aquí para actualizar
+                    </span>
+                    {isUpdating && (
+                      <span className="block text-[11px] text-amber-600 dark:text-amber-400 font-normal mt-1 animate-pulse">
+                        Actualizando aplicación y recargando...
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
-            {displayNotifications.length === 0 ? (
+            {displayNotifications.length === 0 && !showUpdateAlert ? (
               <div className="py-12 text-center text-sm text-slate-400">
                 No hay notificaciones pendientes.
               </div>
@@ -313,14 +367,22 @@ export function Header({
               displayNotifications.map((notif) => (
                 <div
                   key={notif.id}
+                  onClick={notif.type === "SYSTEM_UPDATE" ? applyUpdate : undefined}
                   className={`p-3 rounded-lg border text-sm transition-all hover:shadow-xs ${
-                    notif.isRead
+                    notif.type === "SYSTEM_UPDATE"
+                      ? "cursor-pointer bg-gradient-to-r from-amber-50 dark:from-amber-950/40 to-yellow-50 dark:to-yellow-950/30 border-[#cfd500] shadow-sm hover:scale-[1.01]"
+                      : notif.isRead
                       ? "bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 opacity-70"
                       : "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/50 shadow-xs"
                   }`}
                 >
-                  <div className="font-semibold text-xs text-amber-700 dark:text-amber-400 mb-0.5">
-                    {notif.title}
+                  <div className="font-semibold text-xs text-amber-700 dark:text-amber-400 mb-0.5 flex items-center justify-between">
+                    <span>{notif.title}</span>
+                    {notif.type === "SYSTEM_UPDATE" && (
+                      <span className="text-[10px] bg-[#cfd500] text-black px-1.5 py-0.5 rounded font-black">
+                        ACTUALIZAR
+                      </span>
+                    )}
                   </div>
                   <div className="text-slate-700 dark:text-slate-300 text-xs">
                     {notif.message}
@@ -331,6 +393,9 @@ export function Header({
           </div>
         </div>
       </div>
+
+      {/* Menú de Navegación Inferior (Exclusivo para móviles) */}
+      <BottomNav isEmployee={isEmp} />
     </>
   );
 }

@@ -428,7 +428,7 @@ export function PosTerminal({
   };
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row h-[calc(100vh-4rem)] overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="flex-1 flex flex-col lg:flex-row h-[calc(100dvh-8rem)] md:h-[calc(100vh-4rem)] overflow-hidden bg-slate-50 dark:bg-slate-950">
       {/* ==================================================================== */}
       {/* Columna Izquierda: Catálogo y Búsqueda */}
       {/* ==================================================================== */}

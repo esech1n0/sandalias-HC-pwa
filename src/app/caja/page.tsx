@@ -23,7 +23,7 @@ export default async function CajaPage() {
         }))}
         unreadCount={unreadCount}
       />
-      <main className="flex-1 flex flex-col overflow-y-auto">
+      <main className="flex-1 flex flex-col overflow-y-auto pb-20 md:pb-0">
         <CashManager
           isEmployee={isEmployee}
           activeRegister={

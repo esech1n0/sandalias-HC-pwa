@@ -24,7 +24,7 @@ export default async function ConfiguracionPage() {
         }))}
         unreadCount={unreadCount}
       />
-      <main className="flex-1 flex flex-col overflow-y-auto">
+      <main className="flex-1 flex flex-col overflow-y-auto pb-20 md:pb-0">
         <SettingsManager
           initialSettings={{
             id: settings.id,
