@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth/dal";
-import { createExpense } from "@/services/expenses";
+import { createExpense, updateExpense } from "@/services/expenses";
 import { createExpenseCategory } from "@/services/expenseCategories";
 import { PaymentMethod } from "@/generated/prisma/client";
 import { serializeData } from "@/lib/serialize";
@@ -14,6 +14,7 @@ export async function createExpenseAction(formData: FormData) {
     throw new Error("Acción no permitida para la cuenta de empleado.");
   }
 
+  const date = formData.get("date")?.toString();
   const concept = formData.get("concept")?.toString().trim() || "";
   let category = formData.get("category")?.toString().trim() || "OTHER";
   const customCategory = formData.get("customCategory")?.toString().trim();
@@ -32,12 +33,57 @@ export async function createExpenseAction(formData: FormData) {
   const description = formData.get("description")?.toString() || null;
 
   const expense = await createExpense({
+    date,
     concept,
     category,
     amount,
     paymentMethod,
     description,
     userId: user.id,
+  });
+
+  revalidatePath("/gastos");
+  revalidatePath("/caja");
+  revalidatePath("/reportes");
+
+  return {
+    success: true,
+    expense: serializeData(expense),
+  };
+}
+
+export async function updateExpenseAction(id: string, formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("No autenticado.");
+  if (user.username.toLowerCase() === "empleado") {
+    throw new Error("Acción no permitida para la cuenta de empleado.");
+  }
+
+  const date = formData.get("date")?.toString();
+  const concept = formData.get("concept")?.toString().trim() || "";
+  let category = formData.get("category")?.toString().trim() || "OTHER";
+  const customCategory = formData.get("customCategory")?.toString().trim();
+
+  if (category === "OTHER" || category === "Otros") {
+    if (!customCategory) {
+      throw new Error("Por favor, ingresa el nombre de la nueva categoría.");
+    }
+    category = customCategory;
+    await createExpenseCategory(category);
+  }
+
+  const amount = parseFloat(formData.get("amount")?.toString() || "0");
+  const paymentMethod = (formData.get("paymentMethod")?.toString() || "CASH") as PaymentMethod;
+  const description = formData.get("description")?.toString() || null;
+
+  const expense = await updateExpense({
+    id,
+    date,
+    concept,
+    category,
+    amount,
+    paymentMethod,
+    description,
   });
 
   revalidatePath("/gastos");

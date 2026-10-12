@@ -189,10 +189,10 @@ export function InventoryManager({
           prev.map((item) =>
             item.id === updated.id
               ? {
-                  ...item,
-                  ...updated,
-                  category: cat || item.category,
-                }
+                ...item,
+                ...updated,
+                category: cat || item.category,
+              }
               : item
           )
         );
@@ -451,61 +451,55 @@ export function InventoryManager({
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setActiveTab("products")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${
-                activeTab === "products"
-                  ? "bg-black text-[#cfd500] shadow-xs"
-                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 ${activeTab === "products"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+                }`}
             >
               Catálogo
             </button>
             <button
               onClick={() => setActiveTab("newProduct")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-                activeTab === "newProduct"
-                  ? "bg-black text-[#cfd500] shadow-xs"
-                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${activeTab === "newProduct"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+                }`}
             >
               <Plus className="w-4 h-4" /> Nuevo Producto
             </button>
             <button
               onClick={() => setActiveTab("purchase")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-                activeTab === "purchase"
-                  ? "bg-black text-[#cfd500] shadow-xs"
-                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${activeTab === "purchase"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+                }`}
             >
               <ArrowDownToLine className="w-4 h-4" /> Entrada de Mercancía
             </button>
             <button
               onClick={() => setActiveTab("adjustment")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-                activeTab === "adjustment"
-                  ? "bg-black text-[#cfd500] shadow-xs"
-                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${activeTab === "adjustment"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+                }`}
             >
               <SlidersHorizontal className="w-4 h-4" /> Ajuste Manual
             </button>
             <button
               onClick={() => setActiveTab("categories")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-                activeTab === "categories"
-                  ? "bg-black text-[#cfd500] shadow-xs"
-                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${activeTab === "categories"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+                }`}
             >
               <Tag className="w-4 h-4" /> Categorías
             </button>
             <button
               onClick={() => setActiveTab("history")}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-                activeTab === "history"
-                  ? "bg-black text-[#cfd500] shadow-xs"
-                  : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
-              }`}
+              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${activeTab === "history"
+                ? "bg-black text-[#cfd500] shadow-xs"
+                : "bg-white dark:bg-slate-900 border text-slate-700 dark:text-slate-200 hover:border-[#cfd500]"
+                }`}
             >
               <History className="w-4 h-4" /> Historial
             </button>
@@ -515,11 +509,10 @@ export function InventoryManager({
 
       {feedback && (
         <div
-          className={`p-4 mb-6 rounded-xl text-sm font-bold flex items-center gap-2 ${
-            feedback.type === "success"
-              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 border border-emerald-200"
-              : "bg-red-50 dark:bg-red-950/40 text-red-700 border border-red-200"
-          }`}
+          className={`p-4 mb-6 rounded-xl text-sm font-bold flex items-center gap-2 ${feedback.type === "success"
+            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 border border-emerald-200"
+            : "bg-red-50 dark:bg-red-950/40 text-red-700 border border-red-200"
+            }`}
         >
           {feedback.type === "success" ? (
             <CheckCircle2 className="w-5 h-5 shrink-0" />
@@ -551,11 +544,10 @@ export function InventoryManager({
             <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto no-scrollbar">
               <button
                 onClick={() => setSelectedCat("ALL")}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all ${
-                  selectedCat === "ALL"
-                    ? "bg-black text-[#cfd500] shadow-xs"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 hover:text-black dark:hover:text-white"
-                }`}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer active:scale-95 transition-all ${selectedCat === "ALL"
+                  ? "bg-black text-[#cfd500] shadow-xs"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 hover:text-black dark:hover:text-white"
+                  }`}
               >
                 Todas
               </button>
@@ -563,11 +555,10 @@ export function InventoryManager({
                 <button
                   key={c.id}
                   onClick={() => setSelectedCat(c.id)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95 transition-all ${
-                    selectedCat === c.id
-                      ? "bg-black text-white shadow-xs"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-600 hover:text-black dark:hover:text-white"
-                  }`}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer active:scale-95 transition-all ${selectedCat === c.id
+                    ? "bg-black text-white shadow-xs"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 hover:text-black dark:hover:text-white"
+                    }`}
                 >
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: c.color }} />
                   {c.name}
@@ -622,11 +613,10 @@ export function InventoryManager({
                         </td>
                         <td className="py-3 px-4 text-center font-black">
                           <span
-                            className={`px-2 py-0.5 rounded ${
-                              isLowStock
-                                ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400"
-                                : "text-slate-900 dark:text-white"
-                            }`}
+                            className={`px-2 py-0.5 rounded ${isLowStock
+                              ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400"
+                              : "text-slate-900 dark:text-white"
+                              }`}
                           >
                             {p.stock}
                           </span>
@@ -771,7 +761,7 @@ export function InventoryManager({
 
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Stock Mínimo (Alerta)
+                  Stock Mínimo
                 </label>
                 <input
                   type="number"
@@ -786,7 +776,7 @@ export function InventoryManager({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Precio de Venta ($) *
+                  Precio ($) *
                 </label>
                 <input
                   type="number"
@@ -802,7 +792,7 @@ export function InventoryManager({
 
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Costo de Adquisición ($) *
+                  Costo ($) *
                 </label>
                 <input
                   type="number"
@@ -818,7 +808,7 @@ export function InventoryManager({
 
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Stock Inicial (Entero)
+                  Stock Inicial
                 </label>
                 <input
                   type="number"
@@ -900,7 +890,7 @@ export function InventoryManager({
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                Producto que ingresa *
+                Producto *
               </label>
               <select
                 required
@@ -920,7 +910,7 @@ export function InventoryManager({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Cantidad Comprada (Entero) *
+                  Cantidad *
                 </label>
                 <input
                   type="number"
@@ -934,7 +924,7 @@ export function InventoryManager({
 
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Costo Unitario de Adquisición ($) *
+                  Costo ($) *
                 </label>
                 <input
                   type="number"
@@ -1254,7 +1244,7 @@ export function InventoryManager({
 
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                    Stock Mínimo (Alerta)
+                    Stock Mínimo
                   </label>
                   <input
                     type="number"
@@ -1269,7 +1259,7 @@ export function InventoryManager({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                    Precio de Venta ($) *
+                    Precio ($) *
                   </label>
                   <input
                     type="number"
@@ -1284,7 +1274,7 @@ export function InventoryManager({
 
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                    Costo de Adquisición ($) *
+                    Costo ($) *
                   </label>
                   <input
                     type="number"
