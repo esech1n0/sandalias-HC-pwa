@@ -57,3 +57,35 @@ export async function markAllNotificationsAsRead() {
     data: { isRead: true },
   });
 }
+
+export async function triggerSystemUpdateNotification(versionId?: string) {
+  // Evitar notificaciones duplicadas no leídas para actualización de sistema
+  const existingUnread = await prisma.notification.findFirst({
+    where: {
+      type: "SYSTEM_UPDATE",
+      isRead: false,
+    },
+  });
+
+  if (!existingUnread) {
+    return prisma.notification.create({
+      data: {
+        type: "SYSTEM_UPDATE",
+        title: "Actualización del Sistema",
+        message: "El sistema recibió una notificación, pulse aquí para actualizar",
+        isRead: false,
+      },
+    });
+  }
+  return existingUnread;
+}
+
+export async function markSystemUpdateNotificationsAsRead() {
+  return prisma.notification.updateMany({
+    where: {
+      type: "SYSTEM_UPDATE",
+      isRead: false,
+    },
+    data: { isRead: true },
+  });
+}
