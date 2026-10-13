@@ -200,12 +200,14 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
   sales?: Prisma.SaleListRelationFilter
+  cancelledSales?: Prisma.SaleListRelationFilter
   openedRegisters?: Prisma.CashRegisterListRelationFilter
   closedRegisters?: Prisma.CashRegisterListRelationFilter
   cashMovements?: Prisma.CashMovementListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
   purchases?: Prisma.PurchaseListRelationFilter
+  scheduledExpenses?: Prisma.ScheduledExpenseListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -218,12 +220,14 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   sales?: Prisma.SaleOrderByRelationAggregateInput
+  cancelledSales?: Prisma.SaleOrderByRelationAggregateInput
   openedRegisters?: Prisma.CashRegisterOrderByRelationAggregateInput
   closedRegisters?: Prisma.CashRegisterOrderByRelationAggregateInput
   cashMovements?: Prisma.CashMovementOrderByRelationAggregateInput
   inventoryMovements?: Prisma.InventoryMovementOrderByRelationAggregateInput
   expenses?: Prisma.ExpenseOrderByRelationAggregateInput
   purchases?: Prisma.PurchaseOrderByRelationAggregateInput
+  scheduledExpenses?: Prisma.ScheduledExpenseOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -239,12 +243,14 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
   sales?: Prisma.SaleListRelationFilter
+  cancelledSales?: Prisma.SaleListRelationFilter
   openedRegisters?: Prisma.CashRegisterListRelationFilter
   closedRegisters?: Prisma.CashRegisterListRelationFilter
   cashMovements?: Prisma.CashMovementListRelationFilter
   inventoryMovements?: Prisma.InventoryMovementListRelationFilter
   expenses?: Prisma.ExpenseListRelationFilter
   purchases?: Prisma.PurchaseListRelationFilter
+  scheduledExpenses?: Prisma.ScheduledExpenseListRelationFilter
 }, "id" | "username">
 
 export type UserOrderByWithAggregationInput = {
@@ -283,12 +289,14 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -301,12 +309,14 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -319,12 +329,14 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -337,12 +349,14 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -465,10 +479,26 @@ export type UserUpdateOneWithoutPurchasesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPurchasesInput, Prisma.UserUpdateWithoutPurchasesInput>, Prisma.UserUncheckedUpdateWithoutPurchasesInput>
 }
 
+export type UserCreateNestedOneWithoutCancelledSalesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCancelledSalesInput, Prisma.UserUncheckedCreateWithoutCancelledSalesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCancelledSalesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserCreateNestedOneWithoutSalesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutSalesInput, Prisma.UserUncheckedCreateWithoutSalesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSalesInput
   connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCancelledSalesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCancelledSalesInput, Prisma.UserUncheckedCreateWithoutCancelledSalesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCancelledSalesInput
+  upsert?: Prisma.UserUpsertWithoutCancelledSalesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCancelledSalesInput, Prisma.UserUpdateWithoutCancelledSalesInput>, Prisma.UserUncheckedUpdateWithoutCancelledSalesInput>
 }
 
 export type UserUpdateOneWithoutSalesNestedInput = {
@@ -543,6 +573,22 @@ export type UserUpdateOneWithoutExpensesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExpensesInput, Prisma.UserUpdateWithoutExpensesInput>, Prisma.UserUncheckedUpdateWithoutExpensesInput>
 }
 
+export type UserCreateNestedOneWithoutScheduledExpensesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutScheduledExpensesInput, Prisma.UserUncheckedCreateWithoutScheduledExpensesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutScheduledExpensesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutScheduledExpensesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutScheduledExpensesInput, Prisma.UserUncheckedCreateWithoutScheduledExpensesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutScheduledExpensesInput
+  upsert?: Prisma.UserUpsertWithoutScheduledExpensesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutScheduledExpensesInput, Prisma.UserUpdateWithoutScheduledExpensesInput>, Prisma.UserUncheckedUpdateWithoutScheduledExpensesInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id?: string
   username: string
@@ -552,12 +598,14 @@ export type UserCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -569,12 +617,14 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -602,12 +652,14 @@ export type UserUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -619,12 +671,14 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInventoryMovementsInput = {
@@ -637,11 +691,13 @@ export type UserCreateWithoutInventoryMovementsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInventoryMovementsInput = {
@@ -654,11 +710,13 @@ export type UserUncheckedCreateWithoutInventoryMovementsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInventoryMovementsInput = {
@@ -687,11 +745,13 @@ export type UserUpdateWithoutInventoryMovementsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInventoryMovementsInput = {
@@ -704,11 +764,13 @@ export type UserUncheckedUpdateWithoutInventoryMovementsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPurchasesInput = {
@@ -721,11 +783,13 @@ export type UserCreateWithoutPurchasesInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPurchasesInput = {
@@ -738,11 +802,13 @@ export type UserUncheckedCreateWithoutPurchasesInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPurchasesInput = {
@@ -771,14 +837,151 @@ export type UserUpdateWithoutPurchasesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPurchasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
+  openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
+  closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
+  cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCancelledSalesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
+  closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
+  cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCancelledSalesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
+  closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
+  cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCancelledSalesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCancelledSalesInput, Prisma.UserUncheckedCreateWithoutCancelledSalesInput>
+}
+
+export type UserCreateWithoutSalesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
+  openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
+  closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
+  cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSalesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
+  openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
+  closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
+  cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSalesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSalesInput, Prisma.UserUncheckedCreateWithoutSalesInput>
+}
+
+export type UserUpsertWithoutCancelledSalesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCancelledSalesInput, Prisma.UserUncheckedUpdateWithoutCancelledSalesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCancelledSalesInput, Prisma.UserUncheckedCreateWithoutCancelledSalesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCancelledSalesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCancelledSalesInput, Prisma.UserUncheckedUpdateWithoutCancelledSalesInput>
+}
+
+export type UserUpdateWithoutCancelledSalesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
+  closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
+  cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCancelledSalesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
@@ -793,45 +996,8 @@ export type UserUncheckedUpdateWithoutPurchasesInput = {
   cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutSalesInput = {
-  id?: string
-  username: string
-  passwordHash: string
-  name: string
-  isActive?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
-  openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
-  closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
-  cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
-  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
-  purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutSalesInput = {
-  id?: string
-  username: string
-  passwordHash: string
-  name: string
-  isActive?: boolean
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
-  openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
-  closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
-  cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
-  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
-  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
-  purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutSalesInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutSalesInput, Prisma.UserUncheckedCreateWithoutSalesInput>
+  purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutSalesInput = {
@@ -854,12 +1020,14 @@ export type UserUpdateWithoutSalesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesInput = {
@@ -871,12 +1039,14 @@ export type UserUncheckedUpdateWithoutSalesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutOpenedRegistersInput = {
@@ -889,11 +1059,13 @@ export type UserCreateWithoutOpenedRegistersInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
   closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOpenedRegistersInput = {
@@ -906,11 +1078,13 @@ export type UserUncheckedCreateWithoutOpenedRegistersInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
   closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOpenedRegistersInput = {
@@ -928,11 +1102,13 @@ export type UserCreateWithoutClosedRegistersInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
   cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutClosedRegistersInput = {
@@ -945,11 +1121,13 @@ export type UserUncheckedCreateWithoutClosedRegistersInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
   cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutClosedRegistersInput = {
@@ -978,11 +1156,13 @@ export type UserUpdateWithoutOpenedRegistersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOpenedRegistersInput = {
@@ -995,11 +1175,13 @@ export type UserUncheckedUpdateWithoutOpenedRegistersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
   closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutClosedRegistersInput = {
@@ -1023,11 +1205,13 @@ export type UserUpdateWithoutClosedRegistersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
   cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClosedRegistersInput = {
@@ -1040,11 +1224,13 @@ export type UserUncheckedUpdateWithoutClosedRegistersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
   cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCashMovementsInput = {
@@ -1057,11 +1243,13 @@ export type UserCreateWithoutCashMovementsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCashMovementsInput = {
@@ -1074,11 +1262,13 @@ export type UserUncheckedCreateWithoutCashMovementsInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCashMovementsInput = {
@@ -1107,11 +1297,13 @@ export type UserUpdateWithoutCashMovementsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCashMovementsInput = {
@@ -1124,11 +1316,13 @@ export type UserUncheckedUpdateWithoutCashMovementsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
   expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutExpensesInput = {
@@ -1141,11 +1335,13 @@ export type UserCreateWithoutExpensesInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutExpensesInput = {
@@ -1158,11 +1354,13 @@ export type UserUncheckedCreateWithoutExpensesInput = {
   updatedAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
   openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
   closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
   cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
   purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutExpensesInput = {
@@ -1191,11 +1389,13 @@ export type UserUpdateWithoutExpensesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutExpensesInput = {
@@ -1208,10 +1408,104 @@ export type UserUncheckedUpdateWithoutExpensesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
   openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
   closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
   cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
   inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
+  purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
+  scheduledExpenses?: Prisma.ScheduledExpenseUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutScheduledExpensesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  sales?: Prisma.SaleCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleCreateNestedManyWithoutCancelledByInput
+  openedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutOpenedByInput
+  closedRegisters?: Prisma.CashRegisterCreateNestedManyWithoutClosedByInput
+  cashMovements?: Prisma.CashMovementCreateNestedManyWithoutUserInput
+  inventoryMovements?: Prisma.InventoryMovementCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutUserInput
+  purchases?: Prisma.PurchaseCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutScheduledExpensesInput = {
+  id?: string
+  username: string
+  passwordHash: string
+  name: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutUserInput
+  cancelledSales?: Prisma.SaleUncheckedCreateNestedManyWithoutCancelledByInput
+  openedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutOpenedByInput
+  closedRegisters?: Prisma.CashRegisterUncheckedCreateNestedManyWithoutClosedByInput
+  cashMovements?: Prisma.CashMovementUncheckedCreateNestedManyWithoutUserInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedCreateNestedManyWithoutUserInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutUserInput
+  purchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutScheduledExpensesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutScheduledExpensesInput, Prisma.UserUncheckedCreateWithoutScheduledExpensesInput>
+}
+
+export type UserUpsertWithoutScheduledExpensesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutScheduledExpensesInput, Prisma.UserUncheckedUpdateWithoutScheduledExpensesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutScheduledExpensesInput, Prisma.UserUncheckedCreateWithoutScheduledExpensesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutScheduledExpensesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutScheduledExpensesInput, Prisma.UserUncheckedUpdateWithoutScheduledExpensesInput>
+}
+
+export type UserUpdateWithoutScheduledExpensesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUpdateManyWithoutCancelledByNestedInput
+  openedRegisters?: Prisma.CashRegisterUpdateManyWithoutOpenedByNestedInput
+  closedRegisters?: Prisma.CashRegisterUpdateManyWithoutClosedByNestedInput
+  cashMovements?: Prisma.CashMovementUpdateManyWithoutUserNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutUserNestedInput
+  purchases?: Prisma.PurchaseUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutScheduledExpensesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutUserNestedInput
+  cancelledSales?: Prisma.SaleUncheckedUpdateManyWithoutCancelledByNestedInput
+  openedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutOpenedByNestedInput
+  closedRegisters?: Prisma.CashRegisterUncheckedUpdateManyWithoutClosedByNestedInput
+  cashMovements?: Prisma.CashMovementUncheckedUpdateManyWithoutUserNestedInput
+  inventoryMovements?: Prisma.InventoryMovementUncheckedUpdateManyWithoutUserNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutUserNestedInput
   purchases?: Prisma.PurchaseUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1223,23 +1517,27 @@ export type UserUncheckedUpdateWithoutExpensesInput = {
 export type UserCountOutputType = {
   sessions: number
   sales: number
+  cancelledSales: number
   openedRegisters: number
   closedRegisters: number
   cashMovements: number
   inventoryMovements: number
   expenses: number
   purchases: number
+  scheduledExpenses: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   sales?: boolean | UserCountOutputTypeCountSalesArgs
+  cancelledSales?: boolean | UserCountOutputTypeCountCancelledSalesArgs
   openedRegisters?: boolean | UserCountOutputTypeCountOpenedRegistersArgs
   closedRegisters?: boolean | UserCountOutputTypeCountClosedRegistersArgs
   cashMovements?: boolean | UserCountOutputTypeCountCashMovementsArgs
   inventoryMovements?: boolean | UserCountOutputTypeCountInventoryMovementsArgs
   expenses?: boolean | UserCountOutputTypeCountExpensesArgs
   purchases?: boolean | UserCountOutputTypeCountPurchasesArgs
+  scheduledExpenses?: boolean | UserCountOutputTypeCountScheduledExpensesArgs
 }
 
 /**
@@ -1263,6 +1561,13 @@ export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.E
  * UserCountOutputType without action
  */
 export type UserCountOutputTypeCountSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SaleWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCancelledSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SaleWhereInput
 }
 
@@ -1308,6 +1613,13 @@ export type UserCountOutputTypeCountPurchasesArgs<ExtArgs extends runtime.Types.
   where?: Prisma.PurchaseWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountScheduledExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ScheduledExpenseWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1319,12 +1631,14 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   sales?: boolean | Prisma.User$salesArgs<ExtArgs>
+  cancelledSales?: boolean | Prisma.User$cancelledSalesArgs<ExtArgs>
   openedRegisters?: boolean | Prisma.User$openedRegistersArgs<ExtArgs>
   closedRegisters?: boolean | Prisma.User$closedRegistersArgs<ExtArgs>
   cashMovements?: boolean | Prisma.User$cashMovementsArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.User$inventoryMovementsArgs<ExtArgs>
   expenses?: boolean | Prisma.User$expensesArgs<ExtArgs>
   purchases?: boolean | Prisma.User$purchasesArgs<ExtArgs>
+  scheduledExpenses?: boolean | Prisma.User$scheduledExpensesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1362,12 +1676,14 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   sales?: boolean | Prisma.User$salesArgs<ExtArgs>
+  cancelledSales?: boolean | Prisma.User$cancelledSalesArgs<ExtArgs>
   openedRegisters?: boolean | Prisma.User$openedRegistersArgs<ExtArgs>
   closedRegisters?: boolean | Prisma.User$closedRegistersArgs<ExtArgs>
   cashMovements?: boolean | Prisma.User$cashMovementsArgs<ExtArgs>
   inventoryMovements?: boolean | Prisma.User$inventoryMovementsArgs<ExtArgs>
   expenses?: boolean | Prisma.User$expensesArgs<ExtArgs>
   purchases?: boolean | Prisma.User$purchasesArgs<ExtArgs>
+  scheduledExpenses?: boolean | Prisma.User$scheduledExpensesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1378,12 +1694,14 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     sales: Prisma.$SalePayload<ExtArgs>[]
+    cancelledSales: Prisma.$SalePayload<ExtArgs>[]
     openedRegisters: Prisma.$CashRegisterPayload<ExtArgs>[]
     closedRegisters: Prisma.$CashRegisterPayload<ExtArgs>[]
     cashMovements: Prisma.$CashMovementPayload<ExtArgs>[]
     inventoryMovements: Prisma.$InventoryMovementPayload<ExtArgs>[]
     expenses: Prisma.$ExpensePayload<ExtArgs>[]
     purchases: Prisma.$PurchasePayload<ExtArgs>[]
+    scheduledExpenses: Prisma.$ScheduledExpensePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1789,12 +2107,14 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sales<T extends Prisma.User$salesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$salesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cancelledSales<T extends Prisma.User$cancelledSalesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cancelledSalesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   openedRegisters<T extends Prisma.User$openedRegistersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$openedRegistersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashRegisterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   closedRegisters<T extends Prisma.User$closedRegistersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$closedRegistersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashRegisterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cashMovements<T extends Prisma.User$cashMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cashMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inventoryMovements<T extends Prisma.User$inventoryMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$inventoryMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   expenses<T extends Prisma.User$expensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$expensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   purchases<T extends Prisma.User$purchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$purchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  scheduledExpenses<T extends Prisma.User$scheduledExpensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$scheduledExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScheduledExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2272,6 +2592,30 @@ export type User$salesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
 }
 
 /**
+ * User.cancelledSales
+ */
+export type User$cancelledSalesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Sale
+   */
+  select?: Prisma.SaleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Sale
+   */
+  omit?: Prisma.SaleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SaleInclude<ExtArgs> | null
+  where?: Prisma.SaleWhereInput
+  orderBy?: Prisma.SaleOrderByWithRelationInput | Prisma.SaleOrderByWithRelationInput[]
+  cursor?: Prisma.SaleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+}
+
+/**
  * User.openedRegisters
  */
 export type User$openedRegistersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2413,6 +2757,30 @@ export type User$purchasesArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.PurchaseScalarFieldEnum | Prisma.PurchaseScalarFieldEnum[]
+}
+
+/**
+ * User.scheduledExpenses
+ */
+export type User$scheduledExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ScheduledExpense
+   */
+  select?: Prisma.ScheduledExpenseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ScheduledExpense
+   */
+  omit?: Prisma.ScheduledExpenseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ScheduledExpenseInclude<ExtArgs> | null
+  where?: Prisma.ScheduledExpenseWhereInput
+  orderBy?: Prisma.ScheduledExpenseOrderByWithRelationInput | Prisma.ScheduledExpenseOrderByWithRelationInput[]
+  cursor?: Prisma.ScheduledExpenseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ScheduledExpenseScalarFieldEnum | Prisma.ScheduledExpenseScalarFieldEnum[]
 }
 
 /**

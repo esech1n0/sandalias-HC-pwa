@@ -27,6 +27,10 @@ export default async function ConsultasPage() {
           isEmployee={isEmployee}
           sales={sales.map((s) => ({
             ...s,
+            status: s.status,
+            cancelledAt: s.cancelledAt ? s.cancelledAt.toISOString() : null,
+            cancelledReason: s.cancelledReason,
+            cancelledBy: s.cancelledBy ? { name: s.cancelledBy.name, username: s.cancelledBy.username } : null,
             subtotal: Number(s.subtotal),
             discountValue: s.discountValue !== null ? Number(s.discountValue) : null,
             discountAmount: Number(s.discountAmount),
@@ -34,19 +38,17 @@ export default async function ConsultasPage() {
             totalCost: isEmployee ? 0 : Number(s.totalCost),
             grossProfit: isEmployee ? 0 : Number(s.grossProfit),
             createdAt: s.createdAt.toISOString(),
-            items: isEmployee
-              ? []
-              : s.items.map((i) => ({
-                  ...i,
-                  originalPrice: Number(i.originalPrice),
-                  unitPrice: Number(i.unitPrice),
-                  discountValue: i.discountValue !== null ? Number(i.discountValue) : null,
-                  discountAmount: Number(i.discountAmount),
-                  unitCost: Number(i.unitCost),
-                  subtotal: Number(i.subtotal),
-                  totalCost: Number(i.totalCost),
-                  profit: Number(i.profit),
-                })),
+            items: s.items.map((i) => ({
+              ...i,
+              originalPrice: Number(i.originalPrice),
+              unitPrice: Number(i.unitPrice),
+              discountValue: i.discountValue !== null ? Number(i.discountValue) : null,
+              discountAmount: Number(i.discountAmount),
+              unitCost: isEmployee ? 0 : Number(i.unitCost),
+              subtotal: Number(i.subtotal),
+              totalCost: isEmployee ? 0 : Number(i.totalCost),
+              profit: isEmployee ? 0 : Number(i.profit),
+            })),
             payments: s.payments.map((p) => ({
               ...p,
               amount: Number(p.amount),

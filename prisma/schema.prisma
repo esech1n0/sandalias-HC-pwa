@@ -59,7 +59,26 @@ enum NotificationType {
   SYSTEM_UPDATE
   WEEKLY_REPORT
   MONTHLY_REPORT
+  EXPENSE_DUE
 }
+
+enum ScheduledExpenseStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum SaleStatus {
+  COMPLETED
+  CANCELLED
+}
+
+enum ScheduledExpenseFrequency {
+  WEEKLY
+  MONTHLY
+  ANNUAL
+}
+
 
 // ------------------------------------------------------------------------------
 // Usuarios y Autenticación
@@ -76,13 +95,15 @@ model User {
 
   // Relaciones
   sessions            Session[]
-  sales               Sale[]
+  sales               Sale[]              @relation("SalesCreated")
+  cancelledSales      Sale[]              @relation("SalesCancelled")
   openedRegisters     CashRegister[]      @relation("OpenedRegisters")
   closedRegisters     CashRegister[]      @relation("ClosedRegisters")
   cashMovements       CashMovement[]
   inventoryMovements  InventoryMovement[]
   expenses            Expense[]
   purchases           Purchase[]
+  scheduledExpenses   ScheduledExpense[]
 
   @@map("users")
 }
@@ -218,10 +239,16 @@ model Sale {
   totalCost      Decimal        @db.Decimal(12, 2)
   grossProfit    Decimal        @db.Decimal(12, 2)
 
+  status          SaleStatus     @default(COMPLETED)
+  cancelledAt     DateTime?
+  cancelledReason String?
+  cancelledById   String?
+  cancelledBy     User?          @relation("SalesCancelled", fields: [cancelledById], references: [id])
+
   cashRegisterId String?
   cashRegister   CashRegister?  @relation(fields: [cashRegisterId], references: [id])
   userId         String?
-  user           User?          @relation(fields: [userId], references: [id])
+  user           User?          @relation("SalesCreated", fields: [userId], references: [id])
   createdAt      DateTime       @default(now())
 
   items          SaleItem[]
@@ -330,7 +357,41 @@ model Expense {
   user           User?           @relation(fields: [userId], references: [id])
   createdAt      DateTime        @default(now())
 
+  scheduledExpense ScheduledExpense?
+
   @@map("expenses")
+}
+
+// ------------------------------------------------------------------------------
+// Gastos Programados y Recurrentes
+// ------------------------------------------------------------------------------
+
+model ScheduledExpense {
+  id          String                     @id @default(cuid())
+  concept     String
+  category    String
+  amount      Decimal                    @db.Decimal(12, 2)
+  dueDate     DateTime
+  isRecurring Boolean                    @default(false)
+  frequency   ScheduledExpenseFrequency?
+  startDate   DateTime                   @default(now())
+  endDate     DateTime?
+  status      ScheduledExpenseStatus     @default(PENDING)
+  notes       String?
+  seriesId    String?
+
+  expenseId   String?                    @unique
+  expense     Expense?                   @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+
+  userId      String?
+  user        User?                      @relation(fields: [userId], references: [id])
+  createdAt   DateTime                   @default(now())
+  updatedAt   DateTime                   @updatedAt
+
+  @@index([dueDate])
+  @@index([status])
+  @@index([seriesId])
+  @@map("scheduled_expenses")
 }
 
 // ------------------------------------------------------------------------------

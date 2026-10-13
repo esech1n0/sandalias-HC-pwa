@@ -8,7 +8,7 @@ export default async function CajaPage() {
   const user = await getCurrentUser();
   const isEmployee = user?.username?.toLowerCase() === "empleado";
   const activeRegister = await getActiveCashRegister();
-  const history = isEmployee ? [] : await getCashRegistersHistory(30);
+  const history = await getCashRegistersHistory(30);
   const notifications = await getNotifications();
   const unreadCount = await getUnreadNotificationsCount();
 

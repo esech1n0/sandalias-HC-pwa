@@ -412,6 +412,7 @@ export const ModelName = {
   CashRegister: 'CashRegister',
   CashMovement: 'CashMovement',
   Expense: 'Expense',
+  ScheduledExpense: 'ScheduledExpense',
   Notification: 'Notification',
   SystemSettings: 'SystemSettings'
 } as const
@@ -429,7 +430,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "expenseCategory" | "user" | "session" | "category" | "product" | "productCostHistory" | "inventoryMovement" | "purchase" | "purchaseItem" | "sale" | "saleItem" | "payment" | "cashRegister" | "cashMovement" | "expense" | "notification" | "systemSettings"
+    modelProps: "expenseCategory" | "user" | "session" | "category" | "product" | "productCostHistory" | "inventoryMovement" | "purchase" | "purchaseItem" | "sale" | "saleItem" | "payment" | "cashRegister" | "cashMovement" | "expense" | "scheduledExpense" | "notification" | "systemSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1543,6 +1544,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ScheduledExpense: {
+      payload: Prisma.$ScheduledExpensePayload<ExtArgs>
+      fields: Prisma.ScheduledExpenseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ScheduledExpenseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ScheduledExpenseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>
+        }
+        findFirst: {
+          args: Prisma.ScheduledExpenseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ScheduledExpenseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>
+        }
+        findMany: {
+          args: Prisma.ScheduledExpenseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>[]
+        }
+        create: {
+          args: Prisma.ScheduledExpenseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>
+        }
+        createMany: {
+          args: Prisma.ScheduledExpenseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ScheduledExpenseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>[]
+        }
+        delete: {
+          args: Prisma.ScheduledExpenseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>
+        }
+        update: {
+          args: Prisma.ScheduledExpenseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>
+        }
+        deleteMany: {
+          args: Prisma.ScheduledExpenseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ScheduledExpenseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ScheduledExpenseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>[]
+        }
+        upsert: {
+          args: Prisma.ScheduledExpenseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ScheduledExpensePayload>
+        }
+        aggregate: {
+          args: Prisma.ScheduledExpenseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateScheduledExpense>
+        }
+        groupBy: {
+          args: Prisma.ScheduledExpenseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ScheduledExpenseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ScheduledExpenseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ScheduledExpenseCountAggregateOutputType> | number
+        }
+      }
+    }
     Notification: {
       payload: Prisma.$NotificationPayload<ExtArgs>
       fields: Prisma.NotificationFieldRefs
@@ -1857,6 +1932,10 @@ export const SaleScalarFieldEnum = {
   total: 'total',
   totalCost: 'totalCost',
   grossProfit: 'grossProfit',
+  status: 'status',
+  cancelledAt: 'cancelledAt',
+  cancelledReason: 'cancelledReason',
+  cancelledById: 'cancelledById',
   cashRegisterId: 'cashRegisterId',
   userId: 'userId',
   createdAt: 'createdAt'
@@ -1948,6 +2027,28 @@ export const ExpenseScalarFieldEnum = {
 } as const
 
 export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
+
+
+export const ScheduledExpenseScalarFieldEnum = {
+  id: 'id',
+  concept: 'concept',
+  category: 'category',
+  amount: 'amount',
+  dueDate: 'dueDate',
+  isRecurring: 'isRecurring',
+  frequency: 'frequency',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  notes: 'notes',
+  seriesId: 'seriesId',
+  expenseId: 'expenseId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ScheduledExpenseScalarFieldEnum = (typeof ScheduledExpenseScalarFieldEnum)[keyof typeof ScheduledExpenseScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {
@@ -2111,6 +2212,20 @@ export type ListEnumDiscountTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'SaleStatus'
+ */
+export type EnumSaleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SaleStatus[]'
+ */
+export type ListEnumSaleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SaleStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'CashRegisterStatus'
  */
 export type EnumCashRegisterStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CashRegisterStatus'>
@@ -2135,6 +2250,34 @@ export type EnumCashMovementTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'CashMovementType[]'
  */
 export type ListEnumCashMovementTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CashMovementType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ScheduledExpenseFrequency'
+ */
+export type EnumScheduledExpenseFrequencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScheduledExpenseFrequency'>
+    
+
+
+/**
+ * Reference to a field of type 'ScheduledExpenseFrequency[]'
+ */
+export type ListEnumScheduledExpenseFrequencyFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScheduledExpenseFrequency[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ScheduledExpenseStatus'
+ */
+export type EnumScheduledExpenseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScheduledExpenseStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ScheduledExpenseStatus[]'
+ */
+export type ListEnumScheduledExpenseStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ScheduledExpenseStatus[]'>
     
 
 
@@ -2331,6 +2474,7 @@ export type GlobalOmitConfig = {
   cashRegister?: Prisma.CashRegisterOmit
   cashMovement?: Prisma.CashMovementOmit
   expense?: Prisma.ExpenseOmit
+  scheduledExpense?: Prisma.ScheduledExpenseOmit
   notification?: Prisma.NotificationOmit
   systemSettings?: Prisma.SystemSettingsOmit
 }

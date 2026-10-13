@@ -835,10 +835,6 @@ export type CashRegisterUpdateOneWithoutSalesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CashRegisterUpdateToOneWithWhereWithoutSalesInput, Prisma.CashRegisterUpdateWithoutSalesInput>, Prisma.CashRegisterUncheckedUpdateWithoutSalesInput>
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type EnumCashRegisterStatusFieldUpdateOperationsInput = {
   set?: $Enums.CashRegisterStatus
 }
