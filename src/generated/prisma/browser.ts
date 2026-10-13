@@ -93,6 +93,11 @@ export type CashMovement = Prisma.CashMovementModel
  */
 export type Expense = Prisma.ExpenseModel
 /**
+ * Model ScheduledExpense
+ * 
+ */
+export type ScheduledExpense = Prisma.ScheduledExpenseModel
+/**
  * Model Notification
  * 
  */

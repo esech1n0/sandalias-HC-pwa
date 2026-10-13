@@ -15,10 +15,15 @@ if (!prodUrl) {
   process.exit(1);
 }
 
-console.log("🔒 Conectando a la base de datos de Producción...");
+function normalizeConnectionString(url: string): string {
+  if (url.includes("sslmode=require") && !url.includes("uselibpqcompat")) {
+    return url.replace("sslmode=require", "sslmode=verify-full");
+  }
+  return url;
+}
 
 const adapter = new PrismaPg({
-  connectionString: prodUrl,
+  connectionString: normalizeConnectionString(prodUrl),
 });
 
 const prisma = new PrismaClient({

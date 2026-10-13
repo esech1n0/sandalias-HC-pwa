@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Vault,
   ArrowUpRight,
@@ -8,6 +8,10 @@ import {
   CheckCircle2,
   Lock,
   History,
+  FileText,
+  Download,
+  Share2,
+  X,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/money";
 import { calculateCashRegister } from "@/lib/cash/register";
@@ -75,6 +79,68 @@ export function CashManager({
 
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
+  // Estados para reporte PDF tras corte de caja
+  const [completedCutId, setCompletedCutId] = useState<string | null>(null);
+  const [showCutSuccessModal, setShowCutSuccessModal] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [canShare, setCanShare] = useState(false);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && "share" in navigator) {
+      setCanShare(true);
+    }
+  }, []);
+
+  const handleViewPdf = (id: string) => {
+    window.open(`/api/reports/cash-cut/${id}/pdf`, "_blank", "noopener,noreferrer");
+  };
+
+  const handleDownloadPdf = (id: string) => {
+    const link = document.createElement("a");
+    link.href = `/api/reports/cash-cut/${id}/pdf?download=true`;
+    link.setAttribute("download", `Reporte_Ventas_${id.slice(-6)}.pdf`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleSharePdf = async (id: string) => {
+    try {
+      setIsSharing(true);
+      if (typeof navigator === "undefined" || !navigator.share) {
+        handleViewPdf(id);
+        return;
+      }
+
+      const res = await fetch(`/api/reports/cash-cut/${id}/pdf`);
+      if (!res.ok) throw new Error("Error al obtener el reporte.");
+      const blob = await res.blob();
+      const file = new File([blob], `Reporte_Ventas_${new Date().toISOString().slice(0, 10)}.pdf`, {
+        type: "application/pdf",
+      });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "Reporte diario de ventas - Sandalias HC",
+          text: "Reporte diario de ventas correspondiente al corte de caja.",
+        });
+      } else {
+        await navigator.share({
+          title: "Reporte diario de ventas - Sandalias HC",
+          url: `${window.location.origin}/api/reports/cash-cut/${id}/pdf`,
+        });
+      }
+    } catch (err: unknown) {
+      if ((err as Error).name !== "AbortError") {
+        console.error("Error al compartir PDF:", err);
+        handleViewPdf(id);
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const handleOpen = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback(null);
@@ -113,13 +179,20 @@ export function CashManager({
     e.preventDefault();
     if (!activeRegister) return;
     setFeedback(null);
+    const registerId = activeRegister.id;
     try {
-      await closeCashRegisterAction(
-        activeRegister.id,
+      const closedRegister = await closeCashRegisterAction(
+        registerId,
         parseFloat(countedCash),
         corteNotes
       );
-      setFeedback({ type: "success", message: "Caja cerrada y corte diario generado exitosamente." });
+      const cutId = closedRegister?.id || registerId;
+      setCompletedCutId(cutId);
+      setShowCutSuccessModal(true);
+      setFeedback({
+        type: "success",
+        message: "Caja cerrada y corte diario generado exitosamente.",
+      });
       setCountedCash("");
       setCorteNotes("");
     } catch (err: unknown) {
@@ -170,6 +243,55 @@ export function CashManager({
         </div>
       )}
 
+      {/* Banner de Acceso Rápido al Reporte PDF del Corte Recién Finalizado */}
+      {completedCutId && (
+        <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center text-emerald-700 dark:text-emerald-300 shrink-0">
+              <FileText className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs font-black text-emerald-900 dark:text-emerald-200">
+                Reporte de Ventas en PDF listo (#CORTE-{completedCutId.slice(-6).toUpperCase()})
+              </div>
+              <div className="text-[11px] text-emerald-700 dark:text-emerald-400">
+                Corte de caja finalizado. Puedes consultar, descargar o compartir el reporte en cualquier momento.
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => handleViewPdf(completedCutId)}
+              className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-black bg-[#cfd500] text-slate-900 hover:brightness-105 flex items-center justify-center gap-1.5 shadow-xs transition-all"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Ver reporte PDF</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDownloadPdf(completedCutId)}
+              className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 flex items-center justify-center gap-1.5 shadow-xs transition-all"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Descargar</span>
+            </button>
+            {canShare && (
+              <button
+                type="button"
+                onClick={() => handleSharePdf(completedCutId)}
+                disabled={isSharing}
+                className="px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 flex items-center justify-center gap-1.5 shadow-xs transition-all"
+                title="Compartir reporte"
+              >
+                <Share2 className="w-3.5 h-3.5 text-blue-600" />
+                <span className="hidden sm:inline">Compartir</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Estado Actual de Caja */}
       {!activeRegister ? (
         // Caja Cerrada
@@ -214,7 +336,7 @@ export function CashManager({
                 <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full uppercase">
                   Caja Abierta
                 </span>
-                <div className="text-xs text-slate-400 mt-1">
+                <div className="text-xs text-slate-400 mt-1" suppressHydrationWarning>
                   Aperturada: {new Date(activeRegister.openedAt).toLocaleTimeString("es-MX")}
                 </div>
               </div>
@@ -385,90 +507,212 @@ export function CashManager({
         </div>
       )}
 
-      {/* Historial de Cortes de Caja (solo administrador) */}
-      {!isEmployee && (
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
-          <h2 className="text-base font-black mb-3 flex items-center gap-2">
-            <History className="w-5 h-5 text-slate-400" />
-            Historial de Cortes de Caja
-          </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b text-slate-500 font-bold uppercase">
-                  <th className="py-2.5 px-3">Fecha Apertura</th>
-                  <th className="py-2.5 px-3">Fecha Cierre</th>
-                  <th className="py-2.5 px-3 text-right">Fondo Inicial</th>
-                  <th className="py-2.5 px-3 text-right">Ventas Efectivo</th>
-                  <th className="py-2.5 px-3 text-right">Retiros</th>
-                  <th className="py-2.5 px-3 text-right">Esperado</th>
-                  <th className="py-2.5 px-3 text-right">Contado</th>
-                  <th className="py-2.5 px-3 text-right">Diferencia</th>
-                  <th className="py-2.5 px-3 text-center">Estado</th>
+      {/* Historial de Cortes de Caja */}
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+        <h2 className="text-base font-black mb-3 flex items-center gap-2">
+          <History className="w-5 h-5 text-slate-400" />
+          Historial de Cortes de Caja
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-800/50 border-b text-slate-500 font-bold uppercase">
+                <th className="py-2.5 px-3">Fecha Apertura</th>
+                <th className="py-2.5 px-3">Fecha Cierre</th>
+                <th className="py-2.5 px-3 text-right">Fondo Inicial</th>
+                <th className="py-2.5 px-3 text-right">Ventas Efectivo</th>
+                <th className="py-2.5 px-3 text-right">Retiros</th>
+                <th className="py-2.5 px-3 text-right">Esperado</th>
+                <th className="py-2.5 px-3 text-right">Contado</th>
+                <th className="py-2.5 px-3 text-right">Diferencia</th>
+                <th className="py-2.5 px-3 text-center">Estado</th>
+                <th className="py-2.5 px-3 text-center">Reporte PDF</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {history.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="py-8 text-center text-slate-400">
+                    No hay registros de caja históricos.
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {history.length === 0 ? (
-                  <tr>
-                    <td colSpan={9} className="py-8 text-center text-slate-400">
-                      No hay registros de caja históricos.
+              ) : (
+                history.map((h) => (
+                  <tr key={h.id}>
+                    <td className="py-2.5 px-3 text-slate-500 font-mono" suppressHydrationWarning>
+                      {new Date(h.openedAt).toLocaleString("es-MX")}
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-500 font-mono" suppressHydrationWarning>
+                      {h.closedAt ? new Date(h.closedAt).toLocaleString("es-MX") : "—"}
+                    </td>
+                    <td className="py-2.5 px-3 text-right">{formatCurrency(h.openingBalance)}</td>
+                    <td className="py-2.5 px-3 text-right font-bold text-emerald-600">
+                      {formatCurrency(h.cashSales)}
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-amber-600">
+                      {formatCurrency(h.withdrawalsTotal)}
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-bold">
+                      {formatCurrency(h.expectedCash)}
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-black">
+                      {h.countedCash !== null ? formatCurrency(h.countedCash) : "—"}
+                    </td>
+                    <td className="py-2.5 px-3 text-right font-bold">
+                      {h.difference !== null && h.difference !== undefined ? (
+                        <span
+                          className={
+                            h.difference === 0
+                              ? "text-slate-400"
+                              : h.difference > 0
+                              ? "text-blue-500"
+                              : "text-red-500"
+                          }
+                        >
+                          {formatCurrency(h.difference)}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td className="py-2.5 px-3 text-center">
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          h.status === "OPEN"
+                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+                            : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
+                        }`}
+                      >
+                        {h.status === "OPEN" ? "Abierta" : "Cerrada"}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-3 text-center">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleViewPdf(h.id)}
+                          className="px-2 py-1 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-[#cfd500]/25 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1 font-bold text-[11px]"
+                          title="Ver Reporte de Ventas en PDF"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                          <span className="hidden sm:inline">Ver PDF</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadPdf(h.id)}
+                          className="p-1 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-700 transition-colors"
+                          title="Descargar Reporte en PDF"
+                          aria-label="Descargar PDF"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </button>
+                        {canShare && (
+                          <button
+                            type="button"
+                            onClick={() => handleSharePdf(h.id)}
+                            className="p-1 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200 dark:border-slate-700 transition-colors"
+                            title="Compartir Reporte en PDF"
+                            aria-label="Compartir PDF"
+                          >
+                            <Share2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
-                ) : (
-                  history.map((h) => (
-                    <tr key={h.id}>
-                      <td className="py-2.5 px-3 text-slate-500 font-mono">
-                        {new Date(h.openedAt).toLocaleString("es-MX")}
-                      </td>
-                      <td className="py-2.5 px-3 text-slate-500 font-mono">
-                        {h.closedAt ? new Date(h.closedAt).toLocaleString("es-MX") : "—"}
-                      </td>
-                      <td className="py-2.5 px-3 text-right">{formatCurrency(h.openingBalance)}</td>
-                      <td className="py-2.5 px-3 text-right font-bold text-emerald-600">
-                        {formatCurrency(h.cashSales)}
-                      </td>
-                      <td className="py-2.5 px-3 text-right text-amber-600">
-                        {formatCurrency(h.withdrawalsTotal)}
-                      </td>
-                      <td className="py-2.5 px-3 text-right font-bold">
-                        {formatCurrency(h.expectedCash)}
-                      </td>
-                      <td className="py-2.5 px-3 text-right font-black">
-                        {h.countedCash !== null ? formatCurrency(h.countedCash) : "—"}
-                      </td>
-                      <td className="py-2.5 px-3 text-right font-bold">
-                        {h.difference !== null && h.difference !== undefined ? (
-                          <span
-                            className={
-                              h.difference === 0
-                                ? "text-slate-400"
-                                : h.difference > 0
-                                ? "text-blue-500"
-                                : "text-red-500"
-                            }
-                          >
-                            {formatCurrency(h.difference)}
-                          </span>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                      <td className="py-2.5 px-3 text-center">
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                            h.status === "OPEN"
-                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-                              : "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300"
-                          }`}
-                        >
-                          {h.status === "OPEN" ? "Abierta" : "Cerrada"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Modal de Finalización de Corte con Opciones de PDF */}
+      {showCutSuccessModal && completedCutId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative animate-in fade-in zoom-in-95">
+            <button
+              type="button"
+              onClick={() => setShowCutSuccessModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Cerrar modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+
+            <h2 className="text-xl font-black text-center text-slate-900 dark:text-white mb-1.5">
+              ¡Corte de Caja Finalizado!
+            </h2>
+            <p className="text-xs text-center text-slate-500 dark:text-slate-400 mb-5">
+              El corte se registró exitosamente. Ya puedes generar, visualizar y descargar el reporte de las ventas del día en formato PDF.
+            </p>
+
+            <div className="p-3 mb-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-xs space-y-1.5">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Identificador del corte:</span>
+                <span className="font-bold font-mono text-slate-800 dark:text-slate-200">
+                  #CORTE-{completedCutId.slice(-6).toUpperCase()}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Fecha de corte:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">
+                  {new Date().toLocaleDateString("es-MX", { dateStyle: "medium" })}
+                </span>
+              </div>
+              <div className="text-[11px] text-slate-400 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
+                La generación del PDF no es obligatoria para completar el corte ni altera sus importes.
+              </div>
+            </div>
+
+            <div className="space-y-2.5">
+              <button
+                type="button"
+                onClick={() => handleViewPdf(completedCutId)}
+                className="w-full py-3 px-4 rounded-xl font-black text-slate-900 flex items-center justify-center gap-2 shadow-md hover:brightness-105 transition-all text-sm"
+                style={{ backgroundColor: "#cfd500" }}
+              >
+                <FileText className="w-4 h-4" />
+                <span>Ver reporte de ventas en PDF</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDownloadPdf(completedCutId)}
+                className="w-full py-2.5 px-4 rounded-xl font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center gap-2 transition-all text-xs"
+              >
+                <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Descargar archivo PDF</span>
+              </button>
+
+              {canShare && (
+                <button
+                  type="button"
+                  onClick={() => handleSharePdf(completedCutId)}
+                  disabled={isSharing}
+                  className="w-full py-2.5 px-4 rounded-xl font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center gap-2 transition-all text-xs"
+                >
+                  <Share2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span>{isSharing ? "Preparando reporte..." : "Compartir PDF (Móvil)"}</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setShowCutSuccessModal(false)}
+                className="w-full py-2 text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors text-center block"
+              >
+                Cerrar ventana
+              </button>
+            </div>
+
+            <p className="mt-4 text-[11px] text-center text-slate-400 dark:text-slate-500">
+              💡 Si cierras esta ventana, siempre podrás consultar y generar nuevamente este reporte desde el <strong>Historial de Cortes de Caja</strong>.
+            </p>
           </div>
         </div>
       )}

@@ -8,6 +8,16 @@ import {
   DiscountType,
 } from "@/lib/sales/calculations";
 import { triggerLowStockNotification } from "./notifications";
+import type { Prisma } from "@/generated/prisma/client";
+
+export type SaleHistoryItem = Prisma.SaleGetPayload<{
+  include: {
+    items: true;
+    payments: true;
+    user: { select: { name: true; username: true } };
+    cancelledBy: { select: { name: true; username: true } };
+  };
+}>;
 
 export interface CreateSaleInput {
   items: CartItemInput[];
@@ -218,25 +228,274 @@ export async function createSaleTransaction(input: CreateSaleInput) {
   });
 }
 
-export async function getSalesHistory(limit: number = 50) {
-  return prisma.sale.findMany({
-    include: {
-      items: true,
-      payments: true,
-      user: { select: { name: true, username: true } },
-    },
-    orderBy: { createdAt: "desc" },
-    take: limit,
+export async function cancelSaleTransaction(
+  saleId: string,
+  userId: string,
+  reason: string = "Cancelación de venta"
+) {
+  const cleanReason = reason.trim() || "Cancelación de venta";
+
+  return prisma.$transaction(async (tx) => {
+    // 1. Obtener la venta con partidas y pagos
+    const sale = await tx.sale.findUnique({
+      where: { id: saleId },
+      include: {
+        items: true,
+        payments: true,
+      },
+    });
+
+    if (!sale) {
+      throw new Error("Venta no encontrada.");
+    }
+
+    if (sale.status === "CANCELLED") {
+      throw new Error(`La venta con folio ${sale.folio} ya fue cancelada previamente.`);
+    }
+
+    // 2. Marcar la venta como CANCELLED (con fallback SQL si el cliente en memoria no ha sido reiniciado)
+    let updatedSale: any;
+    try {
+      updatedSale = await tx.sale.update({
+        where: { id: sale.id },
+        data: {
+          status: "CANCELLED",
+          cancelledAt: new Date(),
+          cancelledReason: cleanReason,
+          cancelledById: userId,
+        },
+      });
+    } catch (updateErr: any) {
+      if (
+        updateErr?.message?.includes("status") ||
+        updateErr?.name === "PrismaClientValidationError"
+      ) {
+        await tx.$executeRaw`
+          UPDATE "sales"
+          SET "status" = 'CANCELLED'::"SaleStatus",
+              "cancelledAt" = NOW(),
+              "cancelledReason" = ${cleanReason},
+              "cancelledById" = ${userId}
+          WHERE "id" = ${sale.id}
+        `;
+        updatedSale = {
+          ...sale,
+          status: "CANCELLED",
+          cancelledAt: new Date(),
+          cancelledReason: cleanReason,
+          cancelledById: userId,
+        };
+      } else {
+        throw updateErr;
+      }
+    }
+
+    // 3. Restablecer el stock de los productos vendidos y registrar movimientos de inventario
+    for (const item of sale.items) {
+      const product = await tx.product.findUnique({
+        where: { id: item.productId },
+      });
+
+      if (product) {
+        const previousStock = product.stock;
+        const newStock = previousStock + item.quantity;
+
+        await tx.product.update({
+          where: { id: product.id },
+          data: { stock: newStock },
+        });
+
+        await tx.inventoryMovement.create({
+          data: {
+            productId: product.id,
+            type: "ADJUSTMENT",
+            quantity: item.quantity, // Positivo para representar reingreso al inventario
+            previousStock,
+            newStock,
+            reason: `Cancelación de venta ${sale.folio}: ${cleanReason}`,
+            userId,
+          },
+        });
+      }
+    }
+
+    // 4. Si la venta tuvo pagos en efectivo y hay una caja abierta asociada o activa,
+    // ajustar el efectivo para que el corte de caja cuadre con la devolución del dinero.
+    let cashPaid = 0;
+    let cardPaid = 0;
+    let transferPaid = 0;
+    for (const p of sale.payments) {
+      const amount = Number(p.amount);
+      if (p.method === "CASH") cashPaid += amount;
+      else if (p.method === "CARD") cardPaid += amount;
+      else if (p.method === "TRANSFER") transferPaid += amount;
+    }
+
+    // Revisar si la caja original donde se cobró sigue abierta
+    if (sale.cashRegisterId) {
+      const originalRegister = await tx.cashRegister.findUnique({
+        where: { id: sale.cashRegisterId },
+      });
+
+      if (originalRegister && originalRegister.status === "OPEN") {
+        if (cashPaid > 0) {
+          await tx.cashMovement.create({
+            data: {
+              cashRegisterId: originalRegister.id,
+              type: "ADJUSTMENT",
+              amount: cashPaid,
+              reason: `Devolución en efectivo por cancelación ${sale.folio}`,
+              userId,
+            },
+          });
+        }
+
+        await tx.cashRegister.update({
+          where: { id: originalRegister.id },
+          data: {
+            cashSales: Math.max(0, Number(originalRegister.cashSales) - cashPaid),
+            cardSales: Math.max(0, Number(originalRegister.cardSales) - cardPaid),
+            transferSales: Math.max(0, Number(originalRegister.transferSales) - transferPaid),
+            expectedCash: Math.max(0, Number(originalRegister.expectedCash) - cashPaid),
+          },
+        });
+      } else if (cashPaid > 0) {
+        // Si la caja original ya cerró, revisar si hay una caja abierta activa en este momento
+        const currentOpenRegister = await tx.cashRegister.findFirst({
+          where: { status: "OPEN" },
+        });
+        if (currentOpenRegister) {
+          await tx.cashMovement.create({
+            data: {
+              cashRegisterId: currentOpenRegister.id,
+              type: "ADJUSTMENT",
+              amount: cashPaid,
+              reason: `Devolución en efectivo por cancelación de venta anterior ${sale.folio}`,
+              userId,
+            },
+          });
+          await tx.cashRegister.update({
+            where: { id: currentOpenRegister.id },
+            data: {
+              expectedCash: Math.max(0, Number(currentOpenRegister.expectedCash) - cashPaid),
+              withdrawalsTotal: Number(currentOpenRegister.withdrawalsTotal) + cashPaid,
+            },
+          });
+        }
+      }
+    } else if (cashPaid > 0) {
+      const currentOpenRegister = await tx.cashRegister.findFirst({
+        where: { status: "OPEN" },
+      });
+      if (currentOpenRegister) {
+        await tx.cashMovement.create({
+          data: {
+            cashRegisterId: currentOpenRegister.id,
+            type: "ADJUSTMENT",
+            amount: cashPaid,
+            reason: `Devolución en efectivo por cancelación de venta ${sale.folio}`,
+            userId,
+          },
+        });
+        await tx.cashRegister.update({
+          where: { id: currentOpenRegister.id },
+          data: {
+            expectedCash: Math.max(0, Number(currentOpenRegister.expectedCash) - cashPaid),
+            withdrawalsTotal: Number(currentOpenRegister.withdrawalsTotal) + cashPaid,
+          },
+        });
+      }
+    }
+
+    return updatedSale;
   });
 }
 
-export async function getSaleByFolio(folio: string) {
-  return prisma.sale.findUnique({
-    where: { folio },
-    include: {
-      items: true,
-      payments: true,
-      user: { select: { name: true, username: true } },
-    },
-  });
+export async function getSalesHistory(limit: number = 50): Promise<SaleHistoryItem[]> {
+  try {
+    return (await prisma.sale.findMany({
+      include: {
+        items: true,
+        payments: true,
+        user: { select: { name: true, username: true } },
+        cancelledBy: { select: { name: true, username: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    })) as SaleHistoryItem[];
+  } catch (err: any) {
+    // Si la instancia en memoria aún no ha recargado la relación cancelledBy tras prisma generate
+    if (err?.message?.includes("cancelledBy") || err?.name === "PrismaClientValidationError") {
+      const sales = await prisma.sale.findMany({
+        include: {
+          items: true,
+          payments: true,
+          user: { select: { name: true, username: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+      });
+
+      const cancelUserIds = Array.from(
+        new Set(sales.map((s: any) => s.cancelledById).filter(Boolean))
+      ) as string[];
+
+      const cancelUsers =
+        cancelUserIds.length > 0
+          ? await prisma.user.findMany({
+              where: { id: { in: cancelUserIds } },
+              select: { id: true, name: true, username: true },
+            })
+          : [];
+
+      const usersMap = new Map(cancelUsers.map((u) => [u.id, u]));
+
+      return sales.map((s: any) => ({
+        ...s,
+        cancelledBy: s.cancelledById ? usersMap.get(s.cancelledById) || null : null,
+      })) as unknown as SaleHistoryItem[];
+    }
+    throw err;
+  }
+}
+
+export async function getSaleByFolio(folio: string): Promise<SaleHistoryItem | null> {
+  try {
+    return (await prisma.sale.findUnique({
+      where: { folio },
+      include: {
+        items: true,
+        payments: true,
+        user: { select: { name: true, username: true } },
+        cancelledBy: { select: { name: true, username: true } },
+      },
+    })) as SaleHistoryItem | null;
+  } catch (err: any) {
+    if (err?.message?.includes("cancelledBy") || err?.name === "PrismaClientValidationError") {
+      const sale: any = await prisma.sale.findUnique({
+        where: { folio },
+        include: {
+          items: true,
+          payments: true,
+          user: { select: { name: true, username: true } },
+        },
+      });
+
+      if (!sale) return null;
+
+      let cancelledBy = null;
+      if (sale.cancelledById) {
+        cancelledBy = await prisma.user.findUnique({
+          where: { id: sale.cancelledById },
+          select: { name: true, username: true },
+        });
+      }
+
+      return {
+        ...sale,
+        cancelledBy,
+      } as unknown as SaleHistoryItem;
+    }
+    throw err;
+  }
 }

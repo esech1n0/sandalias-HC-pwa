@@ -5,8 +5,16 @@ const globalForPrisma = global as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+function normalizeConnectionString(url: string): string {
+  if (!url) return url;
+  if (url.includes("sslmode=require") && !url.includes("uselibpqcompat")) {
+    return url.replace("sslmode=require", "sslmode=verify-full");
+  }
+  return url;
+}
+
 function createPrismaClient(): PrismaClient {
-  const connectionString = process.env.DATABASE_URL || "";
+  const connectionString = normalizeConnectionString(process.env.DATABASE_URL || "");
   const adapter = new PrismaPg({
     connectionString,
   });
@@ -17,7 +25,7 @@ function createPrismaClient(): PrismaClient {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+export const prisma = createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;

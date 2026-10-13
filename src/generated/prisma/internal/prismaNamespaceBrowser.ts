@@ -66,6 +66,7 @@ export const ModelName = {
   CashRegister: 'CashRegister',
   CashMovement: 'CashMovement',
   Expense: 'Expense',
+  ScheduledExpense: 'ScheduledExpense',
   Notification: 'Notification',
   SystemSettings: 'SystemSettings'
 } as const
@@ -213,6 +214,10 @@ export const SaleScalarFieldEnum = {
   total: 'total',
   totalCost: 'totalCost',
   grossProfit: 'grossProfit',
+  status: 'status',
+  cancelledAt: 'cancelledAt',
+  cancelledReason: 'cancelledReason',
+  cancelledById: 'cancelledById',
   cashRegisterId: 'cashRegisterId',
   userId: 'userId',
   createdAt: 'createdAt'
@@ -304,6 +309,28 @@ export const ExpenseScalarFieldEnum = {
 } as const
 
 export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
+
+
+export const ScheduledExpenseScalarFieldEnum = {
+  id: 'id',
+  concept: 'concept',
+  category: 'category',
+  amount: 'amount',
+  dueDate: 'dueDate',
+  isRecurring: 'isRecurring',
+  frequency: 'frequency',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  status: 'status',
+  notes: 'notes',
+  seriesId: 'seriesId',
+  expenseId: 'expenseId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ScheduledExpenseScalarFieldEnum = (typeof ScheduledExpenseScalarFieldEnum)[keyof typeof ScheduledExpenseScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {

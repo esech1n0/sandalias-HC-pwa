@@ -59,7 +59,34 @@ export const NotificationType = {
   LOW_STOCK: 'LOW_STOCK',
   SYSTEM_UPDATE: 'SYSTEM_UPDATE',
   WEEKLY_REPORT: 'WEEKLY_REPORT',
-  MONTHLY_REPORT: 'MONTHLY_REPORT'
+  MONTHLY_REPORT: 'MONTHLY_REPORT',
+  EXPENSE_DUE: 'EXPENSE_DUE'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const ScheduledExpenseStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ScheduledExpenseStatus = (typeof ScheduledExpenseStatus)[keyof typeof ScheduledExpenseStatus]
+
+
+export const SaleStatus = {
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type SaleStatus = (typeof SaleStatus)[keyof typeof SaleStatus]
+
+
+export const ScheduledExpenseFrequency = {
+  WEEKLY: 'WEEKLY',
+  MONTHLY: 'MONTHLY',
+  ANNUAL: 'ANNUAL'
+} as const
+
+export type ScheduledExpenseFrequency = (typeof ScheduledExpenseFrequency)[keyof typeof ScheduledExpenseFrequency]
