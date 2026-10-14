@@ -214,6 +214,9 @@ export const SaleScalarFieldEnum = {
   total: 'total',
   totalCost: 'totalCost',
   grossProfit: 'grossProfit',
+  cardCommissionRate: 'cardCommissionRate',
+  cardCommissionAmount: 'cardCommissionAmount',
+  netReceivedAmount: 'netReceivedAmount',
   status: 'status',
   cancelledAt: 'cancelledAt',
   cancelledReason: 'cancelledReason',
@@ -253,6 +256,9 @@ export const PaymentScalarFieldEnum = {
   amount: 'amount',
   receivedAmount: 'receivedAmount',
   changeGiven: 'changeGiven',
+  commissionRate: 'commissionRate',
+  commissionAmount: 'commissionAmount',
+  netAmount: 'netAmount',
   createdAt: 'createdAt'
 } as const
 
@@ -352,6 +358,8 @@ export const SystemSettingsScalarFieldEnum = {
   defaultMinStock: 'defaultMinStock',
   businessName: 'businessName',
   headerColor: 'headerColor',
+  cardCommissionEnabled: 'cardCommissionEnabled',
+  cardCommissionPercentage: 'cardCommissionPercentage',
   updatedAt: 'updatedAt'
 } as const
 

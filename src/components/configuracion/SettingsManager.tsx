@@ -12,6 +12,7 @@ import {
   Save,
   Database,
   Building,
+  CreditCard,
 } from "lucide-react";
 import { changePasswordAction } from "@/actions/auth";
 import { updateSettingsAction } from "@/actions/settings";
@@ -22,6 +23,8 @@ interface SettingsData {
   defaultMinStock: number;
   businessName: string;
   headerColor: string;
+  cardCommissionEnabled: boolean;
+  cardCommissionPercentage: number;
 }
 
 interface SettingsManagerProps {
@@ -47,6 +50,12 @@ export function SettingsManager({ initialSettings, currentUser }: SettingsManage
   const [allowBelowCost, setAllowBelowCost] = useState(initialSettings.allowBelowCostSales);
   const [minStock, setMinStock] = useState(initialSettings.defaultMinStock);
   const [businessName, setBusinessName] = useState(initialSettings.businessName);
+  const [cardCommissionEnabled, setCardCommissionEnabled] = useState(
+    initialSettings.cardCommissionEnabled ?? false
+  );
+  const [cardCommissionPercentage, setCardCommissionPercentage] = useState<string>(
+    (initialSettings.cardCommissionPercentage ?? 0).toString()
+  );
   const [settingsStatus, setSettingsStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
@@ -120,6 +129,32 @@ export function SettingsManager({ initialSettings, currentUser }: SettingsManage
   const handleSettingsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSettingsStatus({ type: null, message: "" });
+
+    const parsedCommission = parseFloat(cardCommissionPercentage);
+    if (cardCommissionEnabled) {
+      if (isNaN(parsedCommission)) {
+        setSettingsStatus({
+          type: "error",
+          message: "El porcentaje de comisión debe ser un valor numérico.",
+        });
+        return;
+      }
+      if (parsedCommission < 0) {
+        setSettingsStatus({
+          type: "error",
+          message: "El porcentaje de comisión no puede ser negativo.",
+        });
+        return;
+      }
+      if (parsedCommission > 100) {
+        setSettingsStatus({
+          type: "error",
+          message: "El porcentaje de comisión no puede ser mayor a 100%.",
+        });
+        return;
+      }
+    }
+
     setSavingSettings(true);
 
     try {
@@ -127,6 +162,8 @@ export function SettingsManager({ initialSettings, currentUser }: SettingsManage
         allowBelowCostSales: allowBelowCost,
         defaultMinStock: Number(minStock) || 5,
         businessName: businessName.trim(),
+        cardCommissionEnabled,
+        cardCommissionPercentage: isNaN(parsedCommission) ? 0 : parsedCommission,
       });
 
       if (res.success) {
@@ -188,7 +225,7 @@ export function SettingsManager({ initialSettings, currentUser }: SettingsManage
           </div>
         )}
 
-        <form onSubmit={handleSettingsSubmit} className="space-y-4">
+        <form onSubmit={handleSettingsSubmit} className="space-y-5">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
               Nombre del Establecimiento / Negocio
@@ -244,6 +281,79 @@ export function SettingsManager({ initialSettings, currentUser }: SettingsManage
                   {allowBelowCost ? "Permitido (Con advertencia)" : "Bloqueado"}
                 </span>
               </label>
+            </div>
+          </div>
+
+          {/* Sección: Comisión por pago con tarjeta */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-[#cfd500]" />
+                <h3 className="font-bold text-sm text-slate-800 dark:text-slate-100">
+                  Comisión por pago con tarjeta
+                </h3>
+              </div>
+              <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-bold ${
+                cardCommissionEnabled
+                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-500"
+              }`}>
+                {cardCommissionEnabled ? `Activa (${cardCommissionPercentage}%)` : "Desactivada"}
+              </span>
+            </div>
+
+            <p className="text-[11px] text-slate-500 leading-relaxed">
+              Configura el porcentaje de comisión que cobra tu banco o proveedor de terminal al cobrar con tarjeta. Esta configuración funcionará como valor predeterminado para las nuevas ventas.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex flex-col justify-between">
+                <div>
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
+                    Cálculo de comisiones por tarjeta
+                  </span>
+                  <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                    Activar o desactivar el cálculo de comisiones bancarias para estimar el neto recibido y la ganancia real.
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer mt-2">
+                  <input
+                    type="checkbox"
+                    checked={cardCommissionEnabled}
+                    onChange={(e) => setCardCommissionEnabled(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all dark:border-slate-600 peer-checked:bg-[#cfd500]"></div>
+                  <span className="ml-3 text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {cardCommissionEnabled ? "Activada" : "Desactivada"}
+                  </span>
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Porcentaje de Comisión bancaria (%)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="any"
+                    min="0"
+                    max="100"
+                    value={cardCommissionPercentage}
+                    disabled={!cardCommissionEnabled}
+                    onChange={(e) => setCardCommissionPercentage(e.target.value)}
+                    placeholder="Ej. 3.5"
+                    className="w-full px-3 py-2 pr-8 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#cfd500] disabled:opacity-40 disabled:cursor-not-allowed font-bold"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                    %
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Acepta decimales (ej. 2.5%, 3.25% o 3.5%).
+                </p>
+              </div>
             </div>
           </div>
 

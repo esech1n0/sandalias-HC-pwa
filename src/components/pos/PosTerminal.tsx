@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { flushSync } from "react-dom";
 import { ThermalTicket, TicketData } from "./ThermalTicket";
 import {
@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   DollarSign,
   Tag,
+  Percent,
 } from "lucide-react";
 import { formatCurrency, roundMoney } from "@/lib/money";
 import {
@@ -27,6 +28,16 @@ import {
   DiscountType,
   PaymentMethod,
 } from "@/lib/sales/calculations";
+import {
+  validateAndClampQuantity,
+  resolveCartKeyboardAction,
+  getNextSelectedIdAfterRemoval,
+} from "@/lib/sales/cartShortcuts";
+import {
+  calculateCardCommission,
+  calculateSaleProfitSummary,
+  validateCommissionRate,
+} from "@/lib/sales/commission";
 import {
   openCashRegisterAction,
   completeSaleAction,
@@ -56,6 +67,8 @@ interface PosTerminalProps {
   categories: Category[];
   activeCashRegister: { id: string; openingBalance: number; expectedCash: number } | null;
   allowBelowCostSales?: boolean;
+  cardCommissionEnabled?: boolean;
+  defaultCardCommissionRate?: number;
 }
 
 interface CartItemState {
@@ -71,6 +84,8 @@ export function PosTerminal({
   categories,
   activeCashRegister,
   allowBelowCostSales = true,
+  cardCommissionEnabled = false,
+  defaultCardCommissionRate = 0,
 }: PosTerminalProps) {
   // Estado de Caja Abierta
   const [cashRegister, setCashRegister] = useState(activeCashRegister);
@@ -88,6 +103,12 @@ export function PosTerminal({
   const [globalDiscountType, setGlobalDiscountType] = useState<DiscountType | null>(null);
   const [globalDiscountValue, setGlobalDiscountValue] = useState<number>(0);
 
+  // Selección y edición de cantidades mediante teclado
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [editingQuantities, setEditingQuantities] = useState<Record<string, string>>({});
+  const quantityInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const isExternalNumericKeyRef = useRef(false);
+
   // Vista Móvil: 'catalog' | 'cart'
   const [mobileView, setMobileView] = useState<"catalog" | "cart">("catalog");
 
@@ -98,6 +119,24 @@ export function PosTerminal({
   const [transferAmount, setTransferAmount] = useState<string>("");
   const [isSubmittingSale, setIsSubmittingSale] = useState(false);
   const [saleError, setSaleError] = useState<string | null>(null);
+
+  // Comisión bancaria por pago con tarjeta para la venta actual
+  const [currentSaleCommissionRate, setCurrentSaleCommissionRate] = useState<number>(
+    defaultCardCommissionRate ?? 0
+  );
+  const [isCustomizingCommission, setIsCustomizingCommission] = useState(false);
+  const [customCommissionInput, setCustomCommissionInput] = useState<string>(
+    (defaultCardCommissionRate ?? 0).toString()
+  );
+
+  // Sincronizar tasa global por defecto si cambia y el cajero no la ha modificado para esta venta
+  useEffect(() => {
+    if (!isCustomizingCommission) {
+      const rate = defaultCardCommissionRate ?? 0;
+      setCurrentSaleCommissionRate(rate);
+      setCustomCommissionInput(rate.toString());
+    }
+  }, [defaultCardCommissionRate, isCustomizingCommission]);
   const [saleSuccess, setSaleSuccess] = useState<{
     folio: string;
     total: number;
@@ -146,6 +185,14 @@ export function PosTerminal({
   const addToCart = (product: Product) => {
     if (product.stock <= 0) return;
 
+    // Limpiar edición temporal del producto si existía
+    setEditingQuantities((prev) => {
+      if (prev[product.id] === undefined) return prev;
+      const next = { ...prev };
+      delete next[product.id];
+      return next;
+    });
+
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
@@ -167,10 +214,19 @@ export function PosTerminal({
         },
       ];
     });
+
+    setSelectedProductId(product.id);
   };
 
   // Modificar cantidad
   const updateQuantity = (productId: string, qty: number) => {
+    setEditingQuantities((prev) => {
+      if (prev[productId] === undefined) return prev;
+      const next = { ...prev };
+      delete next[productId];
+      return next;
+    });
+
     setCart((prev) =>
       prev
         .map((item) => {
@@ -182,6 +238,30 @@ export function PosTerminal({
         })
         .filter((item) => item.quantity > 0)
     );
+  };
+
+  // Confirmar cantidad escrita en el teclado numérico
+  const commitQuantity = (productId: string) => {
+    const rawVal = editingQuantities[productId];
+    setEditingQuantities((prev) => {
+      if (prev[productId] === undefined) return prev;
+      const next = { ...prev };
+      delete next[productId];
+      return next;
+    });
+
+    if (rawVal === undefined) return;
+
+    const currentItem = cart.find((i) => i.product.id === productId);
+    if (!currentItem) return;
+
+    const validatedQty = validateAndClampQuantity(
+      rawVal,
+      currentItem.product.stock,
+      currentItem.quantity
+    );
+
+    updateQuantity(productId, validatedQty);
   };
 
   // Modificar precio personalizado por producto
@@ -209,14 +289,128 @@ export function PosTerminal({
   };
 
   const removeFromCart = (productId: string) => {
-    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+    setCart((prev) => {
+      const remaining = prev.filter((item) => item.product.id !== productId);
+      setSelectedProductId((currentSelected) => {
+        return getNextSelectedIdAfterRemoval(
+          currentSelected,
+          productId,
+          remaining.map((i) => i.product.id)
+        );
+      });
+      return remaining;
+    });
+    setEditingQuantities((prev) => {
+      if (prev[productId] === undefined) return prev;
+      const next = { ...prev };
+      delete next[productId];
+      return next;
+    });
   };
 
   const clearCart = () => {
     setCart([]);
+    setSelectedProductId(null);
+    setEditingQuantities({});
     setGlobalDiscountType(null);
     setGlobalDiscountValue(0);
+    setCurrentSaleCommissionRate(defaultCardCommissionRate ?? 0);
+    setIsCustomizingCommission(false);
+    setCustomCommissionInput((defaultCardCommissionRate ?? 0).toString());
   };
+
+  // Manejo de atajos de teclado globales para el Carrito
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInputOrInteractive =
+        activeEl instanceof HTMLInputElement ||
+        activeEl instanceof HTMLTextAreaElement ||
+        activeEl instanceof HTMLSelectElement ||
+        activeEl?.getAttribute("contenteditable") === "true";
+
+      const isAnyModalOpen =
+        openingModalOpen || checkoutModalOpen || movementModalOpen;
+
+      const cartProductIds = cart.map((i) => i.product.id);
+
+      const resolved = resolveCartKeyboardAction({
+        key: e.key,
+        isInputOrInteractive,
+        isAnyModalOpen,
+        selectedProductId,
+        cartProductIds,
+      });
+
+      if (resolved.preventDefault) {
+        e.preventDefault();
+      }
+
+      switch (resolved.type) {
+        case "DELETE_ITEM":
+          removeFromCart(resolved.productId);
+          break;
+
+        case "SET_QUANTITY_DIGIT": {
+          const inputEl = quantityInputRefs.current[resolved.productId];
+          if (inputEl) {
+            isExternalNumericKeyRef.current = true;
+            setEditingQuantities((prev) => ({
+              ...prev,
+              [resolved.productId]: resolved.digit,
+            }));
+            inputEl.focus();
+            setTimeout(() => {
+              isExternalNumericKeyRef.current = false;
+              inputEl.setSelectionRange(
+                inputEl.value.length,
+                inputEl.value.length
+              );
+            }, 0);
+          }
+          break;
+        }
+
+        case "INCREMENT_QUANTITY": {
+          const target = cart.find((i) => i.product.id === resolved.productId);
+          if (target) {
+            updateQuantity(resolved.productId, target.quantity + 1);
+          }
+          break;
+        }
+
+        case "DECREMENT_QUANTITY": {
+          const target = cart.find((i) => i.product.id === resolved.productId);
+          if (target) {
+            updateQuantity(resolved.productId, target.quantity - 1);
+          }
+          break;
+        }
+
+        case "DESELECT":
+          setSelectedProductId(null);
+          break;
+
+        case "NAVIGATE_SELECTION":
+          setSelectedProductId(resolved.nextProductId);
+          break;
+
+        case "IGNORE":
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    selectedProductId,
+    cart,
+    openingModalOpen,
+    checkoutModalOpen,
+    movementModalOpen,
+    editingQuantities,
+  ]);
 
   // Cálculo del carrito
   const cartCalculation = useMemo(() => {
@@ -246,12 +440,22 @@ export function PosTerminal({
 
   // Apertura de modal de cobro
   const openCheckout = () => {
+    // Confirmar cualquier edición pendiente antes de abrir el modal
+    Object.keys(editingQuantities).forEach((productId) => {
+      commitQuantity(productId);
+    });
+
     if (cart.length === 0) return;
     setSaleError(null);
     setCardAmount("");
     setTransferAmount("");
     // Por defecto sugerir efectivo recibido igual al total de la venta
     setCashReceived(cartCalculation.total.toString());
+    if (!isCustomizingCommission) {
+      const rate = defaultCardCommissionRate ?? 0;
+      setCurrentSaleCommissionRate(rate);
+      setCustomCommissionInput(rate.toString());
+    }
     setCheckoutModalOpen(true);
   };
 
@@ -288,6 +492,58 @@ export function PosTerminal({
   const paymentValidation = useMemo(() => {
     return validatePayments(cartCalculation.total, currentPayments);
   }, [cartCalculation.total, currentPayments]);
+
+  // Manejo de modificación de comisión para la venta actual (sin afectar configuración global)
+  const handleSaleCommissionRateChange = (val: string) => {
+    setCustomCommissionInput(val);
+    setIsCustomizingCommission(true);
+    const validated = validateCommissionRate(val);
+    if (validated.isValid) {
+      setCurrentSaleCommissionRate(validated.parsedRate);
+    }
+  };
+
+  const handleResetCommissionToDefault = () => {
+    const defaultRate = defaultCardCommissionRate ?? 0;
+    setCurrentSaleCommissionRate(defaultRate);
+    setCustomCommissionInput(defaultRate.toString());
+    setIsCustomizingCommission(false);
+  };
+
+  // Indicador si algún producto tiene costo no registrado o igual a $0.00
+  const hasIncompleteCost = useMemo(() => {
+    return cart.some((item) => Number(item.product.currentCost) <= 0);
+  }, [cart]);
+
+  // Cálculo de comisión por pago con tarjeta
+  const cardCommission = useMemo(() => {
+    const cardVal = parseFloat(cardAmount) || 0;
+    return calculateCardCommission({
+      cardAmount: cardVal,
+      rate: currentSaleCommissionRate,
+      isEnabled: cardCommissionEnabled || isCustomizingCommission,
+    });
+  }, [cardAmount, currentSaleCommissionRate, cardCommissionEnabled, isCustomizingCommission]);
+
+  // Resumen de Ganancia Real Estimada
+  const saleProfitSummary = useMemo(() => {
+    return calculateSaleProfitSummary({
+      totalSale: cartCalculation.total,
+      totalCost: cartCalculation.totalCost,
+      cardCommissionAmount: cardCommission.commissionAmount,
+      hasIncompleteCost,
+    });
+  }, [
+    cartCalculation.total,
+    cartCalculation.totalCost,
+    cardCommission.commissionAmount,
+    hasIncompleteCost,
+  ]);
+
+  // Mostrar apartado informativo de comisión cuando el método tarjeta tenga monto y esté activado/personalizado
+  const showCardCommissionSection =
+    (parseFloat(cardAmount) || 0) > 0 &&
+    (cardCommissionEnabled || isCustomizingCommission || currentSaleCommissionRate > 0);
 
   // Confirmar apertura de caja
   const handleOpenRegister = async () => {
@@ -402,6 +658,7 @@ export function PosTerminal({
         cartDiscount: globalDiscountType
           ? { type: globalDiscountType, value: globalDiscountValue }
           : null,
+        cardCommissionRate: cardCommission.rateApplied,
       });
 
       setSaleSuccess({
@@ -684,7 +941,10 @@ export function PosTerminal({
       </div>
 
         {/* Lista de Partidas en Carrito */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div
+          className="flex-1 overflow-y-auto p-4 space-y-3"
+          onClick={() => setSelectedProductId(null)}
+        >
           {cart.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-slate-400 text-sm py-12">
               <ShoppingCart className="w-10 h-10 mb-2 opacity-30" />
@@ -703,29 +963,54 @@ export function PosTerminal({
           ) : (
             cartCalculation.items.map((item) => {
               const rawCartItem = cart.find((i) => i.product.id === item.productId)!;
+              const isSelected = selectedProductId === item.productId;
+              const displayQuantity =
+                editingQuantities[item.productId] !== undefined
+                  ? editingQuantities[item.productId]
+                  : item.quantity.toString();
 
               return (
                 <div
                   key={item.productId}
-                  className={`p-3 rounded-xl border text-sm transition-all ${
-                    item.isLoss
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedProductId(item.productId);
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  aria-pressed={isSelected}
+                  data-selected={isSelected}
+                  className={`p-3 rounded-xl border text-sm transition-all outline-none cursor-pointer select-none ${
+                    isSelected
+                      ? "ring-2 ring-[#cfd500] dark:ring-[#cfd500] border-transparent shadow-md bg-yellow-50/40 dark:bg-yellow-950/20"
+                      : item.isLoss
                       ? "bg-red-50/50 dark:bg-red-950/20 border-red-300 dark:border-red-900"
-                      : "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700"
+                      : "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <div className="font-bold text-slate-800 dark:text-slate-100">
-                        {item.name}
+                      <div className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap">
+                        <span>{item.name}</span>
+                        {isSelected && (
+                          <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#cfd500] text-black">
+                            Seleccionado
+                          </span>
+                        )}
                       </div>
                       <div className="text-xs text-slate-500">
                         Orig: {formatCurrency(item.originalPrice)} · Costo:{" "}
-                        {formatCurrency(item.unitCost)}
+                        {formatCurrency(item.unitCost)} · Disp: {rawCartItem.product.stock}
                       </div>
                     </div>
                     <button
-                      onClick={() => removeFromCart(item.productId)}
-                      className="text-slate-400 hover:text-red-500 p-1"
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromCart(item.productId);
+                      }}
+                      className="text-slate-400 hover:text-red-500 p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                      title="Eliminar artículo (Delete o Backspace)"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -740,7 +1025,10 @@ export function PosTerminal({
                   )}
 
                   {/* Controles de Precio Personalizado y Descuento */}
-                  <div className="grid grid-cols-2 gap-2 mb-2.5">
+                  <div
+                    className="grid grid-cols-2 gap-2 mb-2.5"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <div>
                       <label className="block text-[10px] font-bold text-slate-500 uppercase">
                         Precio Unit.
@@ -776,19 +1064,70 @@ export function PosTerminal({
 
                   {/* Selector de Cantidad y Subtotal */}
                   <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
-                    <div className="flex items-center gap-1.5">
+                    <div
+                      className="flex items-center gap-1.5"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
+                        type="button"
                         onClick={() => updateQuantity(item.productId, item.quantity - 1)}
-                        className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold hover:bg-slate-300 dark:hover:bg-slate-600"
+                        className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold hover:bg-slate-300 dark:hover:bg-slate-600 cursor-pointer"
+                        title="Disminuir unidades"
                       >
                         <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="w-8 text-center font-black text-sm">
-                        {item.quantity}
-                      </span>
+
+                      <input
+                        ref={(el) => {
+                          quantityInputRefs.current[item.productId] = el;
+                        }}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={displayQuantity}
+                        onFocus={(e) => {
+                          setSelectedProductId(item.productId);
+                          if (!isExternalNumericKeyRef.current) {
+                            e.target.select();
+                          }
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.currentTarget.select();
+                        }}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, "");
+                          setEditingQuantities((prev) => ({
+                            ...prev,
+                            [item.productId]: val,
+                          }));
+                        }}
+                        onKeyDown={(e) => {
+                          e.stopPropagation();
+                          if (e.key === "Enter") {
+                            e.currentTarget.blur();
+                          } else if (e.key === "Escape") {
+                            setEditingQuantities((prev) => {
+                              const next = { ...prev };
+                              delete next[item.productId];
+                              return next;
+                            });
+                            e.currentTarget.blur();
+                          }
+                        }}
+                        onBlur={() => {
+                          commitQuantity(item.productId);
+                        }}
+                        className="w-12 h-7 text-center font-black text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:border-[#cfd500] focus:ring-2 focus:ring-[#cfd500] transition-all"
+                        aria-label={`Cantidad de ${item.name}`}
+                        title="Escribe la cantidad deseada con el teclado numérico"
+                      />
+
                       <button
+                        type="button"
                         onClick={() => updateQuantity(item.productId, item.quantity + 1)}
-                        className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold hover:bg-slate-300 dark:hover:bg-slate-600"
+                        className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold hover:bg-slate-300 dark:hover:bg-slate-600 cursor-pointer"
+                        title="Incrementar unidades"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -860,6 +1199,11 @@ export function PosTerminal({
                   {formatCurrency(cartCalculation.grossProfit)}
                 </span>
               </div>
+              {hasIncompleteCost && (
+                <div className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
+                  * Costo parcial: algunos productos sin costo de adquisición registrado
+                </div>
+              )}
             </div>
 
             {cartCalculation.isNetLoss && (
@@ -1080,7 +1424,7 @@ export function PosTerminal({
                   </div>
 
                   {/* Tarjeta */}
-                  <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 font-bold text-sm">
                         <CreditCard className="w-4 h-4 text-blue-500" />
@@ -1105,9 +1449,66 @@ export function PosTerminal({
                         value={cardAmount}
                         onChange={(e) => setCardAmount(e.target.value)}
                         placeholder="Monto con tarjeta"
-                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg font-bold text-sm"
+                        className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg font-bold text-sm focus:ring-2 focus:ring-[#cfd500] focus:outline-hidden"
                       />
                     </div>
+
+                    {/* Apartado informativo de Comisión por Tarjeta */}
+                    {showCardCommissionSection && (
+                      <div className="p-3 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/60 space-y-2">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-blue-900 dark:text-blue-200 flex items-center gap-1">
+                            <Percent className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                            Comisión de Terminal
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                              % para esta venta:
+                            </span>
+                            <div className="relative">
+                              <input
+                                type="number"
+                                step="any"
+                                min="0"
+                                max="100"
+                                value={customCommissionInput}
+                                onChange={(e) => handleSaleCommissionRateChange(e.target.value)}
+                                className="w-16 px-1.5 py-0.5 bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded text-xs font-black text-right pr-4 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
+                                title="Modificar porcentaje para esta venta"
+                              />
+                              <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 pointer-events-none">
+                                %
+                              </span>
+                            </div>
+                            {isCustomizingCommission && (
+                              <button
+                                type="button"
+                                onClick={handleResetCommissionToDefault}
+                                className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                title={`Restablecer al porcentaje predeterminado (${defaultCardCommissionRate}%)`}
+                              >
+                                Restablecer
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                          <div className="bg-white/80 dark:bg-slate-900/60 p-2 rounded-lg border border-blue-100 dark:border-blue-900/50">
+                            <span className="block text-[9px] font-bold text-slate-400 uppercase">Importe Tarjeta</span>
+                            <span className="font-bold text-slate-800 dark:text-slate-100">{formatCurrency(cardCommission.cardAmount)}</span>
+                          </div>
+                          <div className="bg-white/80 dark:bg-slate-900/60 p-2 rounded-lg border border-blue-100 dark:border-blue-900/50">
+                            <span className="block text-[9px] font-bold text-slate-400 uppercase">Comisión ({cardCommission.rateApplied}%)</span>
+                            <span className="font-bold text-blue-600 dark:text-blue-400">-{formatCurrency(cardCommission.commissionAmount)}</span>
+                          </div>
+                          <div className="bg-white/80 dark:bg-slate-900/60 p-2 rounded-lg border border-blue-100 dark:border-blue-900/50 sm:col-span-2">
+                            <span className="block text-[9px] font-bold text-slate-400 uppercase">Neto Recibido</span>
+                            <span className="font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(cardCommission.netReceived)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Transferencia */}
@@ -1174,6 +1575,76 @@ export function PosTerminal({
                       {paymentValidation.errorMessage}
                     </div>
                   )}
+                </div>
+
+                {/* Resumen de Ganancia Real Estimada de la Venta */}
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2.5 mb-6">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                      <DollarSign className="w-3.5 h-3.5 text-emerald-500" />
+                      Ganancia Real Estimada
+                    </span>
+                    {saleProfitSummary.hasIncompleteCost && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        Estimación Parcial
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                      <span>Total de la venta:</span>
+                      <span className="font-bold text-slate-900 dark:text-slate-100">
+                        {formatCurrency(saleProfitSummary.totalSale)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                      <span>Costo de adquisición de productos:</span>
+                      <span className="font-bold text-slate-900 dark:text-slate-100">
+                        {formatCurrency(saleProfitSummary.totalCost)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-slate-700 dark:text-slate-300 font-semibold pt-1 border-t border-slate-200 dark:border-slate-700">
+                      <span>Ganancia antes de comisión bancaria:</span>
+                      <span
+                        className={
+                          saleProfitSummary.profitBeforeCommission < 0
+                            ? "text-red-500 font-bold"
+                            : "text-slate-900 dark:text-slate-100 font-bold"
+                        }
+                      >
+                        {formatCurrency(saleProfitSummary.profitBeforeCommission)}
+                      </span>
+                    </div>
+                    {cardCommission.hasCommission && (
+                      <div className="flex justify-between text-blue-600 dark:text-blue-400 font-semibold">
+                        <span>Comisión bancaria estimada ({cardCommission.rateApplied}%):</span>
+                        <span>-{formatCurrency(saleProfitSummary.cardCommissionAmount)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center pt-1.5 border-t border-slate-200 dark:border-slate-700 font-black">
+                      <span className="text-slate-900 dark:text-white">
+                        {cardCommission.hasCommission
+                          ? "Ganancia después de comisión bancaria:"
+                          : "Ganancia neta estimada:"}
+                      </span>
+                      <span
+                        className={`text-base ${
+                          saleProfitSummary.profitAfterCommission < 0
+                            ? "text-red-500"
+                            : "text-emerald-600 dark:text-emerald-400"
+                        }`}
+                      >
+                        {formatCurrency(saleProfitSummary.profitAfterCommission)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-tight">
+                    * Ganancia estimada después del costo de productos y comisión bancaria, antes de otros gastos operativos o impuestos.
+                    {saleProfitSummary.hasIncompleteCost &&
+                      " Nota: uno o más productos tienen costo no registrado ($0.00)."}
+                  </p>
                 </div>
 
                 {/* Botones de Acción */}

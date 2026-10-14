@@ -30,12 +30,18 @@ export type PaymentAvgAggregateOutputType = {
   amount: runtime.Decimal | null
   receivedAmount: runtime.Decimal | null
   changeGiven: runtime.Decimal | null
+  commissionRate: runtime.Decimal | null
+  commissionAmount: runtime.Decimal | null
+  netAmount: runtime.Decimal | null
 }
 
 export type PaymentSumAggregateOutputType = {
   amount: runtime.Decimal | null
   receivedAmount: runtime.Decimal | null
   changeGiven: runtime.Decimal | null
+  commissionRate: runtime.Decimal | null
+  commissionAmount: runtime.Decimal | null
+  netAmount: runtime.Decimal | null
 }
 
 export type PaymentMinAggregateOutputType = {
@@ -45,6 +51,9 @@ export type PaymentMinAggregateOutputType = {
   amount: runtime.Decimal | null
   receivedAmount: runtime.Decimal | null
   changeGiven: runtime.Decimal | null
+  commissionRate: runtime.Decimal | null
+  commissionAmount: runtime.Decimal | null
+  netAmount: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -55,6 +64,9 @@ export type PaymentMaxAggregateOutputType = {
   amount: runtime.Decimal | null
   receivedAmount: runtime.Decimal | null
   changeGiven: runtime.Decimal | null
+  commissionRate: runtime.Decimal | null
+  commissionAmount: runtime.Decimal | null
+  netAmount: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -65,6 +77,9 @@ export type PaymentCountAggregateOutputType = {
   amount: number
   receivedAmount: number
   changeGiven: number
+  commissionRate: number
+  commissionAmount: number
+  netAmount: number
   createdAt: number
   _all: number
 }
@@ -74,12 +89,18 @@ export type PaymentAvgAggregateInputType = {
   amount?: true
   receivedAmount?: true
   changeGiven?: true
+  commissionRate?: true
+  commissionAmount?: true
+  netAmount?: true
 }
 
 export type PaymentSumAggregateInputType = {
   amount?: true
   receivedAmount?: true
   changeGiven?: true
+  commissionRate?: true
+  commissionAmount?: true
+  netAmount?: true
 }
 
 export type PaymentMinAggregateInputType = {
@@ -89,6 +110,9 @@ export type PaymentMinAggregateInputType = {
   amount?: true
   receivedAmount?: true
   changeGiven?: true
+  commissionRate?: true
+  commissionAmount?: true
+  netAmount?: true
   createdAt?: true
 }
 
@@ -99,6 +123,9 @@ export type PaymentMaxAggregateInputType = {
   amount?: true
   receivedAmount?: true
   changeGiven?: true
+  commissionRate?: true
+  commissionAmount?: true
+  netAmount?: true
   createdAt?: true
 }
 
@@ -109,6 +136,9 @@ export type PaymentCountAggregateInputType = {
   amount?: true
   receivedAmount?: true
   changeGiven?: true
+  commissionRate?: true
+  commissionAmount?: true
+  netAmount?: true
   createdAt?: true
   _all?: true
 }
@@ -206,6 +236,9 @@ export type PaymentGroupByOutputType = {
   amount: runtime.Decimal
   receivedAmount: runtime.Decimal | null
   changeGiven: runtime.Decimal | null
+  commissionRate: runtime.Decimal | null
+  commissionAmount: runtime.Decimal | null
+  netAmount: runtime.Decimal | null
   createdAt: Date
   _count: PaymentCountAggregateOutputType | null
   _avg: PaymentAvgAggregateOutputType | null
@@ -239,6 +272,9 @@ export type PaymentWhereInput = {
   amount?: Prisma.DecimalFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
 }
@@ -250,6 +286,9 @@ export type PaymentOrderByWithRelationInput = {
   amount?: Prisma.SortOrder
   receivedAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   changeGiven?: Prisma.SortOrderInput | Prisma.SortOrder
+  commissionRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  commissionAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  netAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   sale?: Prisma.SaleOrderByWithRelationInput
 }
@@ -264,6 +303,9 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   amount?: Prisma.DecimalFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
   sale?: Prisma.XOR<Prisma.SaleScalarRelationFilter, Prisma.SaleWhereInput>
 }, "id">
@@ -275,6 +317,9 @@ export type PaymentOrderByWithAggregationInput = {
   amount?: Prisma.SortOrder
   receivedAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   changeGiven?: Prisma.SortOrderInput | Prisma.SortOrder
+  commissionRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  commissionAmount?: Prisma.SortOrderInput | Prisma.SortOrder
+  netAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.PaymentCountOrderByAggregateInput
   _avg?: Prisma.PaymentAvgOrderByAggregateInput
@@ -293,6 +338,9 @@ export type PaymentScalarWhereWithAggregatesInput = {
   amount?: Prisma.DecimalWithAggregatesFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.DecimalNullableWithAggregatesFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.DecimalNullableWithAggregatesFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Payment"> | Date | string
 }
 
@@ -302,6 +350,9 @@ export type PaymentCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
   sale: Prisma.SaleCreateNestedOneWithoutPaymentsInput
 }
@@ -313,6 +364,9 @@ export type PaymentUncheckedCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
@@ -322,6 +376,9 @@ export type PaymentUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sale?: Prisma.SaleUpdateOneRequiredWithoutPaymentsNestedInput
 }
@@ -333,6 +390,9 @@ export type PaymentUncheckedUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -343,6 +403,9 @@ export type PaymentCreateManyInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
@@ -352,6 +415,9 @@ export type PaymentUpdateManyMutationInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -362,6 +428,9 @@ export type PaymentUncheckedUpdateManyInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -382,6 +451,9 @@ export type PaymentCountOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   receivedAmount?: Prisma.SortOrder
   changeGiven?: Prisma.SortOrder
+  commissionRate?: Prisma.SortOrder
+  commissionAmount?: Prisma.SortOrder
+  netAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -389,6 +461,9 @@ export type PaymentAvgOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   receivedAmount?: Prisma.SortOrder
   changeGiven?: Prisma.SortOrder
+  commissionRate?: Prisma.SortOrder
+  commissionAmount?: Prisma.SortOrder
+  netAmount?: Prisma.SortOrder
 }
 
 export type PaymentMaxOrderByAggregateInput = {
@@ -398,6 +473,9 @@ export type PaymentMaxOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   receivedAmount?: Prisma.SortOrder
   changeGiven?: Prisma.SortOrder
+  commissionRate?: Prisma.SortOrder
+  commissionAmount?: Prisma.SortOrder
+  netAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -408,6 +486,9 @@ export type PaymentMinOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   receivedAmount?: Prisma.SortOrder
   changeGiven?: Prisma.SortOrder
+  commissionRate?: Prisma.SortOrder
+  commissionAmount?: Prisma.SortOrder
+  netAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -415,6 +496,9 @@ export type PaymentSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   receivedAmount?: Prisma.SortOrder
   changeGiven?: Prisma.SortOrder
+  commissionRate?: Prisma.SortOrder
+  commissionAmount?: Prisma.SortOrder
+  netAmount?: Prisma.SortOrder
 }
 
 export type PaymentCreateNestedManyWithoutSaleInput = {
@@ -459,20 +543,15 @@ export type PaymentUncheckedUpdateManyWithoutSaleNestedInput = {
   deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
 }
 
-export type NullableDecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
-}
-
 export type PaymentCreateWithoutSaleInput = {
   id?: string
   method: $Enums.PaymentMethod
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
@@ -482,6 +561,9 @@ export type PaymentUncheckedCreateWithoutSaleInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
@@ -521,6 +603,9 @@ export type PaymentScalarWhereInput = {
   amount?: Prisma.DecimalFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.DecimalNullableFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFilter<"Payment"> | Date | string
 }
 
@@ -530,6 +615,9 @@ export type PaymentCreateManySaleInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Date | string
 }
 
@@ -539,6 +627,9 @@ export type PaymentUpdateWithoutSaleInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -548,6 +639,9 @@ export type PaymentUncheckedUpdateWithoutSaleInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -557,6 +651,9 @@ export type PaymentUncheckedUpdateManyWithoutSaleInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   receivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changeGiven?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  commissionAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  netAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -569,6 +666,9 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   amount?: boolean
   receivedAmount?: boolean
   changeGiven?: boolean
+  commissionRate?: boolean
+  commissionAmount?: boolean
+  netAmount?: boolean
   createdAt?: boolean
   sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
@@ -580,6 +680,9 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   amount?: boolean
   receivedAmount?: boolean
   changeGiven?: boolean
+  commissionRate?: boolean
+  commissionAmount?: boolean
+  netAmount?: boolean
   createdAt?: boolean
   sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
@@ -591,6 +694,9 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   amount?: boolean
   receivedAmount?: boolean
   changeGiven?: boolean
+  commissionRate?: boolean
+  commissionAmount?: boolean
+  netAmount?: boolean
   createdAt?: boolean
   sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
@@ -602,10 +708,13 @@ export type PaymentSelectScalar = {
   amount?: boolean
   receivedAmount?: boolean
   changeGiven?: boolean
+  commissionRate?: boolean
+  commissionAmount?: boolean
+  netAmount?: boolean
   createdAt?: boolean
 }
 
-export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleId" | "method" | "amount" | "receivedAmount" | "changeGiven" | "createdAt", ExtArgs["result"]["payment"]>
+export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleId" | "method" | "amount" | "receivedAmount" | "changeGiven" | "commissionRate" | "commissionAmount" | "netAmount" | "createdAt", ExtArgs["result"]["payment"]>
 export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sale?: boolean | Prisma.SaleDefaultArgs<ExtArgs>
 }
@@ -628,6 +737,9 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     amount: runtime.Decimal
     receivedAmount: runtime.Decimal | null
     changeGiven: runtime.Decimal | null
+    commissionRate: runtime.Decimal | null
+    commissionAmount: runtime.Decimal | null
+    netAmount: runtime.Decimal | null
     createdAt: Date
   }, ExtArgs["result"]["payment"]>
   composites: {}
@@ -1059,6 +1171,9 @@ export interface PaymentFieldRefs {
   readonly amount: Prisma.FieldRef<"Payment", 'Decimal'>
   readonly receivedAmount: Prisma.FieldRef<"Payment", 'Decimal'>
   readonly changeGiven: Prisma.FieldRef<"Payment", 'Decimal'>
+  readonly commissionRate: Prisma.FieldRef<"Payment", 'Decimal'>
+  readonly commissionAmount: Prisma.FieldRef<"Payment", 'Decimal'>
+  readonly netAmount: Prisma.FieldRef<"Payment", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Payment", 'DateTime'>
 }
     

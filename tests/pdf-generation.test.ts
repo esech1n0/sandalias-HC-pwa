@@ -1,7 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-import { roundMoney, formatCurrency } from "../src/lib/money";
 
 // Mock de prisma para pruebas unitarias de getCashCutPdfData y generateDailySalesPdf
 vi.mock("../src/lib/prisma", () => ({
@@ -297,6 +294,456 @@ describe("Generación y Consolidación de Reporte Diario de Ventas en PDF", () =
       expect(run1.data.salesSummary.totalSales).toBe(run2.data.salesSummary.totalSales);
       expect(run1.data.register.id).toBe(run2.data.register.id);
       expect(run1.filename).toBe(run2.filename);
+    });
+
+    it("agrupa productos por categorías reales de la base de datos y desglosa variantes con subtotales exactos", async () => {
+      const mockRegister = {
+        id: "corte_categorias_ejemplo",
+        openedAt: new Date("2026-10-13T09:00:00Z"),
+        closedAt: new Date("2026-10-13T21:00:00Z"),
+        openingBalance: 1500,
+        cashSales: 10000,
+        cardSales: 5000,
+        transferSales: 1880,
+        withdrawalsTotal: 500,
+        expectedCash: 11000,
+        countedCash: 11000,
+        difference: 0,
+        notes: null,
+        openedBy: { name: "Edson", username: "edson" },
+        closedBy: { name: "Edson", username: "edson" },
+      };
+
+      // Ventas con productos en categorías reales: Gorras, Pijamas, Pantuflas
+      const mockSales = [
+        {
+          id: "sale_gorras_1",
+          folio: "VTA-001",
+          subtotal: 1450,
+          discountAmount: 0,
+          total: 1450,
+          status: "COMPLETED",
+          createdAt: new Date("2026-10-13T10:00:00Z"),
+          cashRegisterId: "corte_categorias_ejemplo",
+          items: [
+            {
+              id: "item_g1",
+              productId: "prod_g1",
+              productName: "Gorra El Mago",
+              quantity: 2,
+              unitPrice: 200,
+              subtotal: 400,
+              product: { name: "Gorra El Mago", category: { id: "cat_gorras", name: "Gorras" } },
+            },
+            {
+              id: "item_g2",
+              productId: "prod_g2",
+              productName: "Gorra New Era negra",
+              quantity: 3,
+              unitPrice: 350,
+              subtotal: 1050,
+              product: { name: "Gorra New Era negra", category: { id: "cat_gorras", name: "Gorras" } },
+            },
+          ],
+          payments: [{ method: "CASH", amount: 1450 }],
+        },
+        {
+          id: "sale_gorras_2",
+          folio: "VTA-002",
+          subtotal: 940,
+          discountAmount: 0,
+          total: 940,
+          status: "COMPLETED",
+          createdAt: new Date("2026-10-13T11:00:00Z"),
+          cashRegisterId: "corte_categorias_ejemplo",
+          items: [
+            {
+              id: "item_g3",
+              productId: "prod_g1", // Misma variante (Gorra El Mago a $200), debe acumular unidades a 4
+              productName: "Gorra El Mago",
+              quantity: 2,
+              unitPrice: 200,
+              subtotal: 400,
+              product: { name: "Gorra El Mago", category: { id: "cat_gorras", name: "Gorras" } },
+            },
+            {
+              id: "item_g4",
+              productId: "prod_g3",
+              productName: "Gorra de brillos",
+              quantity: 3,
+              unitPrice: 180,
+              subtotal: 540,
+              product: { name: "Gorra de brillos", category: { id: "cat_gorras", name: "Gorras" } },
+            },
+          ],
+          payments: [{ method: "CARD", amount: 940 }],
+        },
+        {
+          id: "sale_pijamas_1",
+          folio: "VTA-003",
+          subtotal: 7740,
+          discountAmount: 0,
+          total: 7740,
+          status: "COMPLETED",
+          createdAt: new Date("2026-10-13T13:00:00Z"),
+          cashRegisterId: "corte_categorias_ejemplo",
+          items: [
+            {
+              id: "item_p1",
+              productId: "prod_p1",
+              productName: "Pijama de Hello Kitty",
+              quantity: 12,
+              unitPrice: 250,
+              subtotal: 3000,
+              product: { name: "Pijama de Hello Kitty", category: { id: "cat_pijamas", name: "Pijamas" } },
+            },
+            {
+              id: "item_p2",
+              productId: "prod_p2",
+              productName: "Pijama de Winnie Pooh",
+              quantity: 10,
+              unitPrice: 250,
+              subtotal: 2500,
+              product: { name: "Pijama de Winnie Pooh", category: { id: "cat_pijamas", name: "Pijamas" } },
+            },
+            {
+              id: "item_p3",
+              productId: "prod_p3",
+              productName: "Pijama de Labubu",
+              quantity: 8,
+              unitPrice: 280,
+              subtotal: 2240,
+              product: { name: "Pijama de Labubu", category: { id: "cat_pijamas", name: "Pijamas" } },
+            },
+          ],
+          payments: [
+            { method: "CASH", amount: 5000 },
+            { method: "CARD", amount: 2740 },
+          ],
+        },
+        {
+          id: "sale_pantuflas_1",
+          folio: "VTA-004",
+          subtotal: 6750,
+          discountAmount: 0,
+          total: 6750,
+          status: "COMPLETED",
+          createdAt: new Date("2026-10-13T16:00:00Z"),
+          cashRegisterId: "corte_categorias_ejemplo",
+          items: [
+            {
+              id: "item_pa1",
+              productId: "prod_pa1",
+              productName: "Pantufla de Hello Kitty",
+              quantity: 20,
+              unitPrice: 150,
+              subtotal: 3000,
+              product: { name: "Pantufla de Hello Kitty", category: { id: "cat_pantuflas", name: "Pantuflas" } },
+            },
+            {
+              id: "item_pa2",
+              productId: "prod_pa2",
+              productName: "Pantufla de perrito",
+              quantity: 15,
+              unitPrice: 120,
+              subtotal: 1800,
+              product: { name: "Pantufla de perrito", category: { id: "cat_pantuflas", name: "Pantuflas" } },
+            },
+            {
+              id: "item_pa3",
+              productId: "prod_pa3",
+              productName: "Pantufla de animalito",
+              quantity: 15,
+              unitPrice: 130,
+              subtotal: 1950,
+              product: { name: "Pantufla de animalito", category: { id: "cat_pantuflas", name: "Pantuflas" } },
+            },
+          ],
+          payments: [
+            { method: "CASH", amount: 3660 },
+            { method: "CARD", amount: 1320 },
+            { method: "TRANSFER", amount: 1770 },
+          ],
+        },
+      ];
+
+      (prisma.cashRegister.findUnique as any).mockResolvedValue(mockRegister);
+      (prisma.sale.findMany as any).mockResolvedValue(mockSales);
+
+      const result = await generateDailySalesPdf("corte_categorias_ejemplo");
+      const summary = result.data.salesSummary;
+
+      // 1. Verificar que únicamente aparezcan las 3 categorías con ventas
+      expect(summary.categories).toHaveLength(3);
+      const catNames = summary.categories.map((c) => c.categoryName);
+      expect(catNames).toEqual(["Gorras", "Pantuflas", "Pijamas"]);
+
+      // 2. Verificar sección GORRAS
+      const gorrasCat = summary.categories.find((c) => c.categoryName === "Gorras")!;
+      expect(gorrasCat).toBeDefined();
+      expect(gorrasCat.totalUnits).toBe(10); // 4 + 3 + 3
+      expect(gorrasCat.subtotalAmount).toBe(2390); // 800 + 1050 + 540
+      expect(gorrasCat.items).toHaveLength(3);
+
+      const mago = gorrasCat.items.find((i) => i.productName === "Gorra El Mago")!;
+      expect(mago.quantity).toBe(4); // 2 + 2 acumuladas de ambas ventas
+      expect(mago.unitPrice).toBe(200);
+      expect(mago.totalAmount).toBe(800);
+
+      const newEra = gorrasCat.items.find((i) => i.productName === "Gorra New Era negra")!;
+      expect(newEra.quantity).toBe(3);
+      expect(newEra.unitPrice).toBe(350);
+      expect(newEra.totalAmount).toBe(1050);
+
+      const brillos = gorrasCat.items.find((i) => i.productName === "Gorra de brillos")!;
+      expect(brillos.quantity).toBe(3);
+      expect(brillos.unitPrice).toBe(180);
+      expect(brillos.totalAmount).toBe(540);
+
+      // 3. Verificar sección PIJAMAS
+      const pijamasCat = summary.categories.find((c) => c.categoryName === "Pijamas")!;
+      expect(pijamasCat).toBeDefined();
+      expect(pijamasCat.totalUnits).toBe(30); // 12 + 10 + 8
+      expect(pijamasCat.subtotalAmount).toBe(7740); // 3000 + 2500 + 2240
+
+      // 4. Verificar sección PANTUFLAS
+      const pantuflasCat = summary.categories.find((c) => c.categoryName === "Pantuflas")!;
+      expect(pantuflasCat).toBeDefined();
+      expect(pantuflasCat.totalUnits).toBe(50); // 20 + 15 + 15
+      expect(pantuflasCat.subtotalAmount).toBe(6750); // 3000 + 1800 + 1950
+
+      // 5. Total de unidades general y total monetario
+      expect(summary.totalUnits).toBe(90); // 10 + 30 + 50
+      expect(summary.itemsSubtotal).toBe(16880); // 2390 + 7740 + 6750
+      expect(summary.totalSales).toBe(16880);
+
+      // 6. Coincidencia estricta entre suma de subtotales por categoría y total general
+      const sumSubtotals = summary.categories.reduce((acc, c) => acc + c.subtotalAmount, 0);
+      expect(sumSubtotals).toBe(summary.totalSales);
+
+      // 7. Coincidencia con métodos de pago
+      const totalPayments = summary.totalCash + summary.totalCard + summary.totalTransfer;
+      expect(totalPayments).toBe(summary.totalSales);
+
+      // 8. Validación de buffer generado
+      expect(Buffer.isBuffer(result.buffer)).toBe(true);
+      expect(result.buffer.length).toBeGreaterThan(1500);
+    });
+
+    it("separa en filas distintas una misma variante si fue vendida a precios diferentes o con descuentos", async () => {
+      const mockRegister = {
+        id: "corte_precios_diferentes",
+        openedAt: new Date("2026-10-13T09:00:00Z"),
+        closedAt: new Date("2026-10-13T20:00:00Z"),
+        openingBalance: 1000,
+        cashSales: 740,
+        cardSales: 0,
+        transferSales: 0,
+        withdrawalsTotal: 0,
+        expectedCash: 1740,
+        countedCash: 1740,
+        difference: 0,
+        notes: null,
+      };
+
+      const mockSales = [
+        {
+          id: "sale_regular",
+          folio: "VTA-REG",
+          subtotal: 400,
+          discountAmount: 0,
+          total: 400,
+          status: "COMPLETED",
+          createdAt: new Date("2026-10-13T10:00:00Z"),
+          cashRegisterId: "corte_precios_diferentes",
+          items: [
+            {
+              id: "i1",
+              productId: "prod_mago",
+              productName: "Gorra El Mago",
+              quantity: 2,
+              unitPrice: 200,
+              subtotal: 400,
+              product: { name: "Gorra El Mago", category: { id: "cat_g", name: "Gorras" } },
+            },
+          ],
+          payments: [{ method: "CASH", amount: 400 }],
+        },
+        {
+          id: "sale_descuento",
+          folio: "VTA-DESC",
+          subtotal: 340,
+          discountAmount: 0,
+          total: 340,
+          status: "COMPLETED",
+          createdAt: new Date("2026-10-13T11:00:00Z"),
+          cashRegisterId: "corte_precios_diferentes",
+          items: [
+            {
+              id: "i2",
+              productId: "prod_mago",
+              productName: "Gorra El Mago",
+              quantity: 2,
+              unitPrice: 170, // Precio con descuento o especial
+              subtotal: 340,
+              product: { name: "Gorra El Mago", category: { id: "cat_g", name: "Gorras" } },
+            },
+          ],
+          payments: [{ method: "CASH", amount: 340 }],
+        },
+      ];
+
+      (prisma.cashRegister.findUnique as any).mockResolvedValue(mockRegister);
+      (prisma.sale.findMany as any).mockResolvedValue(mockSales);
+
+      const result = await generateDailySalesPdf("corte_precios_diferentes");
+      const gorras = result.data.salesSummary.categories.find((c) => c.categoryName === "Gorras")!;
+
+      // Deben existir 2 filas para "Gorra El Mago", una para $200 y otra para $170
+      expect(gorras.items).toHaveLength(2);
+      const regular = gorras.items.find((i) => i.unitPrice === 200)!;
+      expect(regular.quantity).toBe(2);
+      expect(regular.totalAmount).toBe(400);
+
+      const discounted = gorras.items.find((i) => i.unitPrice === 170)!;
+      expect(discounted.quantity).toBe(2);
+      expect(discounted.totalAmount).toBe(340);
+
+      // Subtotal de la categoría refleja ambas variantes
+      expect(gorras.totalUnits).toBe(4);
+      expect(gorras.subtotalAmount).toBe(740);
+    });
+
+    it("trata los descuentos globales explícitamente manteniendo coincidencia matemática exacta", async () => {
+      const mockRegister = {
+        id: "corte_descuento_global",
+        openedAt: new Date("2026-10-13T09:00:00Z"),
+        closedAt: new Date("2026-10-13T20:00:00Z"),
+        openingBalance: 1000,
+        cashSales: 1350,
+        cardSales: 0,
+        transferSales: 0,
+        withdrawalsTotal: 0,
+        expectedCash: 2350,
+        countedCash: 2350,
+        difference: 0,
+        notes: null,
+      };
+
+      // Venta con subtotal de artículos de $1,500 y descuento global de $150 -> Total cobrado $1,350
+      const mockSales = [
+        {
+          id: "sale_ticket_discount",
+          folio: "VTA-TICKET-DESC",
+          subtotal: 1500,
+          discountAmount: 150, // Descuento global en carrito
+          total: 1350,
+          status: "COMPLETED",
+          createdAt: new Date("2026-10-13T12:00:00Z"),
+          cashRegisterId: "corte_descuento_global",
+          items: [
+            {
+              id: "item_t1",
+              productId: "prod_t1",
+              productName: "Sandalia Plataforma",
+              quantity: 5,
+              unitPrice: 300,
+              subtotal: 1500,
+              product: { name: "Sandalia Plataforma", category: { id: "cat_s", name: "Sandalias" } },
+            },
+          ],
+          payments: [{ method: "CASH", amount: 1350 }],
+        },
+      ];
+
+      (prisma.cashRegister.findUnique as any).mockResolvedValue(mockRegister);
+      (prisma.sale.findMany as any).mockResolvedValue(mockSales);
+
+      const result = await generateDailySalesPdf("corte_descuento_global");
+      const summary = result.data.salesSummary;
+
+      // Subtotal de artículos en categoría coincide con el total de artículos vendidos
+      expect(summary.categories[0].subtotalAmount).toBe(1500);
+      expect(summary.itemsSubtotal).toBe(1500);
+
+      // Descuento global registrado explícitamente
+      expect(summary.globalDiscounts).toBe(150);
+
+      // Total general de ventas coincide con el cobro real y pagos
+      expect(summary.totalSales).toBe(1350);
+      expect(summary.totalCash).toBe(1350);
+      expect(summary.itemsSubtotal - summary.globalDiscounts).toBe(summary.totalSales);
+    });
+
+    it("maneja correctamente múltiples categorías generando un PDF de varias páginas sin errores", async () => {
+      const mockRegister = {
+        id: "corte_muchas_categorias",
+        openedAt: new Date("2026-10-13T09:00:00Z"),
+        closedAt: new Date("2026-10-13T21:00:00Z"),
+        openingBalance: 1000,
+        cashSales: 15000,
+        cardSales: 0,
+        transferSales: 0,
+        withdrawalsTotal: 0,
+        expectedCash: 16000,
+        countedCash: 16000,
+        difference: 0,
+        notes: null,
+      };
+
+      // Crear 7 categorías con varios artículos para asegurar que el PDF ocupe más de una página
+      const categoryNames = [
+        "Calcetas",
+        "Gorras",
+        "Otros",
+        "Pantuflas",
+        "Pijamas",
+        "Ropa",
+        "Sandalias",
+      ];
+
+      const salesList = categoryNames.map((catName, idx) => ({
+        id: `sale_${idx}`,
+        folio: `VTA-MULTI-${idx}`,
+        subtotal: 1000,
+        discountAmount: 0,
+        total: 1000,
+        status: "COMPLETED",
+        createdAt: new Date("2026-10-13T10:00:00Z"),
+        cashRegisterId: "corte_muchas_categorias",
+        items: [
+          {
+            id: `item_${idx}_a`,
+            productId: `prod_${idx}_a`,
+            productName: `Producto A de ${catName}`,
+            quantity: 2,
+            unitPrice: 250,
+            subtotal: 500,
+            product: { name: `Producto A de ${catName}`, category: { id: `cat_${idx}`, name: catName } },
+          },
+          {
+            id: `item_${idx}_b`,
+            productId: `prod_${idx}_b`,
+            productName: `Producto B de ${catName}`,
+            quantity: 2,
+            unitPrice: 250,
+            subtotal: 500,
+            product: { name: `Producto B de ${catName}`, category: { id: `cat_${idx}`, name: catName } },
+          },
+        ],
+        payments: [{ method: "CASH", amount: 1000 }],
+      }));
+
+      (prisma.cashRegister.findUnique as any).mockResolvedValue(mockRegister);
+      (prisma.sale.findMany as any).mockResolvedValue(salesList);
+
+      const result = await generateDailySalesPdf("corte_muchas_categorias");
+
+      expect(result.data.salesSummary.categories).toHaveLength(7);
+      expect(result.data.salesSummary.totalUnits).toBe(28); // 7 * 4
+      expect(result.data.salesSummary.totalSales).toBe(7000); // 7 * 1000
+      expect(Buffer.isBuffer(result.buffer)).toBe(true);
+      expect(result.buffer.length).toBeGreaterThan(2000);
     });
   });
 });

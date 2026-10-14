@@ -7,6 +7,8 @@ import {
   PaymentInput,
   DiscountType,
 } from "@/lib/sales/calculations";
+import { calculateCardCommission } from "@/lib/sales/commission";
+import { roundMoney } from "@/lib/money";
 import { triggerLowStockNotification } from "./notifications";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -23,6 +25,7 @@ export interface CreateSaleInput {
   items: CartItemInput[];
   payments: PaymentInput[];
   cartDiscount?: { type: DiscountType; value: number } | null;
+  cardCommissionRate?: number | null;
   userId?: string | null;
 }
 
@@ -89,6 +92,27 @@ export async function createSaleTransaction(input: CreateSaleInput) {
     });
     const folio = `VTA-${dateStr}-${String(countToday + 1).padStart(4, "0")}`;
 
+    // 6b. Calcular comisión por pago con tarjeta si aplica
+    const cardPaymentsTotal = input.payments
+      .filter((p) => p.method === "CARD")
+      .reduce((sum, p) => sum + p.amount, 0);
+
+    let appliedCommissionRate = 0;
+    if (cardPaymentsTotal > 0) {
+      if (input.cardCommissionRate !== undefined && input.cardCommissionRate !== null) {
+        appliedCommissionRate = Math.max(0, Math.min(100, input.cardCommissionRate));
+      } else if (settings?.cardCommissionEnabled) {
+        appliedCommissionRate = Number(settings.cardCommissionPercentage ?? 0);
+      }
+    }
+
+    const cardCommission = calculateCardCommission({
+      cardAmount: cardPaymentsTotal,
+      rate: appliedCommissionRate,
+      isEnabled: appliedCommissionRate > 0,
+    });
+    const netReceivedAmount = roundMoney(cart.total - cardCommission.commissionAmount);
+
     // 7. Crear Venta principal (Inmutable)
     const sale = await tx.sale.create({
       data: {
@@ -100,6 +124,9 @@ export async function createSaleTransaction(input: CreateSaleInput) {
         total: cart.total,
         totalCost: cart.totalCost,
         grossProfit: cart.grossProfit,
+        cardCommissionRate: cardCommission.rateApplied,
+        cardCommissionAmount: cardCommission.commissionAmount,
+        netReceivedAmount,
         cashRegisterId: openRegister ? openRegister.id : null,
         userId: input.userId,
       },
@@ -184,6 +211,11 @@ export async function createSaleTransaction(input: CreateSaleInput) {
         transferCovered += paymentAmount;
       }
 
+      const isCard = p.method === "CARD";
+      const paymentCommission = isCard && cardCommission.rateApplied > 0
+        ? roundMoney(paymentAmount * (cardCommission.rateApplied / 100))
+        : 0;
+
       await tx.payment.create({
         data: {
           saleId: sale.id,
@@ -191,6 +223,9 @@ export async function createSaleTransaction(input: CreateSaleInput) {
           amount: paymentAmount,
           receivedAmount: p.method === "CASH" ? p.receivedAmount : null,
           changeGiven: p.method === "CASH" && change > 0 ? change : null,
+          commissionRate: isCard ? cardCommission.rateApplied : 0,
+          commissionAmount: paymentCommission,
+          netAmount: roundMoney(paymentAmount - paymentCommission),
         },
       });
     }

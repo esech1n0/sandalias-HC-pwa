@@ -32,6 +32,8 @@ export default async function ConfiguracionPage() {
             defaultMinStock: settings.defaultMinStock,
             businessName: settings.businessName,
             headerColor: settings.headerColor,
+            cardCommissionEnabled: settings.cardCommissionEnabled,
+            cardCommissionPercentage: Number(settings.cardCommissionPercentage ?? 0),
           }}
           currentUser={{
             username: user?.username || "admin",

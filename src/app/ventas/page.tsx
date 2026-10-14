@@ -9,12 +9,21 @@ import { PosTerminal } from "@/components/pos/PosTerminal";
 
 export default async function VentasPage() {
   const user = await getCurrentUser();
-  const products = await getProducts();
-  const categories = await getCategories();
-  const activeRegister = await getActiveCashRegister();
-  const notifications = await getNotifications();
-  const unreadCount = await getUnreadNotificationsCount();
-  const settings = await getSystemSettings();
+  const [
+    products,
+    categories,
+    activeRegister,
+    notifications,
+    unreadCount,
+    settings,
+  ] = await Promise.all([
+    getProducts(),
+    getCategories(),
+    getActiveCashRegister(),
+    getNotifications(),
+    getUnreadNotificationsCount(),
+    getSystemSettings(),
+  ]);
 
   const isEmployee = user?.username?.toLowerCase() === "empleado";
 
@@ -48,6 +57,8 @@ export default async function VentasPage() {
               : null
           }
           allowBelowCostSales={settings.allowBelowCostSales}
+          cardCommissionEnabled={settings.cardCommissionEnabled}
+          defaultCardCommissionRate={Number(settings.cardCommissionPercentage ?? 0)}
         />
       </main>
     </div>

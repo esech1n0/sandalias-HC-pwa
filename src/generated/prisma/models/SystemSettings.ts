@@ -28,10 +28,12 @@ export type AggregateSystemSettings = {
 
 export type SystemSettingsAvgAggregateOutputType = {
   defaultMinStock: number | null
+  cardCommissionPercentage: runtime.Decimal | null
 }
 
 export type SystemSettingsSumAggregateOutputType = {
   defaultMinStock: number | null
+  cardCommissionPercentage: runtime.Decimal | null
 }
 
 export type SystemSettingsMinAggregateOutputType = {
@@ -40,6 +42,8 @@ export type SystemSettingsMinAggregateOutputType = {
   defaultMinStock: number | null
   businessName: string | null
   headerColor: string | null
+  cardCommissionEnabled: boolean | null
+  cardCommissionPercentage: runtime.Decimal | null
   updatedAt: Date | null
 }
 
@@ -49,6 +53,8 @@ export type SystemSettingsMaxAggregateOutputType = {
   defaultMinStock: number | null
   businessName: string | null
   headerColor: string | null
+  cardCommissionEnabled: boolean | null
+  cardCommissionPercentage: runtime.Decimal | null
   updatedAt: Date | null
 }
 
@@ -58,6 +64,8 @@ export type SystemSettingsCountAggregateOutputType = {
   defaultMinStock: number
   businessName: number
   headerColor: number
+  cardCommissionEnabled: number
+  cardCommissionPercentage: number
   updatedAt: number
   _all: number
 }
@@ -65,10 +73,12 @@ export type SystemSettingsCountAggregateOutputType = {
 
 export type SystemSettingsAvgAggregateInputType = {
   defaultMinStock?: true
+  cardCommissionPercentage?: true
 }
 
 export type SystemSettingsSumAggregateInputType = {
   defaultMinStock?: true
+  cardCommissionPercentage?: true
 }
 
 export type SystemSettingsMinAggregateInputType = {
@@ -77,6 +87,8 @@ export type SystemSettingsMinAggregateInputType = {
   defaultMinStock?: true
   businessName?: true
   headerColor?: true
+  cardCommissionEnabled?: true
+  cardCommissionPercentage?: true
   updatedAt?: true
 }
 
@@ -86,6 +98,8 @@ export type SystemSettingsMaxAggregateInputType = {
   defaultMinStock?: true
   businessName?: true
   headerColor?: true
+  cardCommissionEnabled?: true
+  cardCommissionPercentage?: true
   updatedAt?: true
 }
 
@@ -95,6 +109,8 @@ export type SystemSettingsCountAggregateInputType = {
   defaultMinStock?: true
   businessName?: true
   headerColor?: true
+  cardCommissionEnabled?: true
+  cardCommissionPercentage?: true
   updatedAt?: true
   _all?: true
 }
@@ -191,6 +207,8 @@ export type SystemSettingsGroupByOutputType = {
   defaultMinStock: number
   businessName: string
   headerColor: string
+  cardCommissionEnabled: boolean
+  cardCommissionPercentage: runtime.Decimal
   updatedAt: Date
   _count: SystemSettingsCountAggregateOutputType | null
   _avg: SystemSettingsAvgAggregateOutputType | null
@@ -223,6 +241,8 @@ export type SystemSettingsWhereInput = {
   defaultMinStock?: Prisma.IntFilter<"SystemSettings"> | number
   businessName?: Prisma.StringFilter<"SystemSettings"> | string
   headerColor?: Prisma.StringFilter<"SystemSettings"> | string
+  cardCommissionEnabled?: Prisma.BoolFilter<"SystemSettings"> | boolean
+  cardCommissionPercentage?: Prisma.DecimalFilter<"SystemSettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Prisma.DateTimeFilter<"SystemSettings"> | Date | string
 }
 
@@ -232,6 +252,8 @@ export type SystemSettingsOrderByWithRelationInput = {
   defaultMinStock?: Prisma.SortOrder
   businessName?: Prisma.SortOrder
   headerColor?: Prisma.SortOrder
+  cardCommissionEnabled?: Prisma.SortOrder
+  cardCommissionPercentage?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -244,6 +266,8 @@ export type SystemSettingsWhereUniqueInput = Prisma.AtLeast<{
   defaultMinStock?: Prisma.IntFilter<"SystemSettings"> | number
   businessName?: Prisma.StringFilter<"SystemSettings"> | string
   headerColor?: Prisma.StringFilter<"SystemSettings"> | string
+  cardCommissionEnabled?: Prisma.BoolFilter<"SystemSettings"> | boolean
+  cardCommissionPercentage?: Prisma.DecimalFilter<"SystemSettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Prisma.DateTimeFilter<"SystemSettings"> | Date | string
 }, "id">
 
@@ -253,6 +277,8 @@ export type SystemSettingsOrderByWithAggregationInput = {
   defaultMinStock?: Prisma.SortOrder
   businessName?: Prisma.SortOrder
   headerColor?: Prisma.SortOrder
+  cardCommissionEnabled?: Prisma.SortOrder
+  cardCommissionPercentage?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SystemSettingsCountOrderByAggregateInput
   _avg?: Prisma.SystemSettingsAvgOrderByAggregateInput
@@ -270,6 +296,8 @@ export type SystemSettingsScalarWhereWithAggregatesInput = {
   defaultMinStock?: Prisma.IntWithAggregatesFilter<"SystemSettings"> | number
   businessName?: Prisma.StringWithAggregatesFilter<"SystemSettings"> | string
   headerColor?: Prisma.StringWithAggregatesFilter<"SystemSettings"> | string
+  cardCommissionEnabled?: Prisma.BoolWithAggregatesFilter<"SystemSettings"> | boolean
+  cardCommissionPercentage?: Prisma.DecimalWithAggregatesFilter<"SystemSettings"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SystemSettings"> | Date | string
 }
 
@@ -279,6 +307,8 @@ export type SystemSettingsCreateInput = {
   defaultMinStock?: number
   businessName?: string
   headerColor?: string
+  cardCommissionEnabled?: boolean
+  cardCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Date | string
 }
 
@@ -288,6 +318,8 @@ export type SystemSettingsUncheckedCreateInput = {
   defaultMinStock?: number
   businessName?: string
   headerColor?: string
+  cardCommissionEnabled?: boolean
+  cardCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Date | string
 }
 
@@ -297,6 +329,8 @@ export type SystemSettingsUpdateInput = {
   defaultMinStock?: Prisma.IntFieldUpdateOperationsInput | number
   businessName?: Prisma.StringFieldUpdateOperationsInput | string
   headerColor?: Prisma.StringFieldUpdateOperationsInput | string
+  cardCommissionEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cardCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -306,6 +340,8 @@ export type SystemSettingsUncheckedUpdateInput = {
   defaultMinStock?: Prisma.IntFieldUpdateOperationsInput | number
   businessName?: Prisma.StringFieldUpdateOperationsInput | string
   headerColor?: Prisma.StringFieldUpdateOperationsInput | string
+  cardCommissionEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cardCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -315,6 +351,8 @@ export type SystemSettingsCreateManyInput = {
   defaultMinStock?: number
   businessName?: string
   headerColor?: string
+  cardCommissionEnabled?: boolean
+  cardCommissionPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Date | string
 }
 
@@ -324,6 +362,8 @@ export type SystemSettingsUpdateManyMutationInput = {
   defaultMinStock?: Prisma.IntFieldUpdateOperationsInput | number
   businessName?: Prisma.StringFieldUpdateOperationsInput | string
   headerColor?: Prisma.StringFieldUpdateOperationsInput | string
+  cardCommissionEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cardCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -333,6 +373,8 @@ export type SystemSettingsUncheckedUpdateManyInput = {
   defaultMinStock?: Prisma.IntFieldUpdateOperationsInput | number
   businessName?: Prisma.StringFieldUpdateOperationsInput | string
   headerColor?: Prisma.StringFieldUpdateOperationsInput | string
+  cardCommissionEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  cardCommissionPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -342,11 +384,14 @@ export type SystemSettingsCountOrderByAggregateInput = {
   defaultMinStock?: Prisma.SortOrder
   businessName?: Prisma.SortOrder
   headerColor?: Prisma.SortOrder
+  cardCommissionEnabled?: Prisma.SortOrder
+  cardCommissionPercentage?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type SystemSettingsAvgOrderByAggregateInput = {
   defaultMinStock?: Prisma.SortOrder
+  cardCommissionPercentage?: Prisma.SortOrder
 }
 
 export type SystemSettingsMaxOrderByAggregateInput = {
@@ -355,6 +400,8 @@ export type SystemSettingsMaxOrderByAggregateInput = {
   defaultMinStock?: Prisma.SortOrder
   businessName?: Prisma.SortOrder
   headerColor?: Prisma.SortOrder
+  cardCommissionEnabled?: Prisma.SortOrder
+  cardCommissionPercentage?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
@@ -364,11 +411,14 @@ export type SystemSettingsMinOrderByAggregateInput = {
   defaultMinStock?: Prisma.SortOrder
   businessName?: Prisma.SortOrder
   headerColor?: Prisma.SortOrder
+  cardCommissionEnabled?: Prisma.SortOrder
+  cardCommissionPercentage?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type SystemSettingsSumOrderByAggregateInput = {
   defaultMinStock?: Prisma.SortOrder
+  cardCommissionPercentage?: Prisma.SortOrder
 }
 
 
@@ -379,6 +429,8 @@ export type SystemSettingsSelect<ExtArgs extends runtime.Types.Extensions.Intern
   defaultMinStock?: boolean
   businessName?: boolean
   headerColor?: boolean
+  cardCommissionEnabled?: boolean
+  cardCommissionPercentage?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["systemSettings"]>
 
@@ -388,6 +440,8 @@ export type SystemSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   defaultMinStock?: boolean
   businessName?: boolean
   headerColor?: boolean
+  cardCommissionEnabled?: boolean
+  cardCommissionPercentage?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["systemSettings"]>
 
@@ -397,6 +451,8 @@ export type SystemSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   defaultMinStock?: boolean
   businessName?: boolean
   headerColor?: boolean
+  cardCommissionEnabled?: boolean
+  cardCommissionPercentage?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["systemSettings"]>
 
@@ -406,10 +462,12 @@ export type SystemSettingsSelectScalar = {
   defaultMinStock?: boolean
   businessName?: boolean
   headerColor?: boolean
+  cardCommissionEnabled?: boolean
+  cardCommissionPercentage?: boolean
   updatedAt?: boolean
 }
 
-export type SystemSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "allowBelowCostSales" | "defaultMinStock" | "businessName" | "headerColor" | "updatedAt", ExtArgs["result"]["systemSettings"]>
+export type SystemSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "allowBelowCostSales" | "defaultMinStock" | "businessName" | "headerColor" | "cardCommissionEnabled" | "cardCommissionPercentage" | "updatedAt", ExtArgs["result"]["systemSettings"]>
 
 export type $SystemSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SystemSettings"
@@ -420,6 +478,8 @@ export type $SystemSettingsPayload<ExtArgs extends runtime.Types.Extensions.Inte
     defaultMinStock: number
     businessName: string
     headerColor: string
+    cardCommissionEnabled: boolean
+    cardCommissionPercentage: runtime.Decimal
     updatedAt: Date
   }, ExtArgs["result"]["systemSettings"]>
   composites: {}
@@ -849,6 +909,8 @@ export interface SystemSettingsFieldRefs {
   readonly defaultMinStock: Prisma.FieldRef<"SystemSettings", 'Int'>
   readonly businessName: Prisma.FieldRef<"SystemSettings", 'String'>
   readonly headerColor: Prisma.FieldRef<"SystemSettings", 'String'>
+  readonly cardCommissionEnabled: Prisma.FieldRef<"SystemSettings", 'Boolean'>
+  readonly cardCommissionPercentage: Prisma.FieldRef<"SystemSettings", 'Decimal'>
   readonly updatedAt: Prisma.FieldRef<"SystemSettings", 'DateTime'>
 }
     

@@ -33,6 +33,9 @@ export type SaleAvgAggregateOutputType = {
   total: runtime.Decimal | null
   totalCost: runtime.Decimal | null
   grossProfit: runtime.Decimal | null
+  cardCommissionRate: runtime.Decimal | null
+  cardCommissionAmount: runtime.Decimal | null
+  netReceivedAmount: runtime.Decimal | null
 }
 
 export type SaleSumAggregateOutputType = {
@@ -42,6 +45,9 @@ export type SaleSumAggregateOutputType = {
   total: runtime.Decimal | null
   totalCost: runtime.Decimal | null
   grossProfit: runtime.Decimal | null
+  cardCommissionRate: runtime.Decimal | null
+  cardCommissionAmount: runtime.Decimal | null
+  netReceivedAmount: runtime.Decimal | null
 }
 
 export type SaleMinAggregateOutputType = {
@@ -54,6 +60,9 @@ export type SaleMinAggregateOutputType = {
   total: runtime.Decimal | null
   totalCost: runtime.Decimal | null
   grossProfit: runtime.Decimal | null
+  cardCommissionRate: runtime.Decimal | null
+  cardCommissionAmount: runtime.Decimal | null
+  netReceivedAmount: runtime.Decimal | null
   status: $Enums.SaleStatus | null
   cancelledAt: Date | null
   cancelledReason: string | null
@@ -73,6 +82,9 @@ export type SaleMaxAggregateOutputType = {
   total: runtime.Decimal | null
   totalCost: runtime.Decimal | null
   grossProfit: runtime.Decimal | null
+  cardCommissionRate: runtime.Decimal | null
+  cardCommissionAmount: runtime.Decimal | null
+  netReceivedAmount: runtime.Decimal | null
   status: $Enums.SaleStatus | null
   cancelledAt: Date | null
   cancelledReason: string | null
@@ -92,6 +104,9 @@ export type SaleCountAggregateOutputType = {
   total: number
   totalCost: number
   grossProfit: number
+  cardCommissionRate: number
+  cardCommissionAmount: number
+  netReceivedAmount: number
   status: number
   cancelledAt: number
   cancelledReason: number
@@ -110,6 +125,9 @@ export type SaleAvgAggregateInputType = {
   total?: true
   totalCost?: true
   grossProfit?: true
+  cardCommissionRate?: true
+  cardCommissionAmount?: true
+  netReceivedAmount?: true
 }
 
 export type SaleSumAggregateInputType = {
@@ -119,6 +137,9 @@ export type SaleSumAggregateInputType = {
   total?: true
   totalCost?: true
   grossProfit?: true
+  cardCommissionRate?: true
+  cardCommissionAmount?: true
+  netReceivedAmount?: true
 }
 
 export type SaleMinAggregateInputType = {
@@ -131,6 +152,9 @@ export type SaleMinAggregateInputType = {
   total?: true
   totalCost?: true
   grossProfit?: true
+  cardCommissionRate?: true
+  cardCommissionAmount?: true
+  netReceivedAmount?: true
   status?: true
   cancelledAt?: true
   cancelledReason?: true
@@ -150,6 +174,9 @@ export type SaleMaxAggregateInputType = {
   total?: true
   totalCost?: true
   grossProfit?: true
+  cardCommissionRate?: true
+  cardCommissionAmount?: true
+  netReceivedAmount?: true
   status?: true
   cancelledAt?: true
   cancelledReason?: true
@@ -169,6 +196,9 @@ export type SaleCountAggregateInputType = {
   total?: true
   totalCost?: true
   grossProfit?: true
+  cardCommissionRate?: true
+  cardCommissionAmount?: true
+  netReceivedAmount?: true
   status?: true
   cancelledAt?: true
   cancelledReason?: true
@@ -275,6 +305,9 @@ export type SaleGroupByOutputType = {
   total: runtime.Decimal
   totalCost: runtime.Decimal
   grossProfit: runtime.Decimal
+  cardCommissionRate: runtime.Decimal
+  cardCommissionAmount: runtime.Decimal
+  netReceivedAmount: runtime.Decimal | null
   status: $Enums.SaleStatus
   cancelledAt: Date | null
   cancelledReason: string | null
@@ -317,6 +350,9 @@ export type SaleWhereInput = {
   total?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.DecimalNullableFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFilter<"Sale"> | $Enums.SaleStatus
   cancelledAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
   cancelledReason?: Prisma.StringNullableFilter<"Sale"> | string | null
@@ -341,6 +377,9 @@ export type SaleOrderByWithRelationInput = {
   total?: Prisma.SortOrder
   totalCost?: Prisma.SortOrder
   grossProfit?: Prisma.SortOrder
+  cardCommissionRate?: Prisma.SortOrder
+  cardCommissionAmount?: Prisma.SortOrder
+  netReceivedAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelledReason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -368,6 +407,9 @@ export type SaleWhereUniqueInput = Prisma.AtLeast<{
   total?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.DecimalNullableFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFilter<"Sale"> | $Enums.SaleStatus
   cancelledAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
   cancelledReason?: Prisma.StringNullableFilter<"Sale"> | string | null
@@ -392,6 +434,9 @@ export type SaleOrderByWithAggregationInput = {
   total?: Prisma.SortOrder
   totalCost?: Prisma.SortOrder
   grossProfit?: Prisma.SortOrder
+  cardCommissionRate?: Prisma.SortOrder
+  cardCommissionAmount?: Prisma.SortOrder
+  netReceivedAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   cancelledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   cancelledReason?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -419,6 +464,9 @@ export type SaleScalarWhereWithAggregatesInput = {
   total?: Prisma.DecimalWithAggregatesFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalWithAggregatesFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalWithAggregatesFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalWithAggregatesFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalWithAggregatesFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusWithAggregatesFilter<"Sale"> | $Enums.SaleStatus
   cancelledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Sale"> | Date | string | null
   cancelledReason?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
@@ -438,6 +486,9 @@ export type SaleCreateInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -459,6 +510,9 @@ export type SaleUncheckedCreateInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -480,6 +534,9 @@ export type SaleUpdateInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -501,6 +558,9 @@ export type SaleUncheckedUpdateInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -522,6 +582,9 @@ export type SaleCreateManyInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -541,6 +604,9 @@ export type SaleUpdateManyMutationInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -557,6 +623,9 @@ export type SaleUncheckedUpdateManyInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -586,6 +655,9 @@ export type SaleCountOrderByAggregateInput = {
   total?: Prisma.SortOrder
   totalCost?: Prisma.SortOrder
   grossProfit?: Prisma.SortOrder
+  cardCommissionRate?: Prisma.SortOrder
+  cardCommissionAmount?: Prisma.SortOrder
+  netReceivedAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   cancelledAt?: Prisma.SortOrder
   cancelledReason?: Prisma.SortOrder
@@ -602,6 +674,9 @@ export type SaleAvgOrderByAggregateInput = {
   total?: Prisma.SortOrder
   totalCost?: Prisma.SortOrder
   grossProfit?: Prisma.SortOrder
+  cardCommissionRate?: Prisma.SortOrder
+  cardCommissionAmount?: Prisma.SortOrder
+  netReceivedAmount?: Prisma.SortOrder
 }
 
 export type SaleMaxOrderByAggregateInput = {
@@ -614,6 +689,9 @@ export type SaleMaxOrderByAggregateInput = {
   total?: Prisma.SortOrder
   totalCost?: Prisma.SortOrder
   grossProfit?: Prisma.SortOrder
+  cardCommissionRate?: Prisma.SortOrder
+  cardCommissionAmount?: Prisma.SortOrder
+  netReceivedAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   cancelledAt?: Prisma.SortOrder
   cancelledReason?: Prisma.SortOrder
@@ -633,6 +711,9 @@ export type SaleMinOrderByAggregateInput = {
   total?: Prisma.SortOrder
   totalCost?: Prisma.SortOrder
   grossProfit?: Prisma.SortOrder
+  cardCommissionRate?: Prisma.SortOrder
+  cardCommissionAmount?: Prisma.SortOrder
+  netReceivedAmount?: Prisma.SortOrder
   status?: Prisma.SortOrder
   cancelledAt?: Prisma.SortOrder
   cancelledReason?: Prisma.SortOrder
@@ -649,6 +730,9 @@ export type SaleSumOrderByAggregateInput = {
   total?: Prisma.SortOrder
   totalCost?: Prisma.SortOrder
   grossProfit?: Prisma.SortOrder
+  cardCommissionRate?: Prisma.SortOrder
+  cardCommissionAmount?: Prisma.SortOrder
+  netReceivedAmount?: Prisma.SortOrder
 }
 
 export type SaleScalarRelationFilter = {
@@ -744,6 +828,14 @@ export type NullableEnumDiscountTypeFieldUpdateOperationsInput = {
   set?: $Enums.DiscountType | null
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type EnumSaleStatusFieldUpdateOperationsInput = {
   set?: $Enums.SaleStatus
 }
@@ -832,6 +924,9 @@ export type SaleCreateWithoutUserInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -852,6 +947,9 @@ export type SaleUncheckedCreateWithoutUserInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -882,6 +980,9 @@ export type SaleCreateWithoutCancelledByInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -902,6 +1003,9 @@ export type SaleUncheckedCreateWithoutCancelledByInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -951,6 +1055,9 @@ export type SaleScalarWhereInput = {
   total?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.DecimalNullableFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFilter<"Sale"> | $Enums.SaleStatus
   cancelledAt?: Prisma.DateTimeNullableFilter<"Sale"> | Date | string | null
   cancelledReason?: Prisma.StringNullableFilter<"Sale"> | string | null
@@ -986,6 +1093,9 @@ export type SaleCreateWithoutItemsInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1006,6 +1116,9 @@ export type SaleUncheckedCreateWithoutItemsInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1042,6 +1155,9 @@ export type SaleUpdateWithoutItemsInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1062,6 +1178,9 @@ export type SaleUncheckedUpdateWithoutItemsInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1082,6 +1201,9 @@ export type SaleCreateWithoutPaymentsInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1102,6 +1224,9 @@ export type SaleUncheckedCreateWithoutPaymentsInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1138,6 +1263,9 @@ export type SaleUpdateWithoutPaymentsInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1158,6 +1286,9 @@ export type SaleUncheckedUpdateWithoutPaymentsInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1178,6 +1309,9 @@ export type SaleCreateWithoutCashRegisterInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1198,6 +1332,9 @@ export type SaleUncheckedCreateWithoutCashRegisterInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1244,6 +1381,9 @@ export type SaleCreateManyUserInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1262,6 +1402,9 @@ export type SaleCreateManyCancelledByInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1280,6 +1423,9 @@ export type SaleUpdateWithoutUserInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1300,6 +1446,9 @@ export type SaleUncheckedUpdateWithoutUserInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1320,6 +1469,9 @@ export type SaleUncheckedUpdateManyWithoutUserInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1338,6 +1490,9 @@ export type SaleUpdateWithoutCancelledByInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1358,6 +1513,9 @@ export type SaleUncheckedUpdateWithoutCancelledByInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1378,6 +1536,9 @@ export type SaleUncheckedUpdateManyWithoutCancelledByInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1396,6 +1557,9 @@ export type SaleCreateManyCashRegisterInput = {
   total: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost: runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: $Enums.SaleStatus
   cancelledAt?: Date | string | null
   cancelledReason?: string | null
@@ -1414,6 +1578,9 @@ export type SaleUpdateWithoutCashRegisterInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1434,6 +1601,9 @@ export type SaleUncheckedUpdateWithoutCashRegisterInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1454,6 +1624,9 @@ export type SaleUncheckedUpdateManyWithoutCashRegisterInput = {
   total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalCost?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   grossProfit?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  cardCommissionAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  netReceivedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   status?: Prisma.EnumSaleStatusFieldUpdateOperationsInput | $Enums.SaleStatus
   cancelledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   cancelledReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1512,6 +1685,9 @@ export type SaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   total?: boolean
   totalCost?: boolean
   grossProfit?: boolean
+  cardCommissionRate?: boolean
+  cardCommissionAmount?: boolean
+  netReceivedAmount?: boolean
   status?: boolean
   cancelledAt?: boolean
   cancelledReason?: boolean
@@ -1537,6 +1713,9 @@ export type SaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   total?: boolean
   totalCost?: boolean
   grossProfit?: boolean
+  cardCommissionRate?: boolean
+  cardCommissionAmount?: boolean
+  netReceivedAmount?: boolean
   status?: boolean
   cancelledAt?: boolean
   cancelledReason?: boolean
@@ -1559,6 +1738,9 @@ export type SaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   total?: boolean
   totalCost?: boolean
   grossProfit?: boolean
+  cardCommissionRate?: boolean
+  cardCommissionAmount?: boolean
+  netReceivedAmount?: boolean
   status?: boolean
   cancelledAt?: boolean
   cancelledReason?: boolean
@@ -1581,6 +1763,9 @@ export type SaleSelectScalar = {
   total?: boolean
   totalCost?: boolean
   grossProfit?: boolean
+  cardCommissionRate?: boolean
+  cardCommissionAmount?: boolean
+  netReceivedAmount?: boolean
   status?: boolean
   cancelledAt?: boolean
   cancelledReason?: boolean
@@ -1590,7 +1775,7 @@ export type SaleSelectScalar = {
   createdAt?: boolean
 }
 
-export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "folio" | "subtotal" | "discountType" | "discountValue" | "discountAmount" | "total" | "totalCost" | "grossProfit" | "status" | "cancelledAt" | "cancelledReason" | "cancelledById" | "cashRegisterId" | "userId" | "createdAt", ExtArgs["result"]["sale"]>
+export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "folio" | "subtotal" | "discountType" | "discountValue" | "discountAmount" | "total" | "totalCost" | "grossProfit" | "cardCommissionRate" | "cardCommissionAmount" | "netReceivedAmount" | "status" | "cancelledAt" | "cancelledReason" | "cancelledById" | "cashRegisterId" | "userId" | "createdAt", ExtArgs["result"]["sale"]>
 export type SaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   cancelledBy?: boolean | Prisma.Sale$cancelledByArgs<ExtArgs>
   cashRegister?: boolean | Prisma.Sale$cashRegisterArgs<ExtArgs>
@@ -1629,6 +1814,9 @@ export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     total: runtime.Decimal
     totalCost: runtime.Decimal
     grossProfit: runtime.Decimal
+    cardCommissionRate: runtime.Decimal
+    cardCommissionAmount: runtime.Decimal
+    netReceivedAmount: runtime.Decimal | null
     status: $Enums.SaleStatus
     cancelledAt: Date | null
     cancelledReason: string | null
@@ -2073,6 +2261,9 @@ export interface SaleFieldRefs {
   readonly total: Prisma.FieldRef<"Sale", 'Decimal'>
   readonly totalCost: Prisma.FieldRef<"Sale", 'Decimal'>
   readonly grossProfit: Prisma.FieldRef<"Sale", 'Decimal'>
+  readonly cardCommissionRate: Prisma.FieldRef<"Sale", 'Decimal'>
+  readonly cardCommissionAmount: Prisma.FieldRef<"Sale", 'Decimal'>
+  readonly netReceivedAmount: Prisma.FieldRef<"Sale", 'Decimal'>
   readonly status: Prisma.FieldRef<"Sale", 'SaleStatus'>
   readonly cancelledAt: Prisma.FieldRef<"Sale", 'DateTime'>
   readonly cancelledReason: Prisma.FieldRef<"Sale", 'String'>
