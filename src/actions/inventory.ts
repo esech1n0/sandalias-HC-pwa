@@ -6,6 +6,14 @@ import { createProduct, updateProduct, deleteProduct } from "@/services/products
 import { adjustInventoryManual } from "@/services/inventory";
 import { createPurchaseEntry, CreatePurchaseInput } from "@/services/purchases";
 import { createCategory, updateCategory, deleteCategory } from "@/services/categories";
+import {
+  createPurchaseSchema,
+  idSchema,
+  moneySchema,
+  parseInput,
+  reasonSchema,
+  stockSchema,
+} from "@/lib/validation";
 
 function serializeProduct(product: any) {
   if (!product) return null;
@@ -32,10 +40,10 @@ export async function createProductAction(formData: FormData) {
   const name = formData.get("name")?.toString() || "";
   const description = formData.get("description")?.toString() || null;
   const categoryId = formData.get("categoryId")?.toString() || "";
-  const salePrice = parseFloat(formData.get("salePrice")?.toString() || "0");
-  const currentCost = parseFloat(formData.get("currentCost")?.toString() || "0");
-  const stock = parseInt(formData.get("stock")?.toString() || "0", 10);
-  const minStock = parseInt(formData.get("minStock")?.toString() || "5", 10);
+  const salePrice = parseInput(moneySchema, parseFloat(formData.get("salePrice")?.toString() || "0"));
+  const currentCost = parseInput(moneySchema, parseFloat(formData.get("currentCost")?.toString() || "0"));
+  const stock = parseInput(stockSchema, parseInt(formData.get("stock")?.toString() || "0", 10));
+  const minStock = parseInput(stockSchema, parseInt(formData.get("minStock")?.toString() || "5", 10));
   const imageUrl = formData.get("imageUrl")?.toString() || null;
 
   const product = await createProduct({
@@ -64,20 +72,20 @@ export async function updateProductAction(id: string, formData: FormData) {
   const description = formData.get("description")?.toString() || null;
   const categoryId = formData.get("categoryId")?.toString();
   const salePrice = formData.has("salePrice")
-    ? parseFloat(formData.get("salePrice")?.toString() || "0")
+    ? parseInput(moneySchema, parseFloat(formData.get("salePrice")?.toString() || "0"))
     : undefined;
   const currentCost = formData.has("currentCost")
-    ? parseFloat(formData.get("currentCost")?.toString() || "0")
+    ? parseInput(moneySchema, parseFloat(formData.get("currentCost")?.toString() || "0"))
     : undefined;
   const minStock = formData.has("minStock")
-    ? parseInt(formData.get("minStock")?.toString() || "5", 10)
+    ? parseInput(stockSchema, parseInt(formData.get("minStock")?.toString() || "5", 10))
     : undefined;
   const imageUrl = formData.get("imageUrl")?.toString() || null;
   const isActive = formData.has("isActive")
     ? formData.get("isActive") === "true"
     : undefined;
 
-  const product = await updateProduct(id, {
+  const product = await updateProduct(parseInput(idSchema, id), {
     name,
     description,
     categoryId,
@@ -103,9 +111,9 @@ export async function adjustStockAction(
   assertAdmin(user);
 
   const product = await adjustInventoryManual({
-    productId,
-    newStock,
-    reason,
+    productId: parseInput(idSchema, productId),
+    newStock: parseInput(stockSchema, newStock),
+    reason: parseInput(reasonSchema, reason),
     userId: user.id,
   });
 
@@ -122,7 +130,7 @@ export async function createPurchaseAction(
   assertAdmin(user);
 
   const purchase = await createPurchaseEntry({
-    ...data,
+    ...parseInput(createPurchaseSchema, data),
     userId: user.id,
   });
 

@@ -53,50 +53,50 @@ async function main() {
   console.log("✅ Configuración del sistema inicializada");
 
   // 2. Usuarios administrativos y de operación requeridos
+  // Las contraseñas NUNCA se escriben en el código: se leen de variables de entorno.
+  // - Usuario nuevo sin variable definida -> se omite con aviso.
+  // - Usuario existente -> solo se cambia su contraseña si la variable está definida.
   const usersToSeed = [
-    {
-      username: "Edson",
-      password: "3s34dm1n777",
-      name: "Edson",
-    },
-    {
-      username: "Hector",
-      password: "Choco1234$",
-      name: "Hector",
-    },
-    {
-      username: "Empleado",
-      password: "JD#56B",
-      name: "Empleado",
-    },
+    { username: "Edson", name: "Edson", envVar: "SEED_PASSWORD_EDSON" },
+    { username: "Hector", name: "Hector", envVar: "SEED_PASSWORD_HECTOR" },
+    { username: "Empleado", name: "Empleado", envVar: "SEED_PASSWORD_EMPLEADO" },
   ];
 
   for (const user of usersToSeed) {
-    const passwordHash = await bcrypt.hash(user.password, 10);
+    const password = process.env[user.envVar];
     const existing = await prisma.user.findUnique({
       where: { username: user.username },
     });
+
+    if (password && password.length < 8) {
+      console.warn(`⚠️  ${user.envVar} debe tener al menos 8 caracteres. Se omite ${user.username}.`);
+      continue;
+    }
 
     if (existing) {
       await prisma.user.update({
         where: { id: existing.id },
         data: {
-          passwordHash,
           name: user.name,
           isActive: true,
+          ...(password ? { passwordHash: await bcrypt.hash(password, 10) } : {}),
         },
       });
-      console.log(`✅ Usuario actualizado en Producción: ${user.username}`);
-    } else {
+      console.log(
+        `✅ Usuario actualizado: ${user.username}${password ? " (contraseña cambiada)" : ""}`
+      );
+    } else if (password) {
       await prisma.user.create({
         data: {
           username: user.username,
-          passwordHash,
+          passwordHash: await bcrypt.hash(password, 10),
           name: user.name,
           isActive: true,
         },
       });
-      console.log(`✅ Usuario creado en Producción: ${user.username}`);
+      console.log(`✅ Usuario creado: ${user.username}`);
+    } else {
+      console.warn(`⚠️  ${user.envVar} no está definida. No se creó el usuario ${user.username}.`);
     }
   }
 

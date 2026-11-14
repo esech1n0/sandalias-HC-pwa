@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { updateSystemSettings } from "@/services/settings";
-import { getSession } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/auth/dal";
 import { serializeData } from "@/lib/serialize";
 
 export async function updateSettingsAction(data: {
@@ -13,8 +13,8 @@ export async function updateSettingsAction(data: {
   cardCommissionEnabled?: boolean;
   cardCommissionPercentage?: number;
 }) {
-  const session = await getSession();
-  if (!session?.userId || session?.username?.toLowerCase() === "empleado") {
+  const user = await getCurrentUser();
+  if (!user || user.username.toLowerCase() === "empleado") {
     return { success: false, error: "No autorizado para cuenta de empleado." };
   }
 

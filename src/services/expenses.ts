@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { lockCashRegister, lockOpenCashRegister } from "@/lib/db/locks";
 import { PaymentMethod } from "@/generated/prisma/client";
 import { parseExpenseDate } from "@/lib/expenses/date";
 
@@ -33,6 +34,7 @@ export async function createExpense(input: CreateExpenseInput) {
   return prisma.$transaction(async (tx) => {
     let openRegister = null;
     if (input.paymentMethod === "CASH") {
+      await lockOpenCashRegister(tx);
       openRegister = await tx.cashRegister.findFirst({
         where: { status: "OPEN" },
       });
@@ -62,14 +64,11 @@ export async function createExpense(input: CreateExpenseInput) {
         },
       });
 
-      const newExpensesCashTotal = Number(openRegister.expensesCashTotal) + input.amount;
-      const newExpectedCash = Number(openRegister.expectedCash) - input.amount;
-
       await tx.cashRegister.update({
         where: { id: openRegister.id },
         data: {
-          expensesCashTotal: newExpensesCashTotal,
-          expectedCash: newExpectedCash,
+          expensesCashTotal: { increment: input.amount },
+          expectedCash: { decrement: input.amount },
         },
       });
     }
@@ -95,6 +94,7 @@ export async function updateExpense(input: UpdateExpenseInput) {
 
     // Si el gasto estaba vinculado a una caja abierta y cambió el monto o método de pago
     if (existing.cashRegisterId) {
+      await lockCashRegister(tx, existing.cashRegisterId);
       const register = await tx.cashRegister.findUnique({
         where: { id: existing.cashRegisterId },
       });
@@ -105,14 +105,11 @@ export async function updateExpense(input: UpdateExpenseInput) {
         const diff = newCash - oldCash;
 
         if (diff !== 0) {
-          const newExpensesCashTotal = Number(register.expensesCashTotal) + diff;
-          const newExpectedCash = Number(register.expectedCash) - diff;
-
           await tx.cashRegister.update({
             where: { id: register.id },
             data: {
-              expensesCashTotal: newExpensesCashTotal,
-              expectedCash: newExpectedCash,
+              expensesCashTotal: { increment: diff },
+              expectedCash: { decrement: diff },
             },
           });
         }

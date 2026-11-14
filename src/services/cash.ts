@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { calculateCashRegister } from "@/lib/cash/register";
+import { lockCashRegister, lockKey } from "@/lib/db/locks";
 
 export async function getActiveCashRegister() {
   return prisma.cashRegister.findFirst({
@@ -20,16 +21,17 @@ export async function openCashRegister(openingBalance: number, userId: string) {
     throw new Error("El fondo inicial no puede ser negativo.");
   }
 
-  // Verificar si ya existe una caja abierta
-  const existing = await prisma.cashRegister.findFirst({
-    where: { status: "OPEN" },
-  });
-
-  if (existing) {
-    throw new Error("Ya existe una caja abierta actualmente.");
-  }
-
   return prisma.$transaction(async (tx) => {
+    // Candado para que dos aperturas simultáneas no creen dos cajas abiertas
+    await lockKey(tx, "cash-register-open");
+    const existing = await tx.cashRegister.findFirst({
+      where: { status: "OPEN" },
+    });
+
+    if (existing) {
+      throw new Error("Ya existe una caja abierta actualmente.");
+    }
+
     const register = await tx.cashRegister.create({
       data: {
         openingBalance,
@@ -68,6 +70,7 @@ export async function createWithdrawal(
   }
 
   return prisma.$transaction(async (tx) => {
+    await lockCashRegister(tx, cashRegisterId);
     const register = await tx.cashRegister.findUnique({
       where: { id: cashRegisterId },
     });
@@ -122,6 +125,7 @@ export async function createCashDeposit(
   }
 
   return prisma.$transaction(async (tx) => {
+    await lockCashRegister(tx, cashRegisterId);
     const register = await tx.cashRegister.findUnique({
       where: { id: cashRegisterId },
     });
@@ -166,6 +170,7 @@ export async function closeCashRegister(
   }
 
   return prisma.$transaction(async (tx) => {
+    await lockCashRegister(tx, cashRegisterId);
     const register = await tx.cashRegister.findUnique({
       where: { id: cashRegisterId },
     });

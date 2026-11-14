@@ -1,16 +1,19 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 
 export async function triggerLowStockNotification(
   productId: string,
   stock: number,
   minStock: number,
-  productName: string
+  productName: string,
+  // Cliente de la transacción en curso: si la operación se revierte, la notificación también.
+  db: Prisma.TransactionClient = prisma
 ) {
   if (stock >= minStock) return;
 
   // Evitar notificaciones duplicadas no leídas para el mismo producto
-  const existingUnread = await prisma.notification.findFirst({
+  const existingUnread = await db.notification.findFirst({
     where: {
       productId,
       type: "LOW_STOCK",
@@ -19,7 +22,7 @@ export async function triggerLowStockNotification(
   });
 
   if (!existingUnread) {
-    await prisma.notification.create({
+    await db.notification.create({
       data: {
         type: "LOW_STOCK",
         title: "Bajo Stock",

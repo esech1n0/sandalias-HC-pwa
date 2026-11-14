@@ -13,6 +13,7 @@ import {
 import { getNotifications, getUnreadNotificationsCount } from "@/services/notifications";
 import { parseExpenseDate } from "@/lib/expenses/date";
 import { serializeData } from "@/lib/serialize";
+import { businessDateISO, getBusinessParts } from "@/lib/dates";
 
 interface ReportesPageProps {
   searchParams: Promise<{
@@ -37,8 +38,9 @@ export default async function ReportesPage({ searchParams }: ReportesPageProps) 
   const range = (resolvedParams?.range as "daily" | "weekly" | "monthly" | "yearly" | "custom" | "all") || "daily";
 
   const now = new Date();
-  const targetYear = resolvedParams?.year ? parseInt(resolvedParams.year, 10) : now.getFullYear();
-  const targetMonth = resolvedParams?.month !== undefined ? parseInt(resolvedParams.month, 10) : now.getMonth();
+  const nowParts = getBusinessParts(now); // hora de México, no la del servidor (UTC)
+  const targetYear = resolvedParams?.year ? parseInt(resolvedParams.year, 10) : nowParts.year;
+  const targetMonth = resolvedParams?.month !== undefined ? parseInt(resolvedParams.month, 10) : nowParts.month;
   const targetDate = resolvedParams?.date ? parseExpenseDate(resolvedParams.date) : now;
 
   let reportData;
@@ -77,7 +79,7 @@ export default async function ReportesPage({ searchParams }: ReportesPageProps) 
           period={range}
           currentYear={targetYear}
           currentMonth={targetMonth}
-          currentDate={resolvedParams?.date || now.toISOString().slice(0, 10)}
+          currentDate={resolvedParams?.date || businessDateISO(now)}
           currentStartDate={resolvedParams?.startDate || ""}
           currentEndDate={resolvedParams?.endDate || ""}
         />

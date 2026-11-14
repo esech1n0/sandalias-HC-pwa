@@ -6,8 +6,19 @@ import { cookies } from "next/headers";
 // Manejo de Sesiones Seguras con Jose y Cookies HTTP-Only (Next.js 16)
 // ==============================================================================
 
-const secretKey = process.env.SESSION_SECRET || "sandalias-hc-secure-session-secret-key-32chars";
-const encodedKey = new TextEncoder().encode(secretKey);
+// Sin clave de respaldo: una clave conocida permitiría a cualquiera falsificar sesiones.
+let cachedKey: Uint8Array | null = null;
+function getEncodedKey(): Uint8Array {
+  if (cachedKey) return cachedKey;
+  const secretKey = process.env.SESSION_SECRET;
+  if (!secretKey || secretKey.length < 32) {
+    throw new Error(
+      "SESSION_SECRET no está configurada o tiene menos de 32 caracteres. Configúrala en las variables de entorno."
+    );
+  }
+  cachedKey = new TextEncoder().encode(secretKey);
+  return cachedKey;
+}
 
 export interface SessionPayload {
   userId: string;
@@ -25,13 +36,15 @@ export async function encryptSession(payload: SessionPayload): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(encodedKey);
+    .sign(getEncodedKey());
 }
 
 export async function decryptSession(session: string | undefined): Promise<SessionPayload | null> {
   if (!session) return null;
+  // Fuera del try: una configuración faltante debe fallar visiblemente, no como "sesión inválida".
+  const key = getEncodedKey();
   try {
-    const { payload } = await jwtVerify(session, encodedKey, {
+    const { payload } = await jwtVerify(session, key, {
       algorithms: ["HS256"],
     });
 

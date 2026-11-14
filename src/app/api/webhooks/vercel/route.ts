@@ -19,25 +19,34 @@ interface VercelWebhookBody {
   };
 }
 
+/** Compara la firma HMAC-SHA1 en tiempo constante para evitar ataques de temporización. */
+function isValidSignature(rawBody: string, signature: string, secret: string): boolean {
+  const expected = crypto.createHmac("sha1", secret).update(rawBody).digest();
+  let received: Buffer;
+  try {
+    received = Buffer.from(signature, "hex");
+  } catch {
+    return false;
+  }
+  return received.length === expected.length && crypto.timingSafeEqual(received, expected);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
     const signature = req.headers.get("x-vercel-signature");
     const secret = process.env.VERCEL_WEBHOOK_SECRET;
 
-    // Verificar firma criptográfica si VERCEL_WEBHOOK_SECRET está configurado
-    if (secret && signature) {
-      const computedSignature = crypto
-        .createHmac("sha1", secret)
-        .update(rawBody)
-        .digest("hex");
-
-      if (signature !== computedSignature) {
-        return NextResponse.json(
-          { error: "Firma inválida del webhook de Vercel" },
-          { status: 401 }
-        );
-      }
+    // La firma es obligatoria: sin secreto configurado o sin firma, se rechaza la petición.
+    if (!secret) {
+      console.error("VERCEL_WEBHOOK_SECRET no está configurado; webhook rechazado.");
+      return NextResponse.json({ error: "Webhook no configurado" }, { status: 503 });
+    }
+    if (!signature || !isValidSignature(rawBody, signature, secret)) {
+      return NextResponse.json(
+        { error: "Firma inválida del webhook de Vercel" },
+        { status: 401 }
+      );
     }
 
     let body: VercelWebhookBody;

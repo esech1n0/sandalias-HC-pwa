@@ -9,6 +9,14 @@ import {
 } from "@/lib/sales/calculations";
 import { calculateCardCommission } from "@/lib/sales/commission";
 import { roundMoney } from "@/lib/money";
+import { businessDateKey } from "@/lib/dates";
+import {
+  lockCashRegister,
+  lockKey,
+  lockOpenCashRegister,
+  lockProducts,
+  nextFolio,
+} from "@/lib/db/locks";
 import { triggerLowStockNotification } from "./notifications";
 import type { Prisma } from "@/generated/prisma/client";
 
@@ -35,34 +43,60 @@ export async function createSaleTransaction(input: CreateSaleInput) {
   }
 
   return prisma.$transaction(async (tx) => {
+    // 0. Bloqueos: generador de folios del día, productos del carrito y caja abierta.
+    //    Así dos cobros simultáneos no venden el mismo stock ni repiten folio.
+    const folioPrefix = `VTA-${businessDateKey()}-`;
+    await lockKey(tx, folioPrefix);
+    await lockProducts(tx, input.items.map((i) => i.productId));
+    await lockOpenCashRegister(tx);
+
     // 1. Verificar configuración del sistema para venta por debajo del costo
     const settings = await tx.systemSettings.findUnique({
       where: { id: "default" },
     });
     const allowBelowCost = settings?.allowBelowCostSales ?? true;
 
-    // 2. Verificar existencia en base de datos para cada artículo
-    for (const item of input.items) {
-      const product = await tx.product.findUnique({
-        where: { id: item.productId },
-      });
+    // 2. Cargar productos desde la base de datos (fuente de verdad de precio, costo y stock)
+    const products = await tx.product.findMany({
+      where: { id: { in: input.items.map((i) => i.productId) } },
+    });
+    const productsById = new Map(products.map((p) => [p.id, p]));
 
+    // Cantidad total pedida por producto (el mismo producto puede venir en varias líneas)
+    const requestedByProduct = new Map<string, number>();
+    for (const item of input.items) {
+      requestedByProduct.set(
+        item.productId,
+        (requestedByProduct.get(item.productId) ?? 0) + Math.floor(item.quantity)
+      );
+    }
+
+    const pricedItems: CartItemInput[] = input.items.map((item) => {
+      const product = productsById.get(item.productId);
       if (!product) {
         throw new Error(`Producto ${item.name} no encontrado.`);
       }
-
-      if (product.stock < item.quantity) {
+      if (!product.isActive) {
+        throw new Error(`El producto "${product.name}" está desactivado y no puede venderse.`);
+      }
+      const requested = requestedByProduct.get(product.id) ?? 0;
+      if (product.stock < requested) {
         throw new Error(
-          `Stock insuficiente para "${product.name}". Disponible: ${product.stock}, Solicitado: ${item.quantity}.`
+          `Stock insuficiente para "${product.name}". Disponible: ${product.stock}, Solicitado: ${requested}.`
         );
       }
-
-      // Asignar el costo histórico actual real de la base de datos para el cálculo
-      item.unitCost = Number(product.currentCost);
-    }
+      // Precio de lista, nombre y costo SIEMPRE desde la BD; el cliente solo decide
+      // precio personalizado y descuentos (funciones permitidas del POS).
+      return {
+        ...item,
+        name: product.name,
+        originalPrice: Number(product.salePrice),
+        unitCost: Number(product.currentCost),
+      };
+    });
 
     // 3. Calcular carrito con descuentos y utilidad
-    const cart = calculateCart(input.items, input.cartDiscount);
+    const cart = calculateCart(pricedItems, input.cartDiscount);
 
     if (cart.isNetLoss && !allowBelowCost) {
       throw new Error(
@@ -76,21 +110,21 @@ export async function createSaleTransaction(input: CreateSaleInput) {
       throw new Error(paymentValidation.errorMessage || "Los pagos no cubren el total de la venta.");
     }
 
-    // 5. Obtener caja abierta (si aplica)
+    // 5. Obtener caja abierta (si aplica); ya está bloqueada arriba
     const openRegister = await tx.cashRegister.findFirst({
       where: { status: "OPEN" },
     });
 
-    // 6. Generar folio correlativo del día
-    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-    const countToday = await tx.sale.count({
-      where: {
-        createdAt: {
-          gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        },
-      },
-    });
-    const folio = `VTA-${dateStr}-${String(countToday + 1).padStart(4, "0")}`;
+    // 6. Folio correlativo del día (hora de México), único gracias al candado
+    const folio = await nextFolio(
+      (prefix) =>
+        tx.sale.findFirst({
+          where: { folio: { startsWith: prefix } },
+          orderBy: { folio: "desc" },
+          select: { folio: true },
+        }),
+      folioPrefix
+    );
 
     // 6b. Calcular comisión por pago con tarjeta si aplica
     const cardPaymentsTotal = input.payments
@@ -99,7 +133,11 @@ export async function createSaleTransaction(input: CreateSaleInput) {
 
     let appliedCommissionRate = 0;
     if (cardPaymentsTotal > 0) {
-      if (input.cardCommissionRate !== undefined && input.cardCommissionRate !== null) {
+      if (
+        input.cardCommissionRate !== undefined &&
+        input.cardCommissionRate !== null &&
+        Number.isFinite(input.cardCommissionRate)
+      ) {
         appliedCommissionRate = Math.max(0, Math.min(100, input.cardCommissionRate));
       } else if (settings?.cardCommissionEnabled) {
         appliedCommissionRate = Number(settings.cardCommissionPercentage ?? 0);
@@ -132,45 +170,42 @@ export async function createSaleTransaction(input: CreateSaleInput) {
       },
     });
 
-    // 8. Crear partidas (SaleItem) y descontar inventario
+    // 8. Crear partidas (SaleItem) en una sola consulta
+    await tx.saleItem.createMany({
+      data: cart.items.map((item) => ({
+        saleId: sale.id,
+        productId: item.productId,
+        productName: item.name,
+        quantity: item.quantity,
+        originalPrice: item.originalPrice,
+        unitPrice: item.unitPrice,
+        discountType: item.discountType,
+        discountValue: item.discountValue,
+        discountAmount: item.discountAmount,
+        unitCost: item.unitCost, // Fotografía histórica del costo
+        subtotal: item.subtotal,
+        totalCost: item.totalCost,
+        profit: item.profit,
+      })),
+    });
+
+    // 8b. Descontar inventario. Las filas están bloqueadas, así que el stock en memoria es exacto.
+    const runningStock = new Map(products.map((p) => [p.id, p.stock]));
+
     for (const item of cart.items) {
-      await tx.saleItem.create({
-        data: {
-          saleId: sale.id,
-          productId: item.productId,
-          productName: item.name,
-          quantity: item.quantity,
-          originalPrice: item.originalPrice,
-          unitPrice: item.unitPrice,
-          discountType: item.discountType,
-          discountValue: item.discountValue,
-          discountAmount: item.discountAmount,
-          unitCost: item.unitCost, // Fotografía histórica del costo
-          subtotal: item.subtotal,
-          totalCost: item.totalCost,
-          profit: item.profit,
-        },
-      });
-
-      // Disminuir stock del producto
-      const currentProduct = await tx.product.findUnique({
-        where: { id: item.productId },
-      });
-
-      if (!currentProduct) continue;
-
-      const previousStock = currentProduct.stock;
+      const product = productsById.get(item.productId)!;
+      const previousStock = runningStock.get(product.id)!;
       const newStock = previousStock - item.quantity;
+      runningStock.set(product.id, newStock);
 
       await tx.product.update({
-        where: { id: currentProduct.id },
-        data: { stock: newStock },
+        where: { id: product.id },
+        data: { stock: { decrement: item.quantity } },
       });
 
-      // Registrar movimiento de inventario
       await tx.inventoryMovement.create({
         data: {
-          productId: currentProduct.id,
+          productId: product.id,
           type: "SALE",
           quantity: -item.quantity,
           previousStock,
@@ -180,13 +215,13 @@ export async function createSaleTransaction(input: CreateSaleInput) {
         },
       });
 
-      // Verificar bajo stock
-      if (newStock < currentProduct.minStock) {
+      if (newStock < product.minStock) {
         await triggerLowStockNotification(
-          currentProduct.id,
+          product.id,
           newStock,
-          currentProduct.minStock,
-          currentProduct.name
+          product.minStock,
+          product.name,
+          tx
         );
       }
     }
@@ -195,6 +230,7 @@ export async function createSaleTransaction(input: CreateSaleInput) {
     let cashCovered = 0;
     let cardCovered = 0;
     let transferCovered = 0;
+    let changeAssigned = false;
 
     for (const p of input.payments) {
       if (p.amount <= 0) continue;
@@ -203,7 +239,11 @@ export async function createSaleTransaction(input: CreateSaleInput) {
       let change = 0;
 
       if (p.method === "CASH") {
-        change = paymentValidation.changeGiven;
+        // El cambio se registra una sola vez aunque haya varios pagos en efectivo
+        if (!changeAssigned) {
+          change = paymentValidation.changeGiven;
+          changeAssigned = true;
+        }
         cashCovered += paymentAmount;
       } else if (p.method === "CARD") {
         cardCovered += paymentAmount;
@@ -230,7 +270,7 @@ export async function createSaleTransaction(input: CreateSaleInput) {
       });
     }
 
-    // 10. Actualizar caja abierta si existe
+    // 10. Actualizar caja abierta si existe (incrementos atómicos)
     if (openRegister) {
       if (cashCovered > 0) {
         await tx.cashMovement.create({
@@ -247,10 +287,10 @@ export async function createSaleTransaction(input: CreateSaleInput) {
       await tx.cashRegister.update({
         where: { id: openRegister.id },
         data: {
-          cashSales: Number(openRegister.cashSales) + cashCovered,
-          cardSales: Number(openRegister.cardSales) + cardCovered,
-          transferSales: Number(openRegister.transferSales) + transferCovered,
-          expectedCash: Number(openRegister.expectedCash) + cashCovered,
+          cashSales: { increment: cashCovered },
+          cardSales: { increment: cardCovered },
+          transferSales: { increment: transferCovered },
+          expectedCash: { increment: cashCovered },
         },
       });
     }
@@ -271,7 +311,17 @@ export async function cancelSaleTransaction(
   const cleanReason = reason.trim() || "Cancelación de venta";
 
   return prisma.$transaction(async (tx) => {
-    // 1. Obtener la venta con partidas y pagos
+    // 1. Marcar como CANCELLED solo si sigue COMPLETED (evita doble cancelación simultánea)
+    const marked = await tx.sale.updateMany({
+      where: { id: saleId, status: "COMPLETED" },
+      data: {
+        status: "CANCELLED",
+        cancelledAt: new Date(),
+        cancelledReason: cleanReason,
+        cancelledById: userId,
+      },
+    });
+
     const sale = await tx.sale.findUnique({
       where: { id: saleId },
       include: {
@@ -284,48 +334,13 @@ export async function cancelSaleTransaction(
       throw new Error("Venta no encontrada.");
     }
 
-    if (sale.status === "CANCELLED") {
+    if (marked.count === 0) {
       throw new Error(`La venta con folio ${sale.folio} ya fue cancelada previamente.`);
     }
 
-    // 2. Marcar la venta como CANCELLED (con fallback SQL si el cliente en memoria no ha sido reiniciado)
-    let updatedSale: any;
-    try {
-      updatedSale = await tx.sale.update({
-        where: { id: sale.id },
-        data: {
-          status: "CANCELLED",
-          cancelledAt: new Date(),
-          cancelledReason: cleanReason,
-          cancelledById: userId,
-        },
-      });
-    } catch (updateErr: any) {
-      if (
-        updateErr?.message?.includes("status") ||
-        updateErr?.name === "PrismaClientValidationError"
-      ) {
-        await tx.$executeRaw`
-          UPDATE "sales"
-          SET "status" = 'CANCELLED'::"SaleStatus",
-              "cancelledAt" = NOW(),
-              "cancelledReason" = ${cleanReason},
-              "cancelledById" = ${userId}
-          WHERE "id" = ${sale.id}
-        `;
-        updatedSale = {
-          ...sale,
-          status: "CANCELLED",
-          cancelledAt: new Date(),
-          cancelledReason: cleanReason,
-          cancelledById: userId,
-        };
-      } else {
-        throw updateErr;
-      }
-    }
+    // 2. Restablecer el stock de los productos vendidos y registrar movimientos de inventario
+    await lockProducts(tx, sale.items.map((i) => i.productId));
 
-    // 3. Restablecer el stock de los productos vendidos y registrar movimientos de inventario
     for (const item of sale.items) {
       const product = await tx.product.findUnique({
         where: { id: item.productId },
@@ -337,7 +352,7 @@ export async function cancelSaleTransaction(
 
         await tx.product.update({
           where: { id: product.id },
-          data: { stock: newStock },
+          data: { stock: { increment: item.quantity } },
         });
 
         await tx.inventoryMovement.create({
@@ -354,8 +369,7 @@ export async function cancelSaleTransaction(
       }
     }
 
-    // 4. Si la venta tuvo pagos en efectivo y hay una caja abierta asociada o activa,
-    // ajustar el efectivo para que el corte de caja cuadre con la devolución del dinero.
+    // 3. Ajustar la caja para que el corte cuadre con la devolución del dinero
     let cashPaid = 0;
     let cardPaid = 0;
     let transferPaid = 0;
@@ -366,59 +380,40 @@ export async function cancelSaleTransaction(
       else if (p.method === "TRANSFER") transferPaid += amount;
     }
 
-    // Revisar si la caja original donde se cobró sigue abierta
     if (sale.cashRegisterId) {
-      const originalRegister = await tx.cashRegister.findUnique({
-        where: { id: sale.cashRegisterId },
-      });
+      await lockCashRegister(tx, sale.cashRegisterId);
+    }
+    await lockOpenCashRegister(tx);
 
-      if (originalRegister && originalRegister.status === "OPEN") {
-        if (cashPaid > 0) {
-          await tx.cashMovement.create({
-            data: {
-              cashRegisterId: originalRegister.id,
-              type: "ADJUSTMENT",
-              amount: cashPaid,
-              reason: `Devolución en efectivo por cancelación ${sale.folio}`,
-              userId,
-            },
-          });
-        }
+    const originalRegister = sale.cashRegisterId
+      ? await tx.cashRegister.findUnique({ where: { id: sale.cashRegisterId } })
+      : null;
 
-        await tx.cashRegister.update({
-          where: { id: originalRegister.id },
+    if (originalRegister && originalRegister.status === "OPEN") {
+      // La caja donde se cobró sigue abierta: se revierte la venta en sus totales
+      if (cashPaid > 0) {
+        await tx.cashMovement.create({
           data: {
-            cashSales: Math.max(0, Number(originalRegister.cashSales) - cashPaid),
-            cardSales: Math.max(0, Number(originalRegister.cardSales) - cardPaid),
-            transferSales: Math.max(0, Number(originalRegister.transferSales) - transferPaid),
-            expectedCash: Math.max(0, Number(originalRegister.expectedCash) - cashPaid),
+            cashRegisterId: originalRegister.id,
+            type: "ADJUSTMENT",
+            amount: cashPaid,
+            reason: `Devolución en efectivo por cancelación ${sale.folio}`,
+            userId,
           },
         });
-      } else if (cashPaid > 0) {
-        // Si la caja original ya cerró, revisar si hay una caja abierta activa en este momento
-        const currentOpenRegister = await tx.cashRegister.findFirst({
-          where: { status: "OPEN" },
-        });
-        if (currentOpenRegister) {
-          await tx.cashMovement.create({
-            data: {
-              cashRegisterId: currentOpenRegister.id,
-              type: "ADJUSTMENT",
-              amount: cashPaid,
-              reason: `Devolución en efectivo por cancelación de venta anterior ${sale.folio}`,
-              userId,
-            },
-          });
-          await tx.cashRegister.update({
-            where: { id: currentOpenRegister.id },
-            data: {
-              expectedCash: Math.max(0, Number(currentOpenRegister.expectedCash) - cashPaid),
-              withdrawalsTotal: Number(currentOpenRegister.withdrawalsTotal) + cashPaid,
-            },
-          });
-        }
       }
+
+      await tx.cashRegister.update({
+        where: { id: originalRegister.id },
+        data: {
+          cashSales: { decrement: cashPaid },
+          cardSales: { decrement: cardPaid },
+          transferSales: { decrement: transferPaid },
+          expectedCash: { decrement: cashPaid },
+        },
+      });
     } else if (cashPaid > 0) {
+      // La caja original ya cerró (o no hubo): el reembolso sale de la caja abierta actual
       const currentOpenRegister = await tx.cashRegister.findFirst({
         where: { status: "OPEN" },
       });
@@ -435,102 +430,38 @@ export async function cancelSaleTransaction(
         await tx.cashRegister.update({
           where: { id: currentOpenRegister.id },
           data: {
-            expectedCash: Math.max(0, Number(currentOpenRegister.expectedCash) - cashPaid),
-            withdrawalsTotal: Number(currentOpenRegister.withdrawalsTotal) + cashPaid,
+            expectedCash: { decrement: cashPaid },
+            withdrawalsTotal: { increment: cashPaid },
           },
         });
       }
     }
 
-    return updatedSale;
+    return sale;
   });
 }
 
 export async function getSalesHistory(limit: number = 50): Promise<SaleHistoryItem[]> {
-  try {
-    return (await prisma.sale.findMany({
-      include: {
-        items: true,
-        payments: true,
-        user: { select: { name: true, username: true } },
-        cancelledBy: { select: { name: true, username: true } },
-      },
-      orderBy: { createdAt: "desc" },
-      take: limit,
-    })) as SaleHistoryItem[];
-  } catch (err: any) {
-    // Si la instancia en memoria aún no ha recargado la relación cancelledBy tras prisma generate
-    if (err?.message?.includes("cancelledBy") || err?.name === "PrismaClientValidationError") {
-      const sales = await prisma.sale.findMany({
-        include: {
-          items: true,
-          payments: true,
-          user: { select: { name: true, username: true } },
-        },
-        orderBy: { createdAt: "desc" },
-        take: limit,
-      });
-
-      const cancelUserIds = Array.from(
-        new Set(sales.map((s: any) => s.cancelledById).filter(Boolean))
-      ) as string[];
-
-      const cancelUsers =
-        cancelUserIds.length > 0
-          ? await prisma.user.findMany({
-              where: { id: { in: cancelUserIds } },
-              select: { id: true, name: true, username: true },
-            })
-          : [];
-
-      const usersMap = new Map(cancelUsers.map((u) => [u.id, u]));
-
-      return sales.map((s: any) => ({
-        ...s,
-        cancelledBy: s.cancelledById ? usersMap.get(s.cancelledById) || null : null,
-      })) as unknown as SaleHistoryItem[];
-    }
-    throw err;
-  }
+  return prisma.sale.findMany({
+    include: {
+      items: true,
+      payments: true,
+      user: { select: { name: true, username: true } },
+      cancelledBy: { select: { name: true, username: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
 }
 
 export async function getSaleByFolio(folio: string): Promise<SaleHistoryItem | null> {
-  try {
-    return (await prisma.sale.findUnique({
-      where: { folio },
-      include: {
-        items: true,
-        payments: true,
-        user: { select: { name: true, username: true } },
-        cancelledBy: { select: { name: true, username: true } },
-      },
-    })) as SaleHistoryItem | null;
-  } catch (err: any) {
-    if (err?.message?.includes("cancelledBy") || err?.name === "PrismaClientValidationError") {
-      const sale: any = await prisma.sale.findUnique({
-        where: { folio },
-        include: {
-          items: true,
-          payments: true,
-          user: { select: { name: true, username: true } },
-        },
-      });
-
-      if (!sale) return null;
-
-      let cancelledBy = null;
-      if (sale.cancelledById) {
-        cancelledBy = await prisma.user.findUnique({
-          where: { id: sale.cancelledById },
-          select: { name: true, username: true },
-        });
-      }
-
-      return {
-        ...sale,
-        cancelledBy,
-      } as unknown as SaleHistoryItem;
-    }
-    throw err;
-  }
+  return prisma.sale.findUnique({
+    where: { folio },
+    include: {
+      items: true,
+      payments: true,
+      user: { select: { name: true, username: true } },
+      cancelledBy: { select: { name: true, username: true } },
+    },
+  });
 }

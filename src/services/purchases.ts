@@ -1,6 +1,8 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { calculateWeightedAverageCost } from "@/lib/inventory/cost";
+import { businessDateKey } from "@/lib/dates";
+import { lockKey, lockOpenCashRegister, lockProducts, nextFolio } from "@/lib/db/locks";
 import { PaymentMethod } from "@/generated/prisma/client";
 
 export interface PurchaseItemInput {
@@ -23,24 +25,30 @@ export async function createPurchaseEntry(input: CreatePurchaseInput) {
   }
 
   return prisma.$transaction(async (tx) => {
+    // 0. Bloqueos: folios del día, productos y caja (evita costos, stock o caja pisados)
+    const folioPrefix = `ENT-${businessDateKey()}-`;
+    await lockKey(tx, folioPrefix);
+    await lockProducts(tx, input.items.map((i) => i.productId));
+
     // 1. Obtener caja abierta si el pago fue en EFECTIVO
     let openRegister = null;
     if (input.paymentMethod === "CASH") {
+      await lockOpenCashRegister(tx);
       openRegister = await tx.cashRegister.findFirst({
         where: { status: "OPEN" },
       });
     }
 
     // 2. Generar folio único para la compra
-    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-    const countToday = await tx.purchase.count({
-      where: {
-        createdAt: {
-          gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        },
-      },
-    });
-    const folio = `ENT-${dateStr}-${String(countToday + 1).padStart(4, "0")}`;
+    const folio = await nextFolio(
+      (prefix) =>
+        tx.purchase.findFirst({
+          where: { folio: { startsWith: prefix } },
+          orderBy: { folio: "desc" },
+          select: { folio: true },
+        }),
+      folioPrefix
+    );
 
     let totalPurchaseAmount = 0;
 
@@ -148,14 +156,11 @@ export async function createPurchaseEntry(input: CreatePurchaseInput) {
         },
       });
 
-      const newExpensesCashTotal = Number(openRegister.expensesCashTotal) + totalPurchaseAmount;
-      const newExpectedCash = Number(openRegister.expectedCash) - totalPurchaseAmount;
-
       await tx.cashRegister.update({
         where: { id: openRegister.id },
         data: {
-          expensesCashTotal: newExpensesCashTotal,
-          expectedCash: newExpectedCash,
+          expensesCashTotal: { increment: totalPurchaseAmount },
+          expectedCash: { decrement: totalPurchaseAmount },
         },
       });
     }

@@ -14,6 +14,8 @@ export default async function proxy(req: NextRequest) {
   if (
     path.startsWith("/_next") ||
     path.startsWith("/api/public") ||
+    // Los webhooks no traen cookie de sesión; se autentican con su propia firma HMAC.
+    path.startsWith("/api/webhooks/") ||
     path.includes(".") ||
     path === "/favicon.ico" ||
     path === "/403"

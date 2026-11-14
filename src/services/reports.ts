@@ -1,5 +1,12 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import {
+  businessDateISO,
+  businessTimeToDate,
+  endOfBusinessDay,
+  getBusinessParts,
+  startOfBusinessDay,
+} from "@/lib/dates";
 import { calculateFinancialMetrics, FinancialMetricsResult } from "@/lib/reports/metrics";
 import { roundMoney } from "@/lib/money";
 
@@ -136,7 +143,7 @@ export async function getFinancialReport(filter: DateRangeFilter) {
     totalSales += saleTotal;
     totalCOGS += saleCost;
 
-    const dayKey = sale.createdAt.toISOString().slice(0, 10);
+    const dayKey = businessDateISO(sale.createdAt);
     salesByDayMap.set(dayKey, (salesByDayMap.get(dayKey) || 0) + saleTotal);
 
     for (const p of sale.payments) {
@@ -228,10 +235,10 @@ export async function getFinancialReport(filter: DateRangeFilter) {
   };
 
   // Encontrar años disponibles en la base de datos
-  const currentYear = new Date().getFullYear();
+  const currentYear = getBusinessParts(new Date()).year;
   const availableYearsSet = new Set<number>([currentYear]);
   if (sales.length > 0) {
-    sales.forEach((s) => availableYearsSet.add(s.createdAt.getFullYear()));
+    sales.forEach((s) => availableYearsSet.add(getBusinessParts(s.createdAt).year));
   }
   const availableYears = Array.from(availableYearsSet).sort((a, b) => b - a);
 
@@ -278,41 +285,36 @@ export async function getFinancialReport(filter: DateRangeFilter) {
   };
 }
 
+// Todos los rangos se calculan en hora de México (el servidor corre en UTC).
+
 export async function getDailyReport(date: Date = new Date()) {
-  const start = new Date(date);
-  start.setHours(0, 0, 0, 0);
-
-  const end = new Date(date);
-  end.setHours(23, 59, 59, 999);
-
-  return getFinancialReport({ startDate: start, endDate: end });
+  return getFinancialReport({
+    startDate: startOfBusinessDay(date),
+    endDate: endOfBusinessDay(date),
+  });
 }
 
 export async function getWeeklyReport(date: Date = new Date()) {
-  const current = new Date(date);
-  const day = current.getDay();
-  const diff = current.getDate() - day + (day === 0 ? -6 : 1); // lunes
-
-  const start = new Date(current.setDate(diff));
-  start.setHours(0, 0, 0, 0);
-
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  end.setHours(23, 59, 59, 999);
+  const p = getBusinessParts(date);
+  const daysSinceMonday = (p.weekday + 6) % 7; // semana de lunes a domingo
+  const start = businessTimeToDate(p.year, p.month, p.day - daysSinceMonday);
+  const end = new Date(
+    businessTimeToDate(p.year, p.month, p.day - daysSinceMonday + 7).getTime() - 1
+  );
 
   return getFinancialReport({ startDate: start, endDate: end });
 }
 
 export async function getMonthlyReport(year: number, monthIndex: number) {
-  const start = new Date(year, monthIndex, 1, 0, 0, 0, 0);
-  const end = new Date(year, monthIndex + 1, 0, 23, 59, 59, 999);
+  const start = businessTimeToDate(year, monthIndex, 1);
+  const end = new Date(businessTimeToDate(year, monthIndex + 1, 1).getTime() - 1);
 
   return getFinancialReport({ startDate: start, endDate: end });
 }
 
 export async function getYearlyReport(year: number) {
-  const start = new Date(year, 0, 1, 0, 0, 0, 0);
-  const end = new Date(year, 11, 31, 23, 59, 59, 999);
+  const start = businessTimeToDate(year, 0, 1);
+  const end = new Date(businessTimeToDate(year + 1, 0, 1).getTime() - 1);
 
   const baseReport = await getFinancialReport({ startDate: start, endDate: end });
 
@@ -343,20 +345,20 @@ export async function getYearlyReport(year: number) {
     let pendingCommitments = 0;
 
     for (const s of yearSales) {
-      if (s.createdAt.getMonth() === monthIndex) {
+      if (getBusinessParts(s.createdAt).month === monthIndex) {
         sales += Number(s.total);
         cogs += Number(s.totalCost);
       }
     }
 
     for (const e of yearExpenses) {
-      if (e.date.getMonth() === monthIndex) {
+      if (getBusinessParts(e.date).month === monthIndex) {
         expenses += Number(e.amount);
       }
     }
 
     for (const p of yearScheduled) {
-      if (p.dueDate.getMonth() === monthIndex) {
+      if (getBusinessParts(p.dueDate).month === monthIndex) {
         pendingCommitments += Number(p.amount);
       }
     }
@@ -389,19 +391,13 @@ export async function getYearlyReport(year: number) {
 }
 
 export async function getCustomReport(startDate: Date, endDate: Date) {
-  const start = new Date(startDate);
-  start.setHours(0, 0, 0, 0);
-
-  const end = new Date(endDate);
-  end.setHours(23, 59, 59, 999);
-
-  return getFinancialReport({ startDate: start, endDate: end });
+  return getFinancialReport({
+    startDate: startOfBusinessDay(startDate),
+    endDate: endOfBusinessDay(endDate),
+  });
 }
 
 export async function getAllTimeReport() {
   const start = new Date("2020-01-01T00:00:00.000Z");
-  const end = new Date();
-  end.setHours(23, 59, 59, 999);
-
-  return getFinancialReport({ startDate: start, endDate: end });
+  return getFinancialReport({ startDate: start, endDate: endOfBusinessDay() });
 }

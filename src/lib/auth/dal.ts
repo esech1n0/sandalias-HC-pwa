@@ -22,8 +22,9 @@ export const getCurrentUser = cache(async () => {
   const session = await verifySession();
   if (!session) return null;
 
+  let user: { id: string; username: string; name: string; isActive: boolean } | null;
   try {
-    const user = await prisma.user.findUnique({
+    user = await prisma.user.findUnique({
       where: { id: session.userId },
       select: {
         id: true,
@@ -32,13 +33,16 @@ export const getCurrentUser = cache(async () => {
         isActive: true,
       },
     });
-
-    if (!user || !user.isActive) {
-      redirect("/login");
-    }
-
-    return user;
-  } catch {
+  } catch (error) {
+    console.error("Error al consultar el usuario de la sesión:", error);
     return null;
   }
+
+  // redirect() lanza una excepción especial: debe quedar FUERA del try/catch para que funcione.
+  // Así un usuario desactivado o eliminado pierde el acceso aunque su JWT siga vigente.
+  if (!user || !user.isActive) {
+    redirect("/login");
+  }
+
+  return user;
 });

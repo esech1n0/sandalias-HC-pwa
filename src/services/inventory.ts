@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { triggerLowStockNotification } from "./notifications";
+import { lockProducts } from "@/lib/db/locks";
 
 export interface AdjustStockInput {
   productId: string;
@@ -21,6 +22,7 @@ export async function adjustInventoryManual(input: AdjustStockInput) {
   }
 
   return prisma.$transaction(async (tx) => {
+    await lockProducts(tx, [input.productId]);
     const product = await tx.product.findUnique({
       where: { id: input.productId },
     });
@@ -62,7 +64,8 @@ export async function adjustInventoryManual(input: AdjustStockInput) {
         updatedProduct.id,
         targetStock,
         updatedProduct.minStock,
-        updatedProduct.name
+        updatedProduct.name,
+        tx
       );
     }
 

@@ -11,6 +11,7 @@ import {
 import { createExpenseCategory } from "@/services/expenseCategories";
 import { PaymentMethod, ScheduledExpenseFrequency } from "@/generated/prisma/client";
 import { serializeData } from "@/lib/serialize";
+import { parseInput, paymentMethodSchema, positiveMoneySchema } from "@/lib/validation";
 
 export async function createScheduledExpenseAction(formData: FormData) {
   const user = await getCurrentUser();
@@ -31,7 +32,7 @@ export async function createScheduledExpenseAction(formData: FormData) {
     await createExpenseCategory(category);
   }
 
-  const amount = parseFloat(formData.get("amount")?.toString() || "0");
+  const amount = parseInput(positiveMoneySchema, parseFloat(formData.get("amount")?.toString() || "0"));
   const dueDate = formData.get("dueDate")?.toString() || null;
   const isRecurring = formData.get("isRecurring") === "true";
   const frequency = (formData.get("frequency")?.toString() || null) as ScheduledExpenseFrequency | null;
@@ -69,7 +70,10 @@ export async function payScheduledExpenseAction(formData: FormData) {
   }
 
   const scheduledExpenseId = formData.get("scheduledExpenseId")?.toString() || "";
-  const paymentMethod = (formData.get("paymentMethod")?.toString() || "CASH") as PaymentMethod;
+  const paymentMethod: PaymentMethod = parseInput(
+    paymentMethodSchema,
+    formData.get("paymentMethod")?.toString() || "CASH"
+  );
   const paymentDate = formData.get("paymentDate")?.toString() || null;
   const description = formData.get("description")?.toString() || null;
 
@@ -129,7 +133,7 @@ export async function updateScheduledExpenseAction(id: string, formData: FormDat
     await createExpenseCategory(category);
   }
 
-  const amount = parseFloat(formData.get("amount")?.toString() || "0");
+  const amount = parseInput(positiveMoneySchema, parseFloat(formData.get("amount")?.toString() || "0"));
   const dueDate = formData.get("dueDate")?.toString() || "";
   const notes = formData.get("notes")?.toString() || null;
 

@@ -3,7 +3,8 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { createSession, deleteSession, getSession } from "@/lib/auth/session";
+import { createSession, deleteSession } from "@/lib/auth/session";
+import { getCurrentUser } from "@/lib/auth/dal";
 
 export interface AuthActionResponse {
   success: boolean;
@@ -63,8 +64,8 @@ export async function changePasswordAction(
   currentPassword: string,
   newPassword: string
 ): Promise<AuthActionResponse> {
-  const session = await getSession();
-  if (!session?.userId) {
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
     return { success: false, error: "No autenticado." };
   }
 
@@ -74,7 +75,7 @@ export async function changePasswordAction(
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: session.userId },
+      where: { id: currentUser.id },
     });
 
     if (!user) {
