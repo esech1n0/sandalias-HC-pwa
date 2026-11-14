@@ -1,10 +1,10 @@
-# CLAUDE.md — HC Venta
+# INSTRUCTIONS.md — HC Venta
 
 ## 0. Propósito de este archivo
 
 Este archivo contiene las instrucciones maestras para desarrollar **HC Venta**, un sistema de Punto de Venta (POS) personalizado para el negocio **Sandalias HC**.
 
-Claude debe tratar este documento como la fuente principal de verdad del proyecto.
+Antigravity debe tratar este documento como la fuente principal de verdad del proyecto.
 
 ### Regla fundamental
 
@@ -25,7 +25,7 @@ Antes de implementar, modificar o eliminar una funcionalidad:
 
 ## Nombre del sistema
 
-**Sandalias y Pantuflas HC - Punto de Venta**
+**Sandalias y Pantuflas HC**
 
 ## Nombre de la aplicación
 
