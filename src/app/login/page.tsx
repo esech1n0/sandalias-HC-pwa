@@ -1,14 +1,17 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { loginAction, AuthActionResponse } from "@/actions/auth";
 import { Lock, User, AlertCircle, ArrowRight } from "lucide-react";
+import { PasswordVisibilityToggle } from "@/components/PasswordVisibilityToggle";
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState<AuthActionResponse | null, FormData>(
     loginAction,
     null
   );
+  // La contraseña permanece visible hasta que el usuario vuelva a pulsar el ojo
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("hc-theme");
@@ -100,11 +103,20 @@ export default function LoginPage() {
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   placeholder="••••••••••••"
                   autoComplete="current-password"
-                  className="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#cfd500] focus:border-transparent transition-all text-sm"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  className="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#cfd500] focus:border-transparent transition-all text-sm"
+                />
+                <PasswordVisibilityToggle
+                  visible={showPassword}
+                  onToggle={() => setShowPassword((v) => !v)}
+                  controlsId="password"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2"
                 />
               </div>
             </div>

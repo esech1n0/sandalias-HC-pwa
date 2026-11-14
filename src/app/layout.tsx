@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { IdleScreen } from "@/components/IdleScreen";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
+import { ImageGuard } from "@/components/ImageGuard";
 
 export const viewport: Viewport = {
   themeColor: "#cfd500",
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col">
         <PwaRegister />
+        <ImageGuard />
         {children}
         <IdleScreen />
       </body>

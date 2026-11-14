@@ -109,3 +109,98 @@ button:not(:disabled):active {
   transform: scale(0.97);
 }
 
+
+/* ==============================================================================
+   Imágenes: no se pueden seleccionar ni arrastrar con el mouse
+   (Firefox se cubre además con el listener global de dragstart en ImageGuard)
+   ============================================================================== */
+img,
+svg,
+picture,
+video,
+canvas {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* ==============================================================================
+   Botón de ojo (mostrar / ocultar contraseña)
+   - data-state="open": ojo abierto, contraseña visible
+   - data-state="closed": párpado cerrado con pestañas, contraseña oculta
+   ============================================================================== */
+.eye-toggle svg {
+  overflow: visible;
+}
+
+.eye-toggle .eye-open,
+.eye-toggle .eye-closed,
+.eye-toggle .eye-pupil,
+.eye-toggle .eye-lash {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 260ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 200ms ease;
+}
+
+/* Abierto */
+.eye-toggle[data-state="open"] .eye-open {
+  transform: scaleY(1);
+  opacity: 1;
+}
+.eye-toggle[data-state="open"] .eye-pupil {
+  transform: scale(1);
+  transition-delay: 120ms;
+}
+.eye-toggle[data-state="open"] .eye-closed {
+  transform: scaleY(0.4) translateY(-30%);
+  opacity: 0;
+}
+.eye-toggle[data-state="open"] .eye-lash {
+  transform: scale(0);
+}
+
+/* Cerrado: el ojo se aplasta hacia la línea media y aparece el párpado */
+.eye-toggle[data-state="closed"] .eye-open {
+  transform: scaleY(0.08);
+  opacity: 0;
+}
+.eye-toggle[data-state="closed"] .eye-pupil {
+  transform: scale(0);
+}
+.eye-toggle[data-state="closed"] .eye-closed {
+  transform: none;
+  opacity: 1;
+  transition-delay: 90ms;
+}
+.eye-toggle[data-state="closed"] .eye-lash {
+  transform: scale(1);
+  transition-delay: 160ms;
+}
+
+/* Parpadeo al abrir: el ojo "despierta" con un pequeño rebote */
+.eye-toggle[data-state="open"] svg {
+  animation: eye-wake 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes eye-wake {
+  0% { transform: scale(0.9); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eye-toggle *,
+  .eye-toggle svg {
+    animation: none !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* Oculta el botón nativo de "mostrar contraseña" de Edge para no duplicar el ojo */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
